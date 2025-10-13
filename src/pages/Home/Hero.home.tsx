@@ -4,7 +4,7 @@ import { Pawn } from "../../components/icons/Pawn.pixel";
 import { RightArrow } from "../../components/icons/RightArrow.pixel";
 import heroImage from "/images/pixel-hero-image.png";
 
-//Hero section
+//Hero sectionn
 const Hero = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
   return (
