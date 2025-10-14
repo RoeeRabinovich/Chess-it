@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "../../components/ui/Button";
-import { Pawn } from "../../components/icons/Pawn.pixel";
+import { Pawn } from "../../components/icons/Pawn.icon";
 import { RightArrow } from "../../components/icons/RightArrow.pixel";
 import heroImage from "/images/pixel-hero-image.png";
 
