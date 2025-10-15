@@ -2,7 +2,7 @@ import { Button } from "../../components/ui/Button";
 //Cta section
 const CTA = () => {
   return (
-    <section className="bg-background p-10">
+    <section className="bg-secondary p-10">
       <div className="mx-auto max-w-4xl rounded-sm border-2 p-4 md:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <span className="text-muted-foreground mb-3 inline-block text-sm tracking-wider uppercase">

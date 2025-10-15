@@ -35,16 +35,16 @@ const Navbar = () => {
     <nav
       className={`fixed top-0 right-0 left-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-background/95 border-border border-b backdrop-blur-sm"
-          : "bg-background"
+          ? "border-border mx-70 mt-6 rounded-4xl border-b backdrop-blur-sm"
+          : "bg-background top-0 left-0 mx-0 mt-0 w-full rounded-none border-none"
       }`}
     >
       <div className="container mx-auto px-6 md:px-8">
         <div className="flex h-16 items-center justify-between md:h-20">
           <a href="/" className="group flex items-center gap-3">
             <Crown className="border-border bg-pastel-mint h-10 w-10 rounded-full" />
-            <span className="!font-minecraft text-foreground text-2xl font-bold tracking-wide">
-              Chess-IT
+            <span className="text-foreground text-2xl font-bold tracking-wide">
+              Chess-It
             </span>
           </a>
 
@@ -119,8 +119,12 @@ const Navbar = () => {
                 </>
               ) : (
                 <> */}
-              <DropdownMenuItem>Sign In</DropdownMenuItem>
-              <DropdownMenuItem>Get Started</DropdownMenuItem>
+              <DropdownMenuItem style={{ fontFamily: "minecraft" }}>
+                Sign In
+              </DropdownMenuItem>
+              <DropdownMenuItem style={{ fontFamily: "minecraft" }}>
+                Get Started
+              </DropdownMenuItem>
               {/* </>
               )} */}
             </DropdownMenuContent>
