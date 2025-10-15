@@ -8,9 +8,9 @@ const CTA = () => {
           <span className="text-muted-foreground mb-3 inline-block text-sm tracking-wider uppercase">
             Get started
           </span>
-          <h2 className="text-foreground mb-4 font-serif text-3xl font-bold md:text-4xl">
+          <h2 className="text-foreground mb-4 text-3xl font-bold md:text-4xl">
             Ready to dive into
-            <span className="text-pastel-mint"> Chess-It</span>?
+            <span className="text-pastel-mint"> Chess-It?</span>
           </h2>
           <p className="text-muted-foreground mx-auto mb-8 max-w-2xl text-base md:text-lg">
             Create custom positions, annotate critical moments, and share your

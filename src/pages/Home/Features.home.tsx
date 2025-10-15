@@ -52,8 +52,8 @@ const Features = () => {
     <section className="bg-green-50">
       <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 lg:px-8">
         <div className="mx-auto mb-12 max-w-3xl text-center">
-          <h2 className="text-foreground mb-3 text-center font-serif text-3xl font-bold md:text-4xl">
-            Everything You Need for Chess Study
+          <h2 className="text-foreground mb-3 text-center text-3xl font-bold md:text-4xl">
+            Everything You Need for Chess Study!
           </h2>
           <p className="text-muted-foreground text-center md:text-lg">
             Comprehensive resources and tools for studying chess

@@ -1,7 +1,25 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: minecraft;
+  src: url("/fonts/Minecraft.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
+  h1,
+  h2,
+  h3,
+  button,
+  a,
+  span {
+    font-family: var(--font-minecraft);
+  }
+
   :root {
+    --font-minecraft: "minecraft", sans-serif;
     --background: 0 0% 100%;
     --foreground: 0 0% 10%;
     --primary: 0 0% 10%;

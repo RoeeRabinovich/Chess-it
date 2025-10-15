@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "../../components/ui/Button";
 import { Pawn } from "../../components/icons/Pawn.icon";
 import { RightArrow } from "../../components/icons/RightArrow.pixel";
-import heroImage from "/images/pixel-hero-image.png";
+import heroImage from "../../assets/images/pixel-hero-image.png";
 
 //Hero section
 const Hero = () => {
@@ -14,11 +14,11 @@ const Hero = () => {
           <div className="animate-fade-in">
             <div className="mb-8 inline-block">
               <span className="text-muted-foreground text-sm font-medium tracking-wider uppercase">
-                chess community platform
+                chess study platform
               </span>
             </div>
 
-            <h1 className="text-foreground mb-6 font-serif text-5xl leading-[1.1] font-bold md:text-6xl lg:text-7xl">
+            <h1 className="text-foreground mb-6 text-5xl leading-[1.1] font-bold tracking-wide md:text-6xl lg:text-7xl">
               Study, Train <span className="mt-2 block">& Connect</span>
             </h1>
 

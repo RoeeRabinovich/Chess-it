@@ -43,8 +43,8 @@ const Navbar = () => {
         <div className="flex h-16 items-center justify-between md:h-20">
           <a href="/" className="group flex items-center gap-3">
             <Crown className="border-border bg-pastel-mint h-10 w-10 rounded-full" />
-            <span className="text-foreground font-serif text-xl font-bold tracking-tight">
-              Chess-It
+            <span className="!font-minecraft text-foreground text-2xl font-bold tracking-wide">
+              Chess-IT
             </span>
           </a>
 
