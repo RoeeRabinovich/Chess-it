@@ -8,6 +8,9 @@ import {
   CardTitle,
 } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
+import { Input } from "../../components/ui/Input";
+import { PasswordRequirements } from "../../components/ui/PasswordRequirements";
+import { useToast } from "../../hooks/useToast";
 
 import { useAuth } from "../../hooks/useAuth";
 import { Crown } from "../../components/icons/Crown.icon";
@@ -16,12 +19,15 @@ import { registerSchema } from "../../validations/register.joi";
 const Register = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
+  const { toast } = useToast();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPasswordRequirements, setShowPasswordRequirements] =
+    useState(false);
   const [errors, setErrors] = useState<{
     username?: string;
     email?: string;
@@ -56,15 +62,20 @@ const Register = () => {
 
     try {
       await register(username, email, password, confirmPassword);
-      console.log({
-        title: "Success",
-        description: "Account created successfully",
+      toast({
+        title: "Success!",
+        description: "Account created successfully. Welcome to Chess-It!",
+        variant: "success",
       });
       navigate("/");
-    } catch (error: any) {
-      console.log({
-        title: "Error",
-        description: error.message || "Failed to register",
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to register. Please try again.";
+      toast({
+        title: "Registration Failed",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -83,56 +94,67 @@ const Register = () => {
           <CardDescription>Create your account</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="username">Username</label>
-              <input
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-              {errors.username && (
-                <p className="text-destructive text-sm">{errors.username}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="email">Email</label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              {errors.email && (
-                <p className="text-destructive text-sm">{errors.email}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="password">Password</label>
-              <input
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+            <Input
+              label="Username"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              error={errors.username}
+              required
+              placeholder="Enter your username"
+              aria-describedby={errors.username ? "username-error" : undefined}
+            />
+
+            <Input
+              label="Email"
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              error={errors.email}
+              required
+              placeholder="Enter your email"
+              aria-describedby={errors.email ? "email-error" : undefined}
+            />
+
+            <PasswordRequirements
+              password={password}
+              confirmPassword={confirmPassword}
+              open={showPasswordRequirements}
+              onOpenChange={setShowPasswordRequirements}
+            >
+              <Input
+                label="Password"
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onFocus={() => setShowPasswordRequirements(true)}
+                onBlur={() => setShowPasswordRequirements(false)}
+                error={errors.password}
+                required
+                placeholder="Create a strong password"
+                aria-describedby={
+                  errors.password ? "password-error" : "password-requirements"
+                }
               />
-              {errors.password && (
-                <p className="text-destructive text-sm">{errors.password}</p>
-              )}
-            </div>
-            <div>
-              <label htmlFor="confirm-password">Confirm Password</label>
-              <input
-                id="confirm-password"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-              {errors.confirmPassword && (
-                <p className="text-destructive text-sm">
-                  {errors.confirmPassword}
-                </p>
-              )}
-            </div>
+            </PasswordRequirements>
+
+            <Input
+              label="Confirm Password"
+              id="confirm-password"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              error={errors.confirmPassword}
+              required
+              placeholder="Confirm your password"
+              aria-describedby={
+                errors.confirmPassword ? "confirm-password-error" : undefined
+              }
+            />
+
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Creating account..." : "Register"}
             </Button>

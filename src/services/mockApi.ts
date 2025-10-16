@@ -48,6 +48,8 @@ export const mockApi = {
         _id: String(mockUsers.length + 1),
         username,
         email,
+        password, // In real apps, passwords should be hashed
+        confirmPassword,
         role: "user",
         createdAt: new Date().toISOString(),
       };

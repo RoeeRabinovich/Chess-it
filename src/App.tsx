@@ -5,6 +5,7 @@ import Home from "./pages/Home/Home";
 import Register from "./pages/Register/Register.page";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
+import { Toaster } from "./components/ui/Toaster";
 export default function App() {
   return (
     <Provider store={store}>
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="/register" element={<Register />} />
         </Routes>
         <Footer />
+        <Toaster />
       </BrowserRouter>
     </Provider>
   );

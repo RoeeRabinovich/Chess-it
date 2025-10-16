@@ -6,6 +6,7 @@ export const mockUsers: User[] = [
     _id: "1",
     username: "demo",
     email: "demo@chess-it.com",
+    password: "demo123", // In real apps, passwords should be hashed
     role: "user",
     createdAt: new Date("2024-01-01").toISOString(),
   },
