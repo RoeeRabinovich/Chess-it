@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Button } from "../../components/ui/Button";
 import { Pawn } from "../../components/icons/Pawn.icon";
 import { RightArrow } from "../../components/icons/RightArrow.pixel";
-import heroImage from "../../assets/images/pixel-hero-image.png";
+import heroImage from "../../assets/images/pixel-hero-image (1).png";
+import { useNavigate } from "react-router";
 
 //Hero section
 const Hero = () => {
+  const navigate = useNavigate();
   const [imageLoaded, setImageLoaded] = useState(false);
   return (
     <section className="relative flex min-h-screen items-center justify-center pt-20">
@@ -31,6 +33,7 @@ const Hero = () => {
               <Button
                 size="lg"
                 className="group bg-pastel-mint text-foreground hover:bg-pastel-mint/80"
+                onClick={() => navigate("/register")}
               >
                 Get Started
                 <RightArrow />

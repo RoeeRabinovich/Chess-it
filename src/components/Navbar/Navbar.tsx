@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Crown } from "../icons/Crown.icon";
 import { Button } from "../ui/Button";
 import {
@@ -20,7 +20,7 @@ const navLinks = [
 ];
 
 const Navbar = () => {
-  //   const navigate = useNavigate();
+  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -30,7 +30,6 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
   return (
     <nav
       className={`fixed top-0 right-0 left-0 z-50 transition-all duration-300 ${
@@ -49,6 +48,7 @@ const Navbar = () => {
           </a>
 
           {/* Desktop Navigation */}
+
           <div className="hidden items-center gap-12 md:flex">
             {navLinks.map((link) => (
               <a
@@ -80,9 +80,13 @@ const Navbar = () => {
             <Button variant="ghost" className="text-sm">
               Sign In
             </Button>
-            <Button className="bg-pastel-mint text-foreground hover:bg-pastel-mint/80 text-sm transition-colors">
+            <Button
+              className="bg-pastel-mint text-foreground hover:bg-pastel-mint/80 text-sm transition-colors"
+              onClick={() => navigate("/register")}
+            >
               Get Started
             </Button>
+
             {/* </>
             )} */}
           </div>
@@ -122,9 +126,13 @@ const Navbar = () => {
               <DropdownMenuItem style={{ fontFamily: "minecraft" }}>
                 Sign In
               </DropdownMenuItem>
-              <DropdownMenuItem style={{ fontFamily: "minecraft" }}>
+              <DropdownMenuItem
+                onClick={() => navigate("/register")}
+                style={{ fontFamily: "minecraft" }}
+              >
                 Get Started
               </DropdownMenuItem>
+
               {/* </>
               )} */}
             </DropdownMenuContent>
