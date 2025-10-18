@@ -98,7 +98,7 @@ const authSlice = createSlice({
       )
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Login failed";
+        state.error = action.error.message || "An unexpected error occurred";
       })
       .addCase(register.pending, (state) => {
         state.loading = true;
@@ -114,7 +114,7 @@ const authSlice = createSlice({
       )
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Registration failed";
+        state.error = action.error.message || "An unexpected error occurred";
       });
   },
 });

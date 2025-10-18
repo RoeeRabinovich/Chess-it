@@ -73,11 +73,11 @@ const Register = () => {
   };
 
   return (
-    <div className="from-background to-accent/20 flex min-h-screen items-center justify-center bg-gradient-to-br px-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-green-50 to-emerald-100 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mb-4 flex justify-center">
-            <Crown className="bg-pastel-mint h-10 w-10" />
+            <Crown className="bg-pastel-mint h-10 w-10 rounded-full" />
           </div>
           <CardTitle className="text-2xl">Join Chess-It</CardTitle>
           <CardDescription>Create your account</CardDescription>

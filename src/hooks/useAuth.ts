@@ -10,7 +10,7 @@ import {
 // Custom hook to handle authentication
 export const useAuth = () => {
   const dispatch = useAppDispatch();
-  const { user, loading, error } = useAppSelector((state) => state.auth);
+  const { user, loading } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(checkAuthAction());
@@ -21,7 +21,10 @@ export const useAuth = () => {
     if (loginAction.fulfilled.match(result)) {
       return result.payload;
     }
-    throw new Error(error || "Login failed");
+    // Use the error from the action result, not the global error state
+    const errorMessage =
+      result.error?.message || "An unexpected error occurred";
+    throw new Error(errorMessage);
   };
 
   const register = async (
@@ -36,7 +39,10 @@ export const useAuth = () => {
     if (registerAction.fulfilled.match(result)) {
       return result.payload;
     }
-    throw new Error(error || "Registration failed");
+    // Use the error from the action result, not the global error state
+    const errorMessage =
+      result.error?.message || "An unexpected error occurred";
+    throw new Error(errorMessage);
   };
 
   const logout = () => {

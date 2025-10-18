@@ -23,8 +23,12 @@ export const mockApi = {
 
       const user = mockUsers.find((u) => u.email === email);
 
-      if (!user || password !== "demo123") {
-        throw new Error("Invalid credentials");
+      if (!user) {
+        throw new Error("EMAIL_NOT_FOUND");
+      }
+
+      if (password !== "demo123") {
+        throw new Error("INVALID_PASSWORD");
       }
 
       const token = `mock-token-${user._id}-${Date.now()}`;

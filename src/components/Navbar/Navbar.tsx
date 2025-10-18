@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/Dropdown-menu";
 import { Menu } from "../icons/Menu.icon";
+import { ThemeToggle } from "../ui/ThemeToggle";
 
 // import { Logout } from "../icons/Logout.icon";
 
@@ -63,6 +64,7 @@ const Navbar = () => {
 
           {/* Desktop CTA */}
           <div className="hidden items-center gap-4 md:flex">
+            <ThemeToggle />
             {/* {user ? (
               <>
                 <span className="text-sm">Hi, {user.username}</span>
@@ -77,7 +79,11 @@ const Navbar = () => {
               </>
             ) : (
               <> */}
-            <Button variant="ghost" className="text-sm">
+            <Button
+              variant="ghost"
+              className="text-sm"
+              onClick={() => navigate("/login")}
+            >
               Sign In
             </Button>
             <Button
@@ -111,6 +117,15 @@ const Navbar = () => {
 
               <DropdownMenuSeparator />
 
+              <DropdownMenuItem asChild>
+                <div className="flex w-full items-center justify-between">
+                  <span style={{ fontFamily: "minecraft" }}>Theme</span>
+                  <ThemeToggle />
+                </div>
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+
               {/* {user ? (
                 <>
                   <DropdownMenuItem disabled>
@@ -123,7 +138,10 @@ const Navbar = () => {
                 </>
               ) : (
                 <> */}
-              <DropdownMenuItem style={{ fontFamily: "minecraft" }}>
+              <DropdownMenuItem
+                onClick={() => navigate("/login")}
+                style={{ fontFamily: "minecraft" }}
+              >
                 Sign In
               </DropdownMenuItem>
               <DropdownMenuItem
