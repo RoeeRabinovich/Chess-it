@@ -7,6 +7,7 @@ import {
   logout as logoutAction,
 } from "../store/authSlice";
 
+// Custom hook to handle authentication
 export const useAuth = () => {
   const dispatch = useAppDispatch();
   const { user, loading, error } = useAppSelector((state) => state.auth);

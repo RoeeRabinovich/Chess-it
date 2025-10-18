@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import {
   Card,
   CardContent,
@@ -15,53 +16,43 @@ import { useToast } from "../../hooks/useToast";
 import { useAuth } from "../../hooks/useAuth";
 import { Crown } from "../../components/icons/Crown.icon";
 import { registerSchema } from "../../validations/register.joi";
+import { joiResolver } from "@hookform/resolvers/joi";
+
+interface RegisterFormData {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
 const Register = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register: registerUser } = useAuth();
   const { toast } = useToast();
-
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [showPasswordRequirements, setShowPasswordRequirements] =
     useState(false);
-  const [errors, setErrors] = useState<{
-    username?: string;
-    email?: string;
-    password?: string;
-    confirmPassword?: string;
-  }>({});
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrors({});
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterFormData>({
+    resolver: joiResolver(registerSchema),
+    mode: "onBlur",
+  });
 
-    const { error } = registerSchema.validate(
-      { username, email, password, confirmPassword },
-      { abortEarly: false },
-    );
+  const password = watch("password");
+  const confirmPassword = watch("confirmPassword");
 
-    if (error) {
-      const validationErrors: {
-        username?: string;
-        email?: string;
-        password?: string;
-      } = {};
-      error.details.forEach((detail) => {
-        const key = detail.path[0] as keyof typeof validationErrors;
-        validationErrors[key] = detail.message;
-      });
-      setErrors(validationErrors);
-      return;
-    }
-
-    setLoading(true);
-
+  const onSubmit = async (data: RegisterFormData) => {
     try {
-      await register(username, email, password, confirmPassword);
+      await registerUser(
+        data.username,
+        data.email,
+        data.password,
+        data.confirmPassword,
+      );
       toast({
         title: "Success!",
         description: "Account created successfully. Welcome to Chess-It!",
@@ -78,8 +69,6 @@ const Register = () => {
         description: errorMessage,
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -94,13 +83,16 @@ const Register = () => {
           <CardDescription>Create your account</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-4"
+            noValidate
+          >
             <Input
               label="Username"
               id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              error={errors.username}
+              {...register("username")}
+              error={errors.username?.message}
               required
               placeholder="Enter your username"
               aria-describedby={errors.username ? "username-error" : undefined}
@@ -110,17 +102,16 @@ const Register = () => {
               label="Email"
               id="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={errors.email}
+              {...register("email")}
+              error={errors.email?.message}
               required
               placeholder="Enter your email"
               aria-describedby={errors.email ? "email-error" : undefined}
             />
 
             <PasswordRequirements
-              password={password}
-              confirmPassword={confirmPassword}
+              password={password || ""}
+              confirmPassword={confirmPassword || ""}
               open={showPasswordRequirements}
               onOpenChange={setShowPasswordRequirements}
             >
@@ -128,11 +119,10 @@ const Register = () => {
                 label="Password"
                 id="password"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register("password")}
                 onFocus={() => setShowPasswordRequirements(true)}
                 onBlur={() => setShowPasswordRequirements(false)}
-                error={errors.password}
+                error={errors.password?.message}
                 required
                 placeholder="Create a strong password"
                 aria-describedby={
@@ -145,9 +135,8 @@ const Register = () => {
               label="Confirm Password"
               id="confirm-password"
               type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              error={errors.confirmPassword}
+              {...register("confirmPassword")}
+              error={errors.confirmPassword?.message}
               required
               placeholder="Confirm your password"
               aria-describedby={
@@ -155,8 +144,8 @@ const Register = () => {
               }
             />
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Creating account..." : "Register"}
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Creating account..." : "Register"}
             </Button>
           </form>
           <p className="text-muted-foreground mt-4 text-center text-sm">
