@@ -1,0 +1,7 @@
+{
+  "NODE_ENV": "production",
+  "PORT": 9191,
+  "TOKEN_GENERATOR": "jwt",
+  "LOGGER": "morgan",
+  "DB": "MONGODB"
+}
