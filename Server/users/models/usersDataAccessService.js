@@ -1,0 +1,63 @@
+const User = require("./mongodb/User");
+const config = require("config");
+const _ = require("lodash");
+const { handleBadRequest } = require("../../utils/errorHandler");
+const { compareUserPassword } = require("../helpers/bcrypt");
+const { generateAuthToken } = require("../../auth/providers/jwt");
+
+//Database selection
+
+const DB = config.get("DB");
+
+//Data access functions - sends data from and to the database after validation and normalization.
+
+//Create new user
+const registerUser = async (normalizedUser) => {
+  if (DB === "mongodb") {
+    try {
+      const { email } = normalizedUser;
+      let user = await User.findOne({ email });
+      if (user) throw new Error("Registration Error: User Already Exists");
+
+      user = new User(normalizedUser);
+      user = await user.save();
+
+      user = _.pick(user, ["_id", "username", "email", "image", "createdAt"]);
+      return Promise.resolve(user);
+    } catch (error) {
+      error.status = 400;
+      return handleBadRequest("Mongoose", error);
+    }
+  }
+  return Promise.resolve(
+    "registerUser function is not supported for this database"
+  );
+};
+
+//Login user
+const loginUser = async ({ email, password }) => {
+  if (DB === "mongodb") {
+    try {
+      let user = await User.findOne({ email });
+      if (!user) throw new Error("Authentication Error: User Not Found");
+
+      const isPasswordValid = await compareUserPassword(
+        password,
+        user.password
+      );
+      if (!isPasswordValid)
+        throw new Error("Authentication Error: Invalid Password");
+
+      const token = generateAuthToken(user);
+      return Promise.resolve(token);
+    } catch (error) {
+      error.status = 400;
+      return handleBadRequest("Mongoose", error);
+    }
+  }
+  return Promise.resolve(
+    "loginUser function is not supported for this database"
+  );
+};
+
+module.exports = { registerUser, loginUser };
