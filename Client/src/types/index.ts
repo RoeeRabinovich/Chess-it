@@ -5,6 +5,10 @@ export interface User {
   password: string;
   confirmPassword?: string;
   role: "admin" | "user";
+  image: {
+    url: string;
+    alt: string;
+  };
   createdAt: string;
 }
 
@@ -20,6 +24,10 @@ export interface Study {
   category?: string;
   favoriteCount: number;
   commentCount: number;
+  image: {
+    url: string;
+    alt: string;
+  };
   createdAt: string;
   updatedAt: string;
 }

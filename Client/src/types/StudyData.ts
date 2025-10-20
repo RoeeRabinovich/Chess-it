@@ -7,5 +7,9 @@ export interface StudyData {
   author: string;
   isPublic: boolean;
   moves: Array<{ moveNumber: number; san: string; note: string }>;
+  image: {
+    url: string;
+    alt: string;
+  };
   createdAt: string;
 }

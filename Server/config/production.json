@@ -3,5 +3,6 @@
   "PORT": 9191,
   "TOKEN_GENERATOR": "jwt",
   "LOGGER": "morgan",
+  "VALIDATOR": "joi",
   "DB": "MONGODB"
 }

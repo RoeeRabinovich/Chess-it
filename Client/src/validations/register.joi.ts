@@ -15,10 +15,15 @@ export const registerSchema = Joi.object({
       "string.email": "Please enter a valid email address.",
     }),
 
-  password: Joi.string().min(8).required().messages({
-    "string.empty": "Password is required.",
-    "string.min": "Password must be at least 8 characters long.",
-  }),
+  password: Joi.string()
+    .ruleset.regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+<>?]).{8,}$/,
+    )
+    .rule({
+      message:
+        "Password must be at least 8 characters long and contain an uppercase letter, a lowercase letter, a number and one special character",
+    })
+    .required(),
 
   confirmPassword: Joi.any().valid(Joi.ref("password")).required().messages({
     "any.only": "Passwords do not match.",

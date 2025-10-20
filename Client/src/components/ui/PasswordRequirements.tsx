@@ -38,7 +38,7 @@ const PasswordRequirements = React.forwardRef<
     },
     {
       text: "Contains special character",
-      isValid: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+      isValid: /[!@#$%^&*()_+<>?]/.test(password),
     },
     {
       text: "Passwords match",
