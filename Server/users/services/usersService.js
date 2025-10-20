@@ -1,6 +1,9 @@
 const { registerUser, loginUser } = require("../models/usersDataAccessService");
 const normalizeUser = require("../helpers/normalizeUser");
-const { validateRegister } = require("../validations/userValidatorService");
+const {
+  validateRegister,
+  validateLogin,
+} = require("../validations/userValidatorService");
 const { hashUserPassword } = require("../helpers/bcrypt");
 const { handleJoiError } = require("../../utils/errorHandler");
 

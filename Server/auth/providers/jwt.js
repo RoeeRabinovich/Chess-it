@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const key = process.env.JWT_SECRET;
+const key = process.env.JWT_KEY;
 
 // Generate authentication token
 const generateAuthToken = (user) => {
