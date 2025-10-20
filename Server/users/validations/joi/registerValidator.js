@@ -11,6 +11,11 @@ const registerValidator = (user) => {
       "string.pattern.base":
         "Password must be at least 8 characters long and contain an uppercase letter, a lowercase letter, a number and one special character",
     }),
+    confirmPassword: joi.string().valid(joi.ref("password")).required(),
+    messages: {
+      "any.only": "Passwords do not match.",
+      "any.required": "Please confirm your password.",
+    },
   });
 
   return schema.validate(user);

@@ -1,5 +1,5 @@
 const { registerUser, loginUser } = require("../models/usersDataAccessService");
-const { normalizeUser } = require("../helpers/normalizeUser");
+const normalizeUser = require("../helpers/normalizeUser");
 const { validateRegister } = require("../validations/userValidatorService");
 const { hashUserPassword } = require("../helpers/bcrypt");
 const { handleJoiError } = require("../../utils/errorHandler");
@@ -7,7 +7,7 @@ const { handleJoiError } = require("../../utils/errorHandler");
 //Service functions - performs the main logic of the application.
 
 //Register user
-const registerUser = async (rawUser) => {
+const registerUserService = async (rawUser) => {
   try {
     const { error } = validateRegister(rawUser);
     if (error) {
@@ -25,7 +25,7 @@ const registerUser = async (rawUser) => {
 };
 
 //Login user
-const loginUser = async (rawUser) => {
+const loginUserService = async (rawUser) => {
   try {
     const { error } = validateLogin(rawUser);
     if (error) {
@@ -41,4 +41,4 @@ const loginUser = async (rawUser) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+module.exports = { registerUserService, loginUserService };

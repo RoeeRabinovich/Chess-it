@@ -1,4 +1,4 @@
-const registerValidator = require("./registerValidator");
+const registerValidator = require("./joi/registerValidator");
 const config = require("config");
 
 const validator = config.get("VALIDATOR");

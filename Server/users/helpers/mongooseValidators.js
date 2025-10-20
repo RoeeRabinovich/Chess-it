@@ -16,5 +16,4 @@ const DEFAULT_VALIDATION = {
   lowercase: true,
 };
 
-exports.URL = URL;
-exports.DEFAULT_VALIDATION = DEFAULT_VALIDATION;
+module.exports = { URL, DEFAULT_VALIDATION };

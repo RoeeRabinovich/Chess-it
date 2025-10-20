@@ -13,7 +13,7 @@ const DB = config.get("DB");
 
 //Create new user
 const registerUser = async (normalizedUser) => {
-  if (DB === "mongodb") {
+  if (DB === "MONGODB") {
     try {
       const { email } = normalizedUser;
       let user = await User.findOne({ email });
@@ -36,7 +36,7 @@ const registerUser = async (normalizedUser) => {
 
 //Login user
 const loginUser = async ({ email, password }) => {
-  if (DB === "mongodb") {
+  if (DB === "MONGODB") {
     try {
       let user = await User.findOne({ email });
       if (!user) throw new Error("Authentication Error: User Not Found");

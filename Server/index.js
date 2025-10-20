@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
+const router = require("./router/router");
 const chalk = require("chalk");
 const config = require("config");
 const connectToDb = require("./DB/dbService");
@@ -14,6 +15,7 @@ app.use(logger);
 app.use(express.json());
 app.use(express.text());
 app.use(express.static("./public"));
+app.use(router);
 
 //Error Handling Middleware
 app.use((err, req, res, next) => {
