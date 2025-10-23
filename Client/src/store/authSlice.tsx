@@ -1,123 +1,52 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { mockApi } from "../services/mockApi";
-import { User, AuthResponse } from "../types";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { User, ApiError } from "../types";
 
 interface AuthState {
   user: User | null;
   loading: boolean;
   error: string | null;
+  errorType: ApiError["type"] | null;
 }
 
 const initialState: AuthState = {
   user: null,
-  loading: true,
+  loading: false,
   error: null,
+  errorType: null,
 };
-
-export const checkAuth = createAsyncThunk("auth/checkAuth", async () => {
-  const token = localStorage.getItem("authToken");
-  if (!token) {
-    throw new Error("No token found");
-  }
-  const userData = await mockApi.auth.me();
-  return userData;
-});
-
-export const login = createAsyncThunk(
-  "auth/login",
-  async ({ email, password }: { email: string; password: string }) => {
-    const response = await mockApi.auth.login(email, password);
-    localStorage.setItem("authToken", response.token);
-    return response;
-  },
-);
-
-export const register = createAsyncThunk(
-  "auth/register",
-  async ({
-    username,
-    email,
-    password,
-    confirmPassword,
-  }: {
-    username: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-  }) => {
-    const response = await mockApi.auth.register(
-      username,
-      email,
-      password,
-      confirmPassword,
-    );
-    localStorage.setItem("authToken", response.token);
-    return response;
-  },
-);
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    login: (state, action: PayloadAction<User>) => {
+      state.user = action.payload;
+      state.error = null;
+      state.errorType = null;
+    },
     logout: (state) => {
-      localStorage.removeItem("authToken");
       state.user = null;
       state.error = null;
+      state.errorType = null;
+      localStorage.removeItem("authToken");
+    },
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
+    },
+    setError: (
+      state,
+      action: PayloadAction<{ message: string; type: ApiError["type"] }>,
+    ) => {
+      state.error = action.payload.message;
+      state.errorType = action.payload.type;
     },
     clearError: (state) => {
       state.error = null;
+      state.errorType = null;
     },
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(checkAuth.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(checkAuth.fulfilled, (state, action: PayloadAction<User>) => {
-        state.loading = false;
-        state.user = action.payload;
-        state.error = null;
-      })
-      .addCase(checkAuth.rejected, (state) => {
-        state.loading = false;
-        state.user = null;
-        localStorage.removeItem("authToken");
-      })
-      .addCase(login.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(
-        login.fulfilled,
-        (state, action: PayloadAction<AuthResponse>) => {
-          state.loading = false;
-          state.user = action.payload.user;
-          state.error = null;
-        },
-      )
-      .addCase(login.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || "An unexpected error occurred";
-      })
-      .addCase(register.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(
-        register.fulfilled,
-        (state, action: PayloadAction<AuthResponse>) => {
-          state.loading = false;
-          state.user = action.payload.user;
-          state.error = null;
-        },
-      )
-      .addCase(register.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || "An unexpected error occurred";
-      });
   },
 });
 
-export const { logout, clearError } = authSlice.actions;
+export const { login, logout, setLoading, setError, clearError } =
+  authSlice.actions;
 export default authSlice.reducer;

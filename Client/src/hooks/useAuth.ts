@@ -1,53 +1,108 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
-  checkAuth as checkAuthAction,
   login as loginAction,
-  register as registerAction,
   logout as logoutAction,
+  setLoading,
+  setError,
+  clearError,
 } from "../store/authSlice";
+import { apiService } from "../services/api";
+import { LoginData, RegisterData, ApiError } from "../types";
 
 // Custom hook to handle authentication
 export const useAuth = () => {
   const dispatch = useAppDispatch();
-  const { user, loading } = useAppSelector((state) => state.auth);
+  const { user, loading, error, errorType } = useAppSelector(
+    (state) => state.auth,
+  );
 
   useEffect(() => {
-    dispatch(checkAuthAction());
+    // Check if user is already authenticated on app load
+    const checkAuth = async () => {
+      if (apiService.isAuthenticated()) {
+        try {
+          dispatch(setLoading(true));
+          const userData = await apiService.getProfile();
+          dispatch(loginAction(userData));
+        } catch (error) {
+          const apiError = error as ApiError;
+          dispatch(
+            setError({
+              message: apiError?.message || "Authentication failed",
+              type: apiError?.type || "AUTHENTICATION",
+            }),
+          );
+          apiService.clearAuth();
+        } finally {
+          dispatch(setLoading(false));
+        }
+      }
+    };
+
+    checkAuth();
   }, [dispatch]);
 
-  const login = async (email: string, password: string) => {
-    const result = await dispatch(loginAction({ email, password }));
-    if (loginAction.fulfilled.match(result)) {
-      return result.payload;
+  const login = async (data: LoginData) => {
+    try {
+      dispatch(setLoading(true));
+      dispatch(clearError());
+
+      const response = await apiService.login(data);
+      localStorage.setItem("authToken", response.token);
+      dispatch(loginAction(response.user));
+
+      return response;
+    } catch (error) {
+      const apiError = error as ApiError;
+      dispatch(
+        setError({
+          message: apiError?.message || "Login failed",
+          type: apiError?.type || "AUTHENTICATION",
+        }),
+      );
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
     }
-    // Use the error from the action result, not the global error state
-    const errorMessage =
-      result.error?.message || "An unexpected error occurred";
-    throw new Error(errorMessage);
   };
 
-  const register = async (
-    username: string,
-    email: string,
-    password: string,
-    confirmPassword: string,
-  ) => {
-    const result = await dispatch(
-      registerAction({ username, email, password, confirmPassword }),
-    );
-    if (registerAction.fulfilled.match(result)) {
-      return result.payload;
+  const register = async (data: RegisterData) => {
+    try {
+      dispatch(setLoading(true));
+      dispatch(clearError());
+
+      const response = await apiService.register(data);
+      localStorage.setItem("authToken", response.token);
+      dispatch(loginAction(response.user));
+
+      return response;
+    } catch (error) {
+      const apiError = error as ApiError;
+      dispatch(
+        setError({
+          message: apiError?.message || "Registration failed",
+          type: apiError?.type || "VALIDATION",
+        }),
+      );
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
     }
-    // Use the error from the action result, not the global error state
-    const errorMessage =
-      result.error?.message || "An unexpected error occurred";
-    throw new Error(errorMessage);
   };
 
   const logout = () => {
     dispatch(logoutAction());
   };
 
-  return { user, loading, login, register, logout, isAuthenticated: !!user };
+  return {
+    user,
+    loading,
+    error,
+    errorType,
+    login,
+    register,
+    logout,
+    isAuthenticated: !!user,
+  };
 };

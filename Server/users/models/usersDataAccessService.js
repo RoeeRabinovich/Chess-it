@@ -49,7 +49,14 @@ const loginUser = async ({ email, password }) => {
         throw new Error("Authentication Error: Invalid Password");
 
       const token = generateAuthToken(user);
-      return Promise.resolve(token);
+      const userData = _.pick(user, [
+        "_id",
+        "username",
+        "email",
+        "image",
+        "createdAt",
+      ]);
+      return Promise.resolve({ token, user: userData });
     } catch (error) {
       error.status = 400;
       return handleBadRequest("Mongoose", error);

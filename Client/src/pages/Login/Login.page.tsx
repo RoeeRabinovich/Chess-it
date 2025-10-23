@@ -37,35 +37,62 @@ const Login = () => {
   const getErrorMessage = (
     error: unknown,
   ): { title: string; description: string } => {
+    // Handle both Error instances and plain objects
+    let message = "";
     if (error instanceof Error) {
-      switch (error.message) {
-        case "EMAIL_NOT_FOUND":
-          return {
-            title: "Email not found",
-            description:
-              "No account exists with this email address. Please check your email or create a new account.",
-          };
-        case "INVALID_PASSWORD":
-          return {
-            title: "Incorrect password",
-            description:
-              "The password you entered is incorrect. Please try again or reset your password.",
-          };
-        case "Invalid credentials":
-          return {
-            title: "Invalid credentials",
-            description:
-              "The email or password you entered is incorrect. Please check your credentials and try again.",
-          };
-        default:
-          return {
-            title: "Unable to sign in",
-            description:
-              error.message ||
-              "An unexpected error occurred. Please check your credentials and try again.",
-          };
-      }
+      message = error.message;
+    } else if (error && typeof error === "object" && "message" in error) {
+      message = (error as { message: string }).message;
     }
+
+    if (message) {
+      const lowerMessage = message.toLowerCase();
+
+      if (lowerMessage.includes("user not found")) {
+        return {
+          title: "Email not found",
+          description:
+            "No account exists with this email address. Please check your email or create a new account.",
+        };
+      }
+
+      if (lowerMessage.includes("invalid password")) {
+        return {
+          title: "Incorrect password",
+          description:
+            "The password you entered is incorrect. Please try again or reset your password.",
+        };
+      }
+
+      if (
+        lowerMessage.includes("password must be") ||
+        lowerMessage.includes("joi error")
+      ) {
+        return {
+          title: "Invalid password format",
+          description:
+            "Password must be at least 8 characters long and contain an uppercase letter, a lowercase letter, a number and one special character.",
+        };
+      }
+
+      if (
+        lowerMessage.includes("invalid request data") ||
+        lowerMessage.includes("validation")
+      ) {
+        return {
+          title: "Invalid input",
+          description: message,
+        };
+      }
+
+      // For any other error, show the actual error message
+      return {
+        title: "Login failed",
+        description:
+          message || "An unexpected error occurred. Please try again.",
+      };
+    }
+
     return {
       title: "Unable to sign in",
       description:
@@ -75,7 +102,7 @@ const Login = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      await login(data.email, data.password);
+      await login(data);
       toast({
         title: "Welcome back!",
         description: "You have successfully logged in.",

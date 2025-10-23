@@ -15,10 +15,13 @@ interface PasswordRequirementsProps {
   children: React.ReactNode;
 }
 
-const PasswordRequirements = React.forwardRef<
-  HTMLDivElement,
-  PasswordRequirementsProps
->(({ password, confirmPassword, open, onOpenChange, children }) => {
+const PasswordRequirements = ({
+  password,
+  confirmPassword,
+  open,
+  onOpenChange,
+  children,
+}: PasswordRequirementsProps) => {
   const requirements: PasswordRequirement[] = [
     {
       text: "At least 8 characters",
@@ -102,8 +105,6 @@ const PasswordRequirements = React.forwardRef<
       </Popover.Portal>
     </Popover.Root>
   );
-});
-
-PasswordRequirements.displayName = "PasswordRequirements";
+};
 
 export { PasswordRequirements };

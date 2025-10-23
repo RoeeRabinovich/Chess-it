@@ -47,12 +47,7 @@ const Register = () => {
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      await registerUser(
-        data.username,
-        data.email,
-        data.password,
-        data.confirmPassword,
-      );
+      await registerUser(data);
       toast({
         title: "Success!",
         description: "Account created successfully. Welcome to Chess-It!",
