@@ -130,14 +130,6 @@ export const useChessGame = () => {
     }
   }, []);
 
-  const addVariation = useCallback(
-    (moveIndex: number, variationMoves: ChessMove[]) => {
-      // Implementation for adding variations
-      // This would create a new branch in the variation tree
-    },
-    [],
-  );
-
   const navigateToMove = useCallback(
     (moveIndex: number) => {
       try {
@@ -174,7 +166,6 @@ export const useChessGame = () => {
     flipBoard,
     loadFEN,
     loadPGN,
-    addVariation,
     navigateToMove,
     canUndo: gameState.currentMoveIndex >= 0,
     canRedo: false, // Simplified - would need move history for proper redo

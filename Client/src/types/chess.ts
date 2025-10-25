@@ -47,15 +47,3 @@ export interface ChessGameState {
     eco: string;
   };
 }
-
-export interface StockfishConfig {
-  depth: number;
-  autoDepth: boolean;
-  multiPv: number; // Number of lines to analyze
-}
-
-export interface EngineAnalysis {
-  lines: EngineLine[];
-  isAnalyzing: boolean;
-  error?: string;
-}

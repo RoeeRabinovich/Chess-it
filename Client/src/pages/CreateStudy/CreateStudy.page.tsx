@@ -1,12 +1,10 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import ChessBoard from "../../components/ChessBoard/ChessBoard";
-import { EngineLines } from "../../components/EngineLines/EngineLines";
 import { MoveNotation } from "../../components/MoveNotation/MoveNotation";
 import { ChessControls } from "../../components/ChessControls/ChessControls";
 import { useChessGame } from "../../hooks/useChessGame";
-import { useStockfish } from "../../hooks/useStockfish";
 import { useOpeningDetection } from "../../hooks/useOpeningDetection";
-import { StockfishConfig, MoveData } from "../../types/chess";
+import { MoveData } from "../../types/chess";
 
 export const CreateStudy = () => {
   const {
@@ -23,21 +21,16 @@ export const CreateStudy = () => {
     canRedo,
   } = useChessGame();
 
-  const [stockfishConfig, setStockfishConfig] = useState<StockfishConfig>({
-    depth: 15,
-    autoDepth: false,
-    multiPv: 3,
-  });
-
-  const { analysis, analyzePosition } = useStockfish(stockfishConfig);
   const { opening, detectOpening } = useOpeningDetection();
 
-  // Analyze position when it changes
+  // Debug game state
   useEffect(() => {
-    if (gameState.position) {
-      analyzePosition(gameState.position);
-    }
-  }, [gameState.position, analyzePosition]);
+    console.log("CreateStudy: Game state changed:", {
+      moves: gameState.moves,
+      currentMoveIndex: gameState.currentMoveIndex,
+      position: gameState.position,
+    });
+  }, [gameState]);
 
   // Detect opening when moves change
   useEffect(() => {
@@ -50,24 +43,6 @@ export const CreateStudy = () => {
 
   const handleMoveClick = (moveIndex: number) => {
     navigateToMove(moveIndex);
-  };
-
-  const handleEngineMoveClick = (moves: string[]) => {
-    // For now, just show the moves in console
-    // In a full implementation, this would preview the moves on the board
-    console.log("Engine suggested moves:", moves);
-  };
-
-  const handleDepthChange = (depth: number) => {
-    setStockfishConfig((prev) => ({ ...prev, depth }));
-  };
-
-  const handleAutoDepthToggle = () => {
-    setStockfishConfig((prev) => ({
-      ...prev,
-      autoDepth: !prev.autoDepth,
-      depth: prev.autoDepth ? 15 : prev.depth,
-    }));
   };
 
   const handleLoadFEN = () => {
@@ -85,62 +60,111 @@ export const CreateStudy = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 dark:bg-gray-900">
-      <div className="container mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white">
-            Create Study
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Analyze positions with Stockfish engine and explore chess openings
-          </p>
+    <div className="py-10">
+      {/* Header Section */}
+      <div className="bg-secondary relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative container mx-auto px-4 py-12">
+          <div className="text-center">
+            <h1 className="text-foreground mb-4 text-4xl font-bold sm:text-5xl lg:text-6xl">
+              Create Study
+            </h1>
+            <p className="text-muted-foreground mx-auto max-w-2xl text-lg sm:text-xl">
+              Analyze positions, explore variations, and master chess with our
+              interactive study tools
+            </p>
+            {opening && (
+              <div className="bg-foreground/10 mt-6 inline-flex items-center rounded-full px-4 py-2 backdrop-blur-sm">
+                <span className="text-foreground text-sm font-medium">
+                  Opening: {opening?.name} - {opening?.eco}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {/* Left Column - Board and Engine */}
-          <div className="lg:col-span-2">
-            <EngineLines
-              lines={analysis.lines}
-              isAnalyzing={analysis.isAnalyzing}
-              onMoveClick={handleEngineMoveClick}
-            />
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-4">
+          {/* Left Column - Board and Analysis */}
+          <div className="xl:col-span-3">
+            {/* Engine Analysis Panel */}
+            <div className="bg-card mb-6 rounded-2xl p-6 shadow-xl">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                <h3 className="text-foreground text-xl font-semibold">
+                  Engine Analysis
+                </h3>
+              </div>
+              <div className="bg-muted rounded-xl p-6">
+                <div className="flex h-32 items-center justify-center">
+                  <div className="text-center">
+                    <div className="mb-2 text-4xl">🤖</div>
+                    <p className="text-muted-foreground">
+                      Engine analysis will be available here
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-            <ChessBoard
-              position={gameState.position}
-              onMove={handleMove}
-              isFlipped={gameState.isFlipped}
-              engineLines={analysis.lines}
-              isInteractive={true}
-            />
+            {/* Chess Board Container */}
+            <div className="bg-card rounded-2xl p-6 shadow-xl">
+              <div className="flex justify-center">
+                <div className="rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 p-4 shadow-inner dark:from-amber-900 dark:to-amber-800">
+                  <ChessBoard
+                    position={gameState.position}
+                    onMove={handleMove}
+                    isFlipped={gameState.isFlipped}
+                    engineLines={[]}
+                    isInteractive={true}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Right Column - Notation */}
-          <div className="lg:col-span-1">
-            <MoveNotation
-              moves={gameState.moves}
-              currentMoveIndex={gameState.currentMoveIndex}
-              onMoveClick={handleMoveClick}
-              opening={opening || undefined}
-            />
+          {/* Right Column - Move Notation */}
+          <div className="xl:col-span-1">
+            <div className="sticky top-20">
+              <div className="bg-card rounded-2xl p-6 shadow-xl">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                  <h3 className="text-foreground text-lg font-semibold">
+                    Move History
+                  </h3>
+                </div>
+                <MoveNotation
+                  moves={gameState.moves}
+                  currentMoveIndex={gameState.currentMoveIndex}
+                  onMoveClick={handleMoveClick}
+                  opening={opening || undefined}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Bottom Controls */}
         <div className="mt-8">
-          <ChessControls
-            onFlipBoard={flipBoard}
-            onReset={resetGame}
-            onUndo={undoMove}
-            onRedo={redoMove}
-            onLoadFEN={handleLoadFEN}
-            onLoadPGN={handleLoadPGN}
-            canUndo={canUndo}
-            canRedo={canRedo}
-            engineDepth={stockfishConfig.depth}
-            onDepthChange={handleDepthChange}
-            autoDepth={stockfishConfig.autoDepth}
-            onAutoDepthToggle={handleAutoDepthToggle}
-          />
+          <div className="bg-card rounded-2xl p-6 shadow-xl">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="h-2 w-2 rounded-full bg-purple-500"></div>
+              <h3 className="text-foreground text-lg font-semibold">
+                Game Controls
+              </h3>
+            </div>
+            <ChessControls
+              onFlipBoard={flipBoard}
+              onReset={resetGame}
+              onUndo={undoMove}
+              onRedo={redoMove}
+              onLoadFEN={handleLoadFEN}
+              onLoadPGN={handleLoadPGN}
+              canUndo={canUndo}
+              canRedo={canRedo}
+            />
+          </div>
         </div>
       </div>
     </div>

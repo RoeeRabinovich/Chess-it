@@ -265,7 +265,7 @@ export default function ChessBoard({
       },
       darkSquareStyle: { backgroundColor: "#769656" },
       lightSquareStyle: { backgroundColor: "#eeeed2" },
-      transitionDuration: 300,
+      transitionDuration: 150,
     }),
     [
       fen,

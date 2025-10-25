@@ -49,7 +49,7 @@ const features: TFeatureItem[] = [
 //Features section ("Everything you need from chess study" cards)
 const Features = () => {
   return (
-    <section className="bg-green-100">
+    <section className="bg-secondary">
       <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 lg:px-8">
         <div className="mx-auto mb-12 max-w-3xl text-center">
           <h2 className="text-foreground mb-3 text-center text-3xl font-bold md:text-4xl">
