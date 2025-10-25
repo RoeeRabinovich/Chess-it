@@ -92,6 +92,7 @@ export const useAuth = () => {
   };
 
   const logout = () => {
+    localStorage.removeItem("authToken");
     dispatch(logoutAction());
   };
 

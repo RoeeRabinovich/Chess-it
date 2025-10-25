@@ -7,6 +7,7 @@ import Login from "./pages/Login/Login.page";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { Toaster } from "./components/ui/Toaster";
+
 export default function App() {
   return (
     <Provider store={store}>
