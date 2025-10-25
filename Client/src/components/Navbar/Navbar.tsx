@@ -16,7 +16,7 @@ import { Logout } from "../icons/Logout.icon";
 const navLinks = [
   { name: "Learn", href: "#learn" },
   { name: "Tools", href: "#tools" },
-  { name: "Create Study", href: "#create-study" },
+  { name: "Create Study", href: "/create-study" },
 ];
 
 const Navbar = () => {

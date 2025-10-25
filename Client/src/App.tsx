@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar/Navbar";
 import Home from "./pages/Home/Home";
 import Register from "./pages/Register/Register.page";
 import Login from "./pages/Login/Login.page";
+import { CreateStudy } from "./pages/CreateStudy/CreateStudy.page";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { Toaster } from "./components/ui/Toaster";
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/create-study" element={<CreateStudy />} />
         </Routes>
         <Footer />
         <Toaster />
