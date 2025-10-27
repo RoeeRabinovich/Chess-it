@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback, useState } from "react";
 import ChessBoard from "../../components/ChessBoard/ChessBoard";
 import { MoveNotation } from "../../components/MoveNotation/MoveNotation";
 import { ChessControls } from "../../components/ChessControls/ChessControls";
@@ -7,6 +7,7 @@ import { useOpeningDetection } from "../../hooks/useOpeningDetection";
 import { MoveData } from "../../types/chess";
 
 export const CreateStudy = () => {
+  const [boardScale, setBoardScale] = useState(1.0);
   const {
     gameState,
     makeMove,
@@ -37,13 +38,19 @@ export const CreateStudy = () => {
     detectOpening(gameState.moves);
   }, [gameState.moves, detectOpening]);
 
-  const handleMove = (move: MoveData) => {
-    return makeMove(move);
-  };
+  const handleMove = useCallback(
+    (move: MoveData) => {
+      return makeMove(move);
+    },
+    [makeMove],
+  );
 
-  const handleMoveClick = (moveIndex: number) => {
-    navigateToMove(moveIndex);
-  };
+  const handleMoveClick = useCallback(
+    (moveIndex: number) => {
+      navigateToMove(moveIndex);
+    },
+    [navigateToMove],
+  );
 
   const handleLoadFEN = () => {
     const fen = prompt("Enter FEN position:");
@@ -110,7 +117,10 @@ export const CreateStudy = () => {
 
             {/* Chess Board Container */}
             <div className="bg-card rounded-2xl p-6 shadow-xl">
-              <div className="flex justify-center">
+              <div
+                className="flex justify-center"
+                style={{ scale: boardScale }}
+              >
                 <div className="rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 p-4 shadow-inner dark:from-amber-900 dark:to-amber-800">
                   <ChessBoard
                     position={gameState.position}
@@ -163,6 +173,8 @@ export const CreateStudy = () => {
               onLoadPGN={handleLoadPGN}
               canUndo={canUndo}
               canRedo={canRedo}
+              boardScale={boardScale}
+              onBoardScaleChange={setBoardScale}
             />
           </div>
         </div>

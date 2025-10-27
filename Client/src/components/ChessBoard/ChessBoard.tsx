@@ -1,6 +1,16 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { Chessboard, ChessboardOptions } from "react-chessboard";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
+import { Chessboard } from "react-chessboard";
 import { Chess, Square } from "chess.js";
+
+interface SquareClickArgs {
+  square: string;
+  piece: { pieceType: string } | null;
+}
+
+interface PieceDropArgs {
+  sourceSquare: string;
+  targetSquare: string | null;
+}
 
 export interface MoveData {
   from: string;
@@ -18,8 +28,6 @@ export interface ChessBoardProps {
   position: string;
   /** Called when a valid move is made — return false to revert */
   onMove?: (move: MoveData) => boolean | void;
-  /** Called when an invalid move is attempted */
-  onInvalidMove?: (from: string, to: string) => void;
   /** Flip the board to view from black's perspective */
   isFlipped?: boolean;
   /** Optional arrows (e.g., engine lines or highlights) */
@@ -28,211 +36,162 @@ export interface ChessBoardProps {
   isInteractive?: boolean;
 }
 
-/**
- * Generates highlight styles for legal moves from a given square.
- * - Yellow highlight on the selected square
- * - Green radial gradient on regular move targets
- * - Red radial gradient on capture targets
- */
-const getHighlightStyles = (
-  chess: Chess,
-  square: string,
-): Record<string, React.CSSProperties> => {
-  const moves = chess.moves({ square: square as Square, verbose: true });
-  if (moves.length === 0) return {};
-
-  const highlights: Record<string, React.CSSProperties> = {};
-
-  for (const move of moves) {
-    const targetPiece = chess.get(move.to as Square);
-    const sourcePiece = chess.get(square as Square);
-    const isCapture = targetPiece && targetPiece.color !== sourcePiece?.color;
-
-    highlights[move.to] = {
-      background: isCapture
-        ? "radial-gradient(circle, rgba(255, 0, 0, 0.3) 80%, transparent 85%)"
-        : "radial-gradient(circle, rgba(16, 185, 129, 0.2) 25%, transparent 25%)",
-      borderRadius: "50%",
-    };
-  }
-
-  // Highlight the selected square in yellow
-  highlights[square] = {
-    background: "rgba(255, 255, 0, 0.4)",
-  };
-
-  return highlights;
-};
-
-/**
- * ChessBoard Component
- *
- * A fully-featured chess board with:
- * - Click-to-move and drag-and-drop support
- * - Visual move indicators and engine line arrows
- * - Proper state synchronization and error handling
- * - Full TypeScript support with no `any` types
- */
 export default function ChessBoard({
   position,
   onMove,
-  onInvalidMove,
   isFlipped = false,
   engineLines = [],
   isInteractive = true,
 }: ChessBoardProps) {
-  // Maintain a single Chess instance across renders
-  const chessRef = useRef(new Chess());
-  const chess = chessRef.current;
+  const chessGameRef = useRef(new Chess(position));
+  const positionRef = useRef(position);
 
-  // Local state for board rendering and interaction
-  const [fen, setFen] = useState(chess.fen());
-  const [selectedSquare, setSelectedSquare] = useState<string>("");
-  const [highlightSquares, setHighlightSquares] = useState<
+  const [chessPosition, setChessPosition] = useState(position);
+  const [moveFrom, setMoveFrom] = useState("");
+  const [optionSquares, setOptionSquares] = useState<
     Record<string, React.CSSProperties>
   >({});
 
-  /**
-   * Sync internal position with the position prop.
-   * Only reloads if the position actually differs to prevent flickering.
-   */
+  // Update chess game when position prop changes
   useEffect(() => {
-    if (position !== fen) {
+    if (position !== positionRef.current) {
+      positionRef.current = position;
       try {
-        chess.load(position);
-        setFen(chess.fen());
-        setSelectedSquare("");
-        setHighlightSquares({});
+        chessGameRef.current.load(position);
+        setChessPosition(chessGameRef.current.fen());
+        setMoveFrom("");
+        setOptionSquares({});
       } catch (error) {
         console.error("Invalid FEN position:", error);
       }
     }
-  }, [position, fen, chess]);
+  }, [position]);
 
-  /**
-   * Highlight legal moves for a selected square.
-   * Returns true if there are legal moves, false otherwise.
-   */
-  const highlightMoves = useCallback(
-    (square: string): boolean => {
-      const highlights = getHighlightStyles(chess, square);
-      setHighlightSquares(highlights);
-      return Object.keys(highlights).length > 1;
-    },
-    [chess],
-  );
+  // Get move options for a square to show valid moves
+  const getMoveOptions = useCallback((square: Square): boolean => {
+    const moves = chessGameRef.current.moves({ square, verbose: true });
 
-  /**
-   * Execute a move on the board.
-   * Updates FEN, calls onMove callback, and handles reversions.
-   */
-  const executeMove = useCallback(
-    (move: MoveData): boolean => {
-      try {
-        const result = chess.move(move);
+    if (moves.length === 0) {
+      setOptionSquares({});
+      return false;
+    }
 
-        if (!result) {
-          onInvalidMove?.(move.from, move.to);
-          return false;
+    const newSquares: Record<string, React.CSSProperties> = {};
+
+    for (const move of moves) {
+      const targetPiece = chessGameRef.current.get(move.to);
+      const sourcePiece = chessGameRef.current.get(square);
+      const isCapture = targetPiece && targetPiece.color !== sourcePiece?.color;
+
+      newSquares[move.to] = {
+        background: isCapture
+          ? "radial-gradient(circle, rgba(0,0,0,.1) 85%, transparent 85%)"
+          : "radial-gradient(circle, rgba(0,0,0,.1) 25%, transparent 25%)",
+        borderRadius: "50%",
+      };
+    }
+
+    newSquares[square] = {
+      background: "rgba(255, 255, 0, 0.4)",
+    };
+
+    setOptionSquares(newSquares);
+    return true;
+  }, []);
+
+  // Handle square clicks
+  const onSquareClick = useCallback(
+    ({ square, piece }: SquareClickArgs) => {
+      if (!isInteractive) return;
+
+      // Piece clicked to move
+      if (!moveFrom && piece) {
+        const hasMoveOptions = getMoveOptions(square as Square);
+        if (hasMoveOptions) {
+          setMoveFrom(square);
         }
+        return;
+      }
 
-        // Ask parent if they want to commit this move
+      // Square clicked to move to
+      const moves = chessGameRef.current.moves({
+        square: moveFrom as Square,
+        verbose: true,
+      });
+      const foundMove = moves.find(
+        (m) => m.from === moveFrom && m.to === square,
+      );
+
+      // Not a valid move
+      if (!foundMove) {
+        const hasMoveOptions = getMoveOptions(square as Square);
+        setMoveFrom(hasMoveOptions ? square : "");
+        return;
+      }
+
+      // Valid move found
+      try {
+        const move = chessGameRef.current.move({
+          from: moveFrom,
+          to: square,
+          promotion: "q",
+        });
+
+        // Check with parent if move should be committed
         const shouldCommit = onMove?.(move) ?? true;
 
         if (shouldCommit === false) {
-          chess.undo();
+          chessGameRef.current.undo();
+          return;
+        }
+
+        setChessPosition(chessGameRef.current.fen());
+        setMoveFrom("");
+        setOptionSquares({});
+      } catch {
+        // Invalid move - just clear and select new square if applicable
+        const hasMoveOptions = getMoveOptions(square as Square);
+        setMoveFrom(hasMoveOptions ? square : "");
+      }
+    },
+    [moveFrom, isInteractive, getMoveOptions, onMove],
+  );
+
+  // Handle piece drops for drag-and-drop
+  const onPieceDrop = useCallback(
+    ({ sourceSquare, targetSquare }: PieceDropArgs): boolean => {
+      if (!isInteractive || !targetSquare) {
+        return false;
+      }
+
+      try {
+        const move = chessGameRef.current.move({
+          from: sourceSquare,
+          to: targetSquare,
+          promotion: "q",
+        });
+
+        // Check with parent if move should be committed
+        const shouldCommit = onMove?.(move) ?? true;
+
+        if (shouldCommit === false) {
+          chessGameRef.current.undo();
           return false;
         }
 
-        // Update local FEN and clear selection
-        setFen(chess.fen());
-        setSelectedSquare("");
-        setHighlightSquares({});
+        setChessPosition(chessGameRef.current.fen());
+        setMoveFrom("");
+        setOptionSquares({});
+
         return true;
-      } catch (error) {
-        console.error("Move execution error:", error);
-        onInvalidMove?.(move.from, move.to);
+      } catch {
         return false;
       }
     },
-    [chess, onMove, onInvalidMove],
+    [isInteractive, onMove],
   );
 
-  /**
-   * Handle square clicks for click-to-move.
-   * - First click: select a piece and show legal moves
-   * - Second click: move piece if target is legal
-   */
-  const handleSquareClick = useCallback(
-    ({ square, piece }: { piece: string; square: string }): void => {
-      if (!isInteractive) return;
-
-      // If no square selected and clicking on a piece, select it
-      if (!selectedSquare && piece) {
-        const hasMoves = highlightMoves(square);
-        if (hasMoves) {
-          setSelectedSquare(square);
-        }
-        return;
-      }
-
-      // Get possible moves from the selected square
-      const possibleMoves = chess
-        .moves({ square: selectedSquare as Square, verbose: true })
-        .map((m) => m.to);
-
-      // If clicked square is not a legal move target
-      if (!possibleMoves.includes(square as Square)) {
-        // Check if this square has a piece with legal moves
-        const hasMoves = highlightMoves(square);
-        setSelectedSquare(hasMoves ? square : "");
-        return;
-      }
-
-      // Execute the move
-      const move: MoveData = {
-        from: selectedSquare,
-        to: square,
-        promotion: "q", // Default to queen promotion
-      };
-
-      executeMove(move);
-    },
-    [selectedSquare, chess, highlightMoves, isInteractive, executeMove],
-  );
-
-  /**
-   * Handle piece drops for drag-and-drop.
-   * Validates the move and updates board state accordingly.
-   */
-  const handlePieceDrop = useCallback(
-    ({
-      sourceSquare,
-      targetSquare,
-    }: {
-      sourceSquare: string;
-      targetSquare: string | null;
-    }): boolean => {
-      if (!isInteractive || !targetSquare) return false;
-
-      const move: MoveData = {
-        from: sourceSquare,
-        to: targetSquare,
-        promotion: "q",
-      };
-
-      const success = executeMove(move);
-
-      // Return success to react-chessboard to animate the piece
-      return success;
-    },
-    [isInteractive, executeMove],
-  );
-
-  /**
-   * Generate arrows for the best engine lines.
-   * Shows only the first line's opening move as a green arrow.
-   */
+  // Generate arrows for engine lines
   const arrows = useMemo(() => {
     if (engineLines.length === 0) return [];
 
@@ -248,38 +207,37 @@ export default function ChessBoard({
     ];
   }, [engineLines]);
 
-  /**
-   * Memoize board options to prevent unnecessary re-renders.
-   */
-  const boardOptions = useMemo(
+  // Memoize board options
+  const chessboardOptions = useMemo(
     () => ({
-      position: fen,
-      onPieceDrop: handlePieceDrop,
-      onSquareClick: handleSquareClick,
+      onSquareClick,
+      onPieceDrop,
+      position: chessPosition,
       boardOrientation: (isFlipped ? "black" : "white") as "white" | "black",
-      squareStyles: highlightSquares,
+      squareStyles: optionSquares,
       arrows,
       boardStyle: {
-        borderRadius: "8px",
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+        borderRadius: "12px",
+        boxShadow: "none",
+        border: "2px solid #e5e7eb",
       },
       darkSquareStyle: { backgroundColor: "#769656" },
       lightSquareStyle: { backgroundColor: "#eeeed2" },
-      transitionDuration: 150,
+      animationDurationInMs: 100,
     }),
     [
-      fen,
-      handlePieceDrop,
-      handleSquareClick,
-      highlightSquares,
-      arrows,
+      onSquareClick,
+      onPieceDrop,
+      chessPosition,
       isFlipped,
+      optionSquares,
+      arrows,
     ],
   );
 
   return (
     <div className="mx-auto w-full max-w-lg">
-      <Chessboard options={boardOptions as unknown as ChessboardOptions} />
+      <Chessboard options={chessboardOptions} />
     </div>
   );
 }

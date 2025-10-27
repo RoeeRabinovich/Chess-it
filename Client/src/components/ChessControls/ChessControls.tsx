@@ -9,6 +9,8 @@ interface ChessControlsProps {
   onLoadPGN: () => void;
   canUndo: boolean;
   canRedo: boolean;
+  boardScale: number;
+  onBoardScaleChange: (scale: number) => void;
 }
 
 export const ChessControls = ({
@@ -20,6 +22,8 @@ export const ChessControls = ({
   onLoadPGN,
   canUndo,
   canRedo,
+  boardScale,
+  onBoardScaleChange,
 }: ChessControlsProps) => {
   return (
     <div className="flex flex-wrap items-center gap-4">
@@ -61,6 +65,22 @@ export const ChessControls = ({
         <Button variant="outline" size="sm" onClick={onLoadPGN}>
           Load PGN
         </Button>
+      </div>
+
+      {/* Board Size Control */}
+      <div className="flex items-center gap-2">
+        <label className="text-foreground text-sm">
+          Size: {Math.round(boardScale * 100)}%
+        </label>
+        <input
+          type="range"
+          min="0.5"
+          max="1.5"
+          step="0.05"
+          value={boardScale}
+          onChange={(e) => onBoardScaleChange(parseFloat(e.target.value))}
+          className="h-2 w-32 cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700"
+        />
       </div>
     </div>
   );
