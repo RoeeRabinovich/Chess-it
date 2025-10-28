@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo, useEffect } from "react";
+import { useState, useRef, useCallback, useMemo, useEffect, memo } from "react";
 import { Chessboard } from "react-chessboard";
 import { Chess, Square } from "chess.js";
 
@@ -18,11 +18,6 @@ export interface MoveData {
   promotion?: string;
 }
 
-export interface EngineLine {
-  moves: string[];
-  evaluation: number;
-}
-
 export interface ChessBoardProps {
   /** FEN position to display */
   position: string;
@@ -30,19 +25,15 @@ export interface ChessBoardProps {
   onMove?: (move: MoveData) => boolean | void;
   /** Flip the board to view from black's perspective */
   isFlipped?: boolean;
-  /** Optional arrows (e.g., engine lines or highlights) */
-  engineLines?: EngineLine[];
   /** Allow or disallow user moves */
   isInteractive?: boolean;
 }
-
-export default function ChessBoard({
+const ChessBoard = ({
   position,
   onMove,
   isFlipped = false,
-  engineLines = [],
   isInteractive = true,
-}: ChessBoardProps) {
+}: ChessBoardProps) => {
   const chessGameRef = useRef(new Chess(position));
   const positionRef = useRef(position);
 
@@ -191,23 +182,25 @@ export default function ChessBoard({
     [isInteractive, onMove],
   );
 
-  // Generate arrows for engine lines
-  const arrows = useMemo(() => {
-    if (engineLines.length === 0) return [];
-
-    const bestLine = engineLines[0];
-    if (bestLine.moves.length < 2) return [];
-
-    return [
-      {
-        startSquare: bestLine.moves[0],
-        endSquare: bestLine.moves[1],
-        color: "#10b981",
-      },
-    ];
-  }, [engineLines]);
-
   // Memoize board options
+  const boardStyleRef = useMemo(
+    () => ({
+      borderRadius: "12px",
+      boxShadow: "none",
+      border: "2px solid #e5e7eb",
+    }),
+    [],
+  );
+
+  const darkSquareStyleRef = useMemo(
+    () => ({ backgroundColor: "#769656" }),
+    [],
+  );
+  const lightSquareStyleRef = useMemo(
+    () => ({ backgroundColor: "#eeeed2" }),
+    [],
+  );
+
   const chessboardOptions = useMemo(
     () => ({
       onSquareClick,
@@ -215,14 +208,11 @@ export default function ChessBoard({
       position: chessPosition,
       boardOrientation: (isFlipped ? "black" : "white") as "white" | "black",
       squareStyles: optionSquares,
-      arrows,
-      boardStyle: {
-        borderRadius: "12px",
-        boxShadow: "none",
-        border: "2px solid #e5e7eb",
-      },
-      darkSquareStyle: { backgroundColor: "#769656" },
-      lightSquareStyle: { backgroundColor: "#eeeed2" },
+
+      boardStyle: boardStyleRef,
+
+      darkSquareStyle: darkSquareStyleRef,
+      lightSquareStyle: lightSquareStyleRef,
       animationDurationInMs: 100,
     }),
     [
@@ -231,7 +221,9 @@ export default function ChessBoard({
       chessPosition,
       isFlipped,
       optionSquares,
-      arrows,
+      boardStyleRef,
+      darkSquareStyleRef,
+      lightSquareStyleRef,
     ],
   );
 
@@ -240,4 +232,6 @@ export default function ChessBoard({
       <Chessboard options={chessboardOptions} />
     </div>
   );
-}
+};
+
+export default memo(ChessBoard);

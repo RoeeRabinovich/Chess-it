@@ -19,4 +19,7 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ["stockfish.wasm"],
   },
+  build: {
+    target: "esnext", // ensure modern syntax for workers
+  },
 });

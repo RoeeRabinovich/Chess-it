@@ -1,20 +1,21 @@
-import { useEffect, useCallback, useState, useRef, useMemo } from "react";
+import { useEffect, useCallback, useState, useRef } from "react";
 import { Chess } from "chess.js";
 import ChessBoard from "../../components/ChessBoard/ChessBoard";
 import { MoveNotation } from "../../components/MoveNotation/MoveNotation";
 import { ChessControls } from "../../components/ChessControls/ChessControls";
+import { EngineAnalysis } from "../../components/EngineAnalysis/EngineAnalysis";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useOpeningDetection } from "../../hooks/useOpeningDetection";
-import { MoveData, EngineLine } from "../../types/chess";
-// Import from public directory - it will be available at runtime
 import Engine from "../../../../Client/public/stockfish/engine";
 
 export const CreateStudy = () => {
   const [boardScale, setBoardScale] = useState(1.0);
-  const [engineLines, setEngineLines] = useState<EngineLine[]>([]);
 
-  // Initialize Stockfish engine (from example)
-  const engine = useMemo(() => new Engine(), []);
+  // Engine state
+  const engineRef = useRef<Engine | null>(null);
+  const [isEngineEnabled, setIsEngineEnabled] = useState(false);
+  const [isEngineLoading, setIsEngineLoading] = useState(false);
+  const [isEngineReady, setIsEngineReady] = useState(false);
 
   // Create a chess game ref for engine analysis
   const chessGameRef = useRef(new Chess());
@@ -44,49 +45,47 @@ export const CreateStudy = () => {
   // Track current FEN for evaluation
   const currentFenRef = useRef(gameState.position);
 
-  // Set up engine message handler once
-  useEffect(() => {
-    engine.onMessage(({ positionEvaluation, possibleMate, pv, depth }) => {
-      // Ignore messages with a depth less than 10
-      if (depth && depth < 10) {
-        return;
-      }
+  // Handle enabling the engine
+  const handleEnableEngine = useCallback(() => {
+    if (isEngineLoading || isEngineReady) return;
 
-      // Get the current turn from the current FEN
-      const isWhiteToMove = currentFenRef.current.includes(" w ");
+    setIsEngineLoading(true);
+    setIsEngineEnabled(true);
 
-      // Update the position evaluation
-      if (positionEvaluation) {
-        const evalValue =
-          (isWhiteToMove ? 1 : -1) * (Number(positionEvaluation) / 100);
-        setPositionEvaluation(evalValue);
-      }
+    // Load engine in the next tick to allow UI update
+    setTimeout(() => {
+      try {
+        const engine = new Engine();
+        engineRef.current = engine;
 
-      // Update the possible mate, depth and best line
-      if (possibleMate) {
-        setPossibleMate(possibleMate);
-      }
-      if (depth) {
-        setDepth(depth);
-      }
-      if (pv) {
-        setBestLine(pv);
+        engine.onMessage(({ positionEvaluation, possibleMate, pv, depth }) => {
+          // Ignore messages with a depth less than 10
+          if (depth && depth < 10) return;
 
-        // Update engine lines for the board arrows
-        const bestMove = pv.split(" ")?.[0];
-        if (bestMove) {
-          setEngineLines([
-            {
-              moves: [bestMove],
-              evaluation: positionEvaluation ? parseInt(positionEvaluation) : 0,
-              depth: depth || 0,
-            },
-          ]);
-        }
+          // Get the current turn from the current FEN
+          const isWhiteToMove = currentFenRef.current.includes(" w ");
+
+          // Update the position evaluation
+          if (positionEvaluation) {
+            const evalValue =
+              (isWhiteToMove ? 1 : -1) * (Number(positionEvaluation) / 100);
+            setPositionEvaluation(evalValue);
+          }
+
+          // Update the possible mate, depth and best line
+          if (possibleMate) setPossibleMate(possibleMate);
+          if (depth) setDepth(depth);
+          if (pv) setBestLine(pv);
+        });
+
+        setIsEngineReady(true);
+        setIsEngineLoading(false);
+      } catch (error) {
+        console.error("Failed to load engine:", error);
+        setIsEngineLoading(false);
       }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    }, 100);
+  }, [isEngineLoading, isEngineReady]);
 
   // Sync the chess game ref with the game state
   useEffect(() => {
@@ -99,49 +98,31 @@ export const CreateStudy = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState.position]);
 
-  // Find best move when position changes
+  // Analyze position when it changes (only if engine is enabled and ready)
   useEffect(() => {
-    if (!chessGame.isGameOver() && !chessGame.isDraw()) {
-      // Stop any running analysis before starting new one
-      engine.stop();
+    if (!isEngineEnabled || !isEngineReady || !engineRef.current) return;
+    if (chessGame.isGameOver() || chessGame.isDraw()) return;
 
-      // Reset evaluation state
+    // Defer analysis to not block UI
+    const timeoutId = setTimeout(() => {
+      engineRef.current?.stop();
       setDepth(0);
       setBestLine("");
-      setEngineLines([]);
       setPositionEvaluation(0);
       setPossibleMate("");
 
-      // Small delay to ensure position is loaded and engine has stopped
-      setTimeout(() => {
-        const fen = chessGame.fen();
-        console.log("Analyzing position:", fen);
-        engine.evaluatePosition(fen, 18);
-      }, 100);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameState.position]);
+      const fen = chessGame.fen();
+      engineRef.current?.evaluatePosition(fen, 15);
+    }, 300);
 
-  // Debug game state
-  useEffect(() => {
-    console.log("CreateStudy: Game state changed:", {
-      moves: gameState.moves,
-      currentMoveIndex: gameState.currentMoveIndex,
-      position: gameState.position,
-    });
-  }, [gameState]);
+    return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState.position, isEngineEnabled, isEngineReady]);
 
   // Detect opening when moves change
   useEffect(() => {
     detectOpening(gameState.moves);
   }, [gameState.moves, detectOpening]);
-
-  const handleMove = useCallback(
-    (move: MoveData) => {
-      return makeMove(move);
-    },
-    [makeMove],
-  );
 
   const handleMoveClick = useCallback(
     (moveIndex: number) => {
@@ -166,114 +147,33 @@ export const CreateStudy = () => {
 
   return (
     <div className="py-10">
-      {/* Header Section */}
-      <div className="bg-pastel-mint text-primary dark:bg-secondary relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative container mx-auto px-4 py-12">
-          <div className="text-center">
-            <h1 className="text-foreground mb-4 text-4xl font-bold sm:text-5xl lg:text-6xl">
-              Create Study
-            </h1>
-            <p className="text-muted-foreground mx-auto max-w-2xl text-lg sm:text-xl">
-              Analyze positions, explore variations, and master chess with our
-              interactive study tools
-            </p>
-            {opening && (
-              <div className="bg-foreground/10 mt-6 inline-flex items-center rounded-full px-4 py-2 backdrop-blur-sm">
-                <span className="text-foreground text-sm font-medium">
-                  Opening: {opening?.name} - {opening?.eco}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
+      {/* Main Content Container */}
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-4">
-          {/* Left Column - Board and Analysis */}
-          <div className="xl:col-span-3">
-            {/* Engine Analysis Panel */}
-            <div className="bg-card mb-6 rounded-2xl p-6 shadow-xl">
-              <div className="mb-4 flex items-center gap-3">
-                <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                <h3 className="text-foreground text-xl font-semibold">
-                  Engine Analysis
-                </h3>
-              </div>
-              <div className="bg-muted rounded-xl p-6">
-                {depth > 0 ? (
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-muted-foreground mb-1 text-sm">
-                        Position Evaluation:
-                      </p>
-                      <p
-                        className={`text-2xl font-bold ${
-                          positionEvaluation > 0
-                            ? "text-green-600"
-                            : positionEvaluation < 0
-                              ? "text-red-600"
-                              : "text-gray-600"
-                        }`}
-                      >
-                        {possibleMate
-                          ? `#${possibleMate}`
-                          : positionEvaluation.toFixed(2)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground mb-1 text-sm">
-                        Depth:
-                      </p>
-                      <p className="text-foreground text-lg font-semibold">
-                        {depth}
-                      </p>
-                    </div>
-                    {bestLine && (
-                      <div>
-                        <p className="text-muted-foreground mb-1 text-sm">
-                          Best Line:
-                        </p>
-                        <p className="text-foreground text-sm italic">
-                          {bestLine.slice(0, 50)}
-                          {bestLine.length > 50 ? "..." : ""}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="flex h-32 items-center justify-center">
-                    <div className="text-center">
-                      <div className="mb-2 text-4xl">🤖</div>
-                      <p className="text-muted-foreground">
-                        Engine analysis will appear here
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Chess Board Container */}
-            <div
-              className="bg-card flex items-center justify-center rounded-2xl p-6 shadow-xl"
-              style={{
-                minHeight: `${600 * boardScale}px`,
-                minWidth: `${600 * boardScale}px`,
-                maxWidth: "100%",
-              }}
-            >
+        <div className="grid grid-cols-1 gap-8 xl:grid-cols-3">
+          {/* Left Column - Board */}
+          <div className="xl:col-span-2">
+            {/* Chess Board Container with fixed dimensions */}
+            <div className="bg-card overflow-hidden rounded-2xl p-6 shadow-xl">
               <div
-                className="flex justify-center"
-                style={{ scale: boardScale, transformOrigin: "center center" }}
+                className="relative flex items-center justify-center"
+                style={{
+                  height: "600px",
+                  width: "600px",
+                  maxWidth: "100%",
+                  margin: "0 auto",
+                }}
               >
-                <div>
+                <div
+                  className="absolute inset-0 flex items-center justify-center"
+                  style={{
+                    scale: boardScale,
+                    transformOrigin: "center center",
+                  }}
+                >
                   <ChessBoard
                     position={gameState.position}
-                    onMove={handleMove}
+                    onMove={makeMove}
                     isFlipped={gameState.isFlipped}
-                    engineLines={engineLines}
                     isInteractive={true}
                   />
                 </div>
@@ -281,23 +181,80 @@ export const CreateStudy = () => {
             </div>
           </div>
 
-          {/* Right Column - Move Notation */}
-          <div className="xl:col-span-1">
-            <div className="sticky top-20">
-              <div className="bg-card rounded-2xl p-6 shadow-xl">
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+          {/* Right Column - Analysis and Move Notation */}
+          <div className="space-y-6 xl:col-span-1">
+            {/* Engine Analysis Panel */}
+            <div className="bg-card rounded-2xl p-6 shadow-xl">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`h-2 w-2 rounded-full ${isEngineReady ? "bg-green-500" : "bg-gray-400"}`}
+                  ></div>
                   <h3 className="text-foreground text-lg font-semibold">
-                    Move History
+                    Engine Analysis
                   </h3>
                 </div>
-                <MoveNotation
-                  moves={gameState.moves}
-                  currentMoveIndex={gameState.currentMoveIndex}
-                  onMoveClick={handleMoveClick}
-                  opening={opening || undefined}
-                />
+                {!isEngineEnabled && (
+                  <button
+                    onClick={handleEnableEngine}
+                    disabled={isEngineLoading}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50"
+                  >
+                    {isEngineLoading ? "Loading..." : "Enable Analysis"}
+                  </button>
+                )}
               </div>
+
+              {!isEngineEnabled ? (
+                <div className="text-muted-foreground flex flex-col items-center justify-center py-12 text-center">
+                  <svg
+                    className="mb-4 h-16 w-16 opacity-50"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <p className="text-sm">
+                    Click "Enable Analysis" to start engine evaluation
+                  </p>
+                </div>
+              ) : isEngineLoading ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <div className="bg-muted mb-4 h-12 w-12 animate-pulse rounded-full"></div>
+                  <p className="text-muted-foreground text-sm">
+                    Loading Stockfish engine...
+                  </p>
+                </div>
+              ) : (
+                <EngineAnalysis
+                  positionEvaluation={positionEvaluation}
+                  depth={depth}
+                  bestLine={bestLine}
+                  possibleMate={possibleMate}
+                />
+              )}
+            </div>
+
+            {/* Move Notation */}
+            <div className="bg-card rounded-2xl p-6 shadow-xl">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                <h3 className="text-foreground text-lg font-semibold">
+                  Move History
+                </h3>
+              </div>
+              <MoveNotation
+                moves={gameState.moves}
+                currentMoveIndex={gameState.currentMoveIndex}
+                onMoveClick={handleMoveClick}
+                opening={opening || undefined}
+              />
             </div>
           </div>
         </div>

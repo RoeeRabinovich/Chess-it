@@ -7,8 +7,6 @@
  * Description of the universal chess interface (UCI)  https://gist.github.com/aliostad/f4470274f39d29b788c1b09519e67372/
  */
 
-const stockfish = new Worker("/stockfish/stockfish.wasm.js");
-
 type EngineMessage = {
   /** stockfish engine message in UCI format*/
   uciMessage: string;
@@ -32,7 +30,11 @@ export default class Engine {
   isReady: boolean;
 
   constructor() {
-    this.stockfish = stockfish;
+    // Use new Worker with URL constructor for proper Vite handling
+    this.stockfish = new Worker(
+      new URL("/stockfish/stockfish.wasm.js", import.meta.url),
+      { type: "module" },
+    );
     this.isReady = false;
     this.onMessage = (callback) => {
       this.stockfish.addEventListener("message", (e) => {
