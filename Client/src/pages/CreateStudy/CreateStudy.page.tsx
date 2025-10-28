@@ -1,21 +1,29 @@
-import { useEffect, useCallback, useState, useRef } from "react";
+import {
+  useEffect,
+  useCallback,
+  useState,
+  useRef,
+  lazy,
+  Suspense,
+} from "react";
 import { Chess } from "chess.js";
-import ChessBoard from "../../components/ChessBoard/ChessBoard";
 import { MoveNotation } from "../../components/MoveNotation/MoveNotation";
 import { ChessControls } from "../../components/ChessControls/ChessControls";
 import { EngineAnalysis } from "../../components/EngineAnalysis/EngineAnalysis";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useOpeningDetection } from "../../hooks/useOpeningDetection";
-import Engine from "../../../../Client/public/stockfish/engine";
+import { analyzePosition } from "../../services/stockfishService";
+
+// Lazy load the heavy ChessBoard component
+const ChessBoard = lazy(() => import("../../components/ChessBoard/ChessBoard"));
 
 export const CreateStudy = () => {
   const [boardScale, setBoardScale] = useState(1.0);
 
   // Engine state
-  const engineRef = useRef<Engine | null>(null);
   const [isEngineEnabled, setIsEngineEnabled] = useState(false);
-  const [isEngineLoading, setIsEngineLoading] = useState(false);
-  const [isEngineReady, setIsEngineReady] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const analysisAbortController = useRef<AbortController | null>(null);
 
   // Create a chess game ref for engine analysis
   const chessGameRef = useRef(new Chess());
@@ -47,45 +55,9 @@ export const CreateStudy = () => {
 
   // Handle enabling the engine
   const handleEnableEngine = useCallback(() => {
-    if (isEngineLoading || isEngineReady) return;
-
-    setIsEngineLoading(true);
+    if (isEngineEnabled) return;
     setIsEngineEnabled(true);
-
-    // Load engine in the next tick to allow UI update
-    setTimeout(() => {
-      try {
-        const engine = new Engine();
-        engineRef.current = engine;
-
-        engine.onMessage(({ positionEvaluation, possibleMate, pv, depth }) => {
-          // Ignore messages with a depth less than 10
-          if (depth && depth < 10) return;
-
-          // Get the current turn from the current FEN
-          const isWhiteToMove = currentFenRef.current.includes(" w ");
-
-          // Update the position evaluation
-          if (positionEvaluation) {
-            const evalValue =
-              (isWhiteToMove ? 1 : -1) * (Number(positionEvaluation) / 100);
-            setPositionEvaluation(evalValue);
-          }
-
-          // Update the possible mate, depth and best line
-          if (possibleMate) setPossibleMate(possibleMate);
-          if (depth) setDepth(depth);
-          if (pv) setBestLine(pv);
-        });
-
-        setIsEngineReady(true);
-        setIsEngineLoading(false);
-      } catch (error) {
-        console.error("Failed to load engine:", error);
-        setIsEngineLoading(false);
-      }
-    }, 100);
-  }, [isEngineLoading, isEngineReady]);
+  }, [isEngineEnabled]);
 
   // Sync the chess game ref with the game state
   useEffect(() => {
@@ -98,26 +70,52 @@ export const CreateStudy = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState.position]);
 
-  // Analyze position when it changes (only if engine is enabled and ready)
+  // Analyze position when it changes (only if engine is enabled)
   useEffect(() => {
-    if (!isEngineEnabled || !isEngineReady || !engineRef.current) return;
+    if (!isEngineEnabled) return;
     if (chessGame.isGameOver() || chessGame.isDraw()) return;
 
-    // Defer analysis to not block UI
-    const timeoutId = setTimeout(() => {
-      engineRef.current?.stop();
-      setDepth(0);
-      setBestLine("");
-      setPositionEvaluation(0);
-      setPossibleMate("");
+    // Abort previous analysis if still running
+    if (analysisAbortController.current) {
+      analysisAbortController.current.abort();
+    }
 
-      const fen = chessGame.fen();
-      engineRef.current?.evaluatePosition(fen, 15);
-    }, 300);
+    // Defer analysis to not block UI and allow debouncing
+    const timeoutId = setTimeout(async () => {
+      try {
+        setIsAnalyzing(true);
+        setDepth(0);
+        setBestLine("");
+        setPositionEvaluation(0);
+        setPossibleMate("");
 
-    return () => clearTimeout(timeoutId);
+        const fen = chessGame.fen();
+
+        // Call the server API for analysis
+        const result = await analyzePosition(fen, 15, 1);
+
+        // Update the UI with results
+        setPositionEvaluation(result.evaluation);
+        setDepth(result.depth);
+        setBestLine(result.bestLine);
+        setPossibleMate(result.possibleMate || "");
+      } catch (error) {
+        if (error instanceof Error && error.name !== "AbortError") {
+          console.error("Analysis failed:", error);
+        }
+      } finally {
+        setIsAnalyzing(false);
+      }
+    }, 500); // Debounce for 500ms
+
+    return () => {
+      clearTimeout(timeoutId);
+      if (analysisAbortController.current) {
+        analysisAbortController.current.abort();
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameState.position, isEngineEnabled, isEngineReady]);
+  }, [gameState.position, isEngineEnabled]);
 
   // Detect opening when moves change
   useEffect(() => {
@@ -170,12 +168,20 @@ export const CreateStudy = () => {
                     transformOrigin: "center center",
                   }}
                 >
-                  <ChessBoard
-                    position={gameState.position}
-                    onMove={makeMove}
-                    isFlipped={gameState.isFlipped}
-                    isInteractive={true}
-                  />
+                  <Suspense
+                    fallback={
+                      <div className="flex h-full w-full items-center justify-center">
+                        <div className="bg-muted border-primary h-16 w-16 animate-spin rounded-full border-4 border-t-transparent"></div>
+                      </div>
+                    }
+                  >
+                    <ChessBoard
+                      position={gameState.position}
+                      onMove={makeMove}
+                      isFlipped={gameState.isFlipped}
+                      isInteractive={true}
+                    />
+                  </Suspense>
                 </div>
               </div>
             </div>
@@ -188,19 +194,23 @@ export const CreateStudy = () => {
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`h-2 w-2 rounded-full ${isEngineReady ? "bg-green-500" : "bg-gray-400"}`}
+                    className={`h-2 w-2 rounded-full ${isEngineEnabled ? (isAnalyzing ? "animate-pulse bg-yellow-500" : "bg-green-500") : "bg-gray-400"}`}
                   ></div>
                   <h3 className="text-foreground text-lg font-semibold">
                     Engine Analysis
                   </h3>
+                  {isAnalyzing && (
+                    <span className="text-muted-foreground text-xs">
+                      Analyzing...
+                    </span>
+                  )}
                 </div>
                 {!isEngineEnabled && (
                   <button
                     onClick={handleEnableEngine}
-                    disabled={isEngineLoading}
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
                   >
-                    {isEngineLoading ? "Loading..." : "Enable Analysis"}
+                    Enable Analysis
                   </button>
                 )}
               </div>
@@ -221,14 +231,11 @@ export const CreateStudy = () => {
                     />
                   </svg>
                   <p className="text-sm">
-                    Click "Enable Analysis" to start engine evaluation
+                    Click "Enable Analysis" to start server-side engine
+                    evaluation
                   </p>
-                </div>
-              ) : isEngineLoading ? (
-                <div className="flex flex-col items-center justify-center py-12">
-                  <div className="bg-muted mb-4 h-12 w-12 animate-pulse rounded-full"></div>
-                  <p className="text-muted-foreground text-sm">
-                    Loading Stockfish engine...
+                  <p className="text-muted-foreground mt-2 text-xs">
+                    Powered by Stockfish 17.1
                   </p>
                 </div>
               ) : (

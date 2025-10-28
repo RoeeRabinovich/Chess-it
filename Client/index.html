@@ -3,13 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <!-- Preload JS and WASM for Stockfish -->
-    <link rel="preload" href="/stockfish/stockfish.wasm.js" as="script" />
+
+    <!-- Preload critical font to prevent LCP delay -->
     <link
       rel="preload"
-      href="/stockfish/stockfish.wasm"
-      as="fetch"
-      crossorigin
+      href="/fonts/Minecraft.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin="anonymous"
     />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
