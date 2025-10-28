@@ -1,13 +1,12 @@
-const joi = require("joi");
+const Joi = require("joi");
 
 const loginValidator = (user) => {
   const passwordRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+<>?]).{8,}$/;
 
-  const schema = joi.object({
-    email: joi.string().email().required(),
-    password: joi
-      .string()
+  const schema = Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string()
       .ruleset.regex(passwordRegex)
       .rule({
         message:
