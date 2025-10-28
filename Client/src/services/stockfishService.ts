@@ -1,4 +1,5 @@
 import axios from "axios";
+const PORT = import.meta.env.VITE_API_BASE_URL;
 export interface AnalysisResult {
   evaluation: number;
   depth: number;
@@ -18,7 +19,7 @@ export async function analyzePosition(
   depth: number = 15,
   multipv: number = 1,
 ): Promise<AnalysisResult> {
-  const response = await axios.post("http://localhost:8181/stockfish/analyze", {
+  const response = await axios.post(`${PORT}/stockfish/analyze`, {
     fen,
     depth,
     multipv,
