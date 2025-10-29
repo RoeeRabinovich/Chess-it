@@ -1,6 +1,8 @@
 import { Button } from "../../components/ui/Button";
+import { useNavigate } from "react-router";
 //Cta section
 const CTA = () => {
+  const navigate = useNavigate();
   return (
     <section className="bg-secondary p-10">
       <div className="mx-auto max-w-4xl rounded-sm border-2 p-4 md:px-6 lg:px-8">
@@ -21,6 +23,9 @@ const CTA = () => {
             <Button
               size="lg"
               className="group bg-pastel-mint text-foreground hover:bg-pastel-mint/80"
+              onClick={() => {
+                navigate("/register");
+              }}
             >
               Join Chess-It Today!
             </Button>

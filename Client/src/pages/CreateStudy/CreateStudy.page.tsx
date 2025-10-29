@@ -1,18 +1,10 @@
-import {
-  useEffect,
-  useCallback,
-  useState,
-  useRef,
-  lazy,
-  Suspense,
-} from "react";
-import { Chess } from "chess.js";
+import { useEffect, useCallback, useState, lazy, Suspense } from "react";
 import { MoveNotation } from "../../components/MoveNotation/MoveNotation";
 import { ChessControls } from "../../components/ChessControls/ChessControls";
 import { EngineAnalysis } from "../../components/EngineAnalysis/EngineAnalysis";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useOpeningDetection } from "../../hooks/useOpeningDetection";
-import { analyzePosition } from "../../services/stockfishService";
+import { useStockfish } from "../../hooks/useStockfish";
 
 // Lazy load the heavy ChessBoard component
 const ChessBoard = lazy(() => import("../../components/ChessBoard/ChessBoard"));
@@ -21,19 +13,6 @@ export const CreateStudy = () => {
   const [boardScale, setBoardScale] = useState(1.0);
 
   // Engine state
-  const [isEngineEnabled, setIsEngineEnabled] = useState(false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const analysisAbortController = useRef<AbortController | null>(null);
-
-  // Create a chess game ref for engine analysis
-  const chessGameRef = useRef(new Chess());
-  const chessGame = chessGameRef.current;
-
-  // Store engine variables
-  const [positionEvaluation, setPositionEvaluation] = useState(0);
-  const [depth, setDepth] = useState(0);
-  const [bestLine, setBestLine] = useState("");
-  const [possibleMate, setPossibleMate] = useState("");
   const {
     gameState,
     makeMove,
@@ -47,75 +26,17 @@ export const CreateStudy = () => {
     canUndo,
     canRedo,
   } = useChessGame();
+  const {
+    isEngineEnabled,
+    isAnalyzing,
+    positionEvaluation,
+    depth,
+    bestLine,
+    possibleMate,
+    enableEngine,
+  } = useStockfish(gameState.position);
 
   const { opening, detectOpening } = useOpeningDetection();
-
-  // Track current FEN for evaluation
-  const currentFenRef = useRef(gameState.position);
-
-  // Handle enabling the engine
-  const handleEnableEngine = useCallback(() => {
-    if (isEngineEnabled) return;
-    setIsEngineEnabled(true);
-  }, [isEngineEnabled]);
-
-  // Sync the chess game ref with the game state
-  useEffect(() => {
-    try {
-      chessGame.load(gameState.position);
-      currentFenRef.current = gameState.position;
-    } catch (error) {
-      console.error("Failed to load position into engine:", error);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameState.position]);
-
-  // Analyze position when it changes (only if engine is enabled)
-  useEffect(() => {
-    if (!isEngineEnabled) return;
-    if (chessGame.isGameOver() || chessGame.isDraw()) return;
-
-    // Abort previous analysis if still running
-    if (analysisAbortController.current) {
-      analysisAbortController.current.abort();
-    }
-
-    // Defer analysis to not block UI and allow debouncing
-    const timeoutId = setTimeout(async () => {
-      try {
-        setIsAnalyzing(true);
-        setDepth(0);
-        setBestLine("");
-        setPositionEvaluation(0);
-        setPossibleMate("");
-
-        const fen = chessGame.fen();
-
-        // Call the server API for analysis
-        const result = await analyzePosition(fen, 15, 1);
-
-        // Update the UI with results
-        setPositionEvaluation(result.evaluation);
-        setDepth(result.depth);
-        setBestLine(result.bestLine);
-        setPossibleMate(result.possibleMate || "");
-      } catch (error) {
-        if (error instanceof Error && error.name !== "AbortError") {
-          console.error("Analysis failed:", error);
-        }
-      } finally {
-        setIsAnalyzing(false);
-      }
-    }, 500); // Debounce for 500ms
-
-    return () => {
-      clearTimeout(timeoutId);
-      if (analysisAbortController.current) {
-        analysisAbortController.current.abort();
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameState.position, isEngineEnabled]);
 
   // Detect opening when moves change
   useEffect(() => {
@@ -207,7 +128,7 @@ export const CreateStudy = () => {
                 </div>
                 {!isEngineEnabled && (
                   <button
-                    onClick={handleEnableEngine}
+                    onClick={() => enableEngine()}
                     className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
                   >
                     Enable Analysis
