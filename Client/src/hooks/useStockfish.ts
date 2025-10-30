@@ -40,6 +40,9 @@ export const useStockfish = (
   const chessGameRef = useRef(new Chess());
   const chessGame = chessGameRef.current;
 
+  const multipv = 1;
+  const cacheKey = `${position}|d=${maxDepth}|m=${multipv}`;
+
   useEffect(() => {
     try {
       if (chessGame.fen() !== position) {
@@ -67,8 +70,17 @@ export const useStockfish = (
       analysisAbortController.current.abort();
     }
 
-    if (evalCache.has(fen)) {
-      const cached = evalCache.get(fen)!;
+    // Clean up the cache if it exceeds the maximum number of entries
+    const MAX_CACHE_ENTRIES = 200;
+    if (evalCache.size >= MAX_CACHE_ENTRIES) {
+      const oldestKey = evalCache.keys().next().value;
+      if (oldestKey) {
+        evalCache.delete(oldestKey);
+      }
+    }
+    // Check if the position is in the cache and update UI
+    if (evalCache.has(cacheKey)) {
+      const cached = evalCache.get(cacheKey)!;
       setPositionEvaluation(cached.evaluation);
       setDepth(cached.depth);
       setBestLine(cached.bestLine);
@@ -95,10 +107,14 @@ export const useStockfish = (
           1,
           abortController.signal,
         );
-
+        const whiteToMove = chessGame.turn() === "w";
+        const normalizeEval = whiteToMove
+          ? result.evaluation
+          : -result.evaluation;
         // cache and update UI
-        evalCache.set(fen, result);
-        setPositionEvaluation(result.evaluation);
+        evalCache.set(cacheKey, { ...result, evaluation: normalizeEval });
+
+        setPositionEvaluation(normalizeEval);
         setDepth(result.depth);
         setBestLine(result.bestLine);
         setPossibleMate(result.possibleMate ?? "");
@@ -115,9 +131,11 @@ export const useStockfish = (
     return () => {
       clearTimeout(timeoutId);
       abortController.abort();
+      if (analysisAbortController.current === abortController) {
+        analysisAbortController.current = null;
+      }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [position, isEngineEnabled, chessGame, maxDepth, debounceTime]);
+  }, [cacheKey, isEngineEnabled, chessGame, maxDepth, multipv, debounceTime]);
 
   return {
     isEngineEnabled,

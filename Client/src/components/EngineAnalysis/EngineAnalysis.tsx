@@ -12,8 +12,8 @@ export const EngineAnalysis = ({
   possibleMate,
 }: EngineAnalysisProps) => {
   return (
-    <div className="bg-muted min-h-[200px] rounded-xl p-6">
-      {depth > 0 ? (
+    <div className="bg-muted max-h-[400px] min-h-[200px] rounded-xl p-6">
+      {depth > 0 && (
         <div className="h-full space-y-3">
           <div className="min-h-[32px]">
             <p className="text-muted-foreground mb-1 text-sm">
@@ -46,13 +46,6 @@ export const EngineAnalysis = ({
               </p>
             </div>
           )}
-        </div>
-      ) : (
-        <div className="flex min-h-[200px] items-center justify-center">
-          <div className="text-center">
-            <div className="mb-2 animate-pulse text-4xl">🤖</div>
-            <p className="text-muted-foreground text-sm">Analyzing...</p>
-          </div>
         </div>
       )}
     </div>

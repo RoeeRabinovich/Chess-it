@@ -34,7 +34,7 @@ export const CreateStudy = () => {
     bestLine,
     possibleMate,
     enableEngine,
-  } = useStockfish(gameState.position, undefined, 12, 100);
+  } = useStockfish(gameState.position, undefined, 12, 400);
 
   const { opening, detectOpening } = useOpeningDetection();
 
@@ -112,11 +112,11 @@ export const CreateStudy = () => {
                   <h3 className="text-foreground text-lg font-semibold">
                     Engine Analysis
                   </h3>
-                  {/* {isAnalyzing && (
+                  {isAnalyzing && (
                     <span className="text-muted-foreground text-xs">
                       Analyzing...
                     </span>
-                  )} */}
+                  )}
                 </div>
                 {!isEngineEnabled && (
                   <button

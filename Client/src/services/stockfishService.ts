@@ -23,12 +23,12 @@ export async function analyzePosition(
   signal?: AbortSignal,
 ): Promise<AnalysisResult> {
   try {
-    const respone = await axios.post(
+    const response = await axios.post(
       `${PORT}/stockfish/analyze`,
       { fen, depth, multipv },
       { signal, timeout: 15000 },
     );
-    const data = respone.data;
+    const data = response.data;
 
     return {
       evaluation: data.evaluation,
