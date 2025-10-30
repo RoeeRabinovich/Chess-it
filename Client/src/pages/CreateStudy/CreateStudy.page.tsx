@@ -34,7 +34,7 @@ export const CreateStudy = () => {
     bestLine,
     possibleMate,
     enableEngine,
-  } = useStockfish(gameState.position);
+  } = useStockfish(gameState.position, undefined, 12, 100);
 
   const { opening, detectOpening } = useOpeningDetection();
 
@@ -73,15 +73,7 @@ export const CreateStudy = () => {
           <div className="xl:col-span-2">
             {/* Chess Board Container with fixed dimensions */}
             <div className="bg-card overflow-hidden rounded-2xl p-6 shadow-xl">
-              <div
-                className="relative flex items-center justify-center"
-                style={{
-                  height: "600px",
-                  width: "600px",
-                  maxWidth: "100%",
-                  margin: "0 auto",
-                }}
-              >
+              <div className="relative mx-auto flex h-[600px] w-[600px] max-w-full items-center justify-center">
                 <div
                   className="absolute inset-0 flex items-center justify-center"
                   style={{
@@ -120,11 +112,11 @@ export const CreateStudy = () => {
                   <h3 className="text-foreground text-lg font-semibold">
                     Engine Analysis
                   </h3>
-                  {isAnalyzing && (
+                  {/* {isAnalyzing && (
                     <span className="text-muted-foreground text-xs">
                       Analyzing...
                     </span>
-                  )}
+                  )} */}
                 </div>
                 {!isEngineEnabled && (
                   <button

@@ -12,37 +12,47 @@ interface UseStockfishReturn {
   enableEngine: () => void;
 }
 
+const evalCache = new Map<
+  string,
+  {
+    evaluation: number;
+    depth: number;
+    bestLine: string;
+    possibleMate?: string | null;
+  }
+>();
+
 export const useStockfish = (
   position: string,
   isEnabled?: boolean,
+  maxDepth: number = 15,
+  debounceTime: number = 400,
 ): UseStockfishReturn => {
   const [isEngineEnabled, setIsEngineEnabled] = useState(isEnabled ?? false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const analysisAbortController = useRef<AbortController | null>(null);
-
-  // Create a chess game ref for engine analysis
-  const chessGameRef = useRef(new Chess());
-  const chessGame = chessGameRef.current;
-
-  // Store engine variables
   const [positionEvaluation, setPositionEvaluation] = useState(0);
   const [depth, setDepth] = useState(0);
   const [bestLine, setBestLine] = useState("");
   const [possibleMate, setPossibleMate] = useState("");
 
+  const analysisAbortController = useRef<AbortController | null>(null);
+  // Create a chess game ref for engine analysis
+  const chessGameRef = useRef(new Chess());
+  const chessGame = chessGameRef.current;
+
   useEffect(() => {
     try {
-      chessGame.load(position);
+      if (chessGame.fen() !== position) {
+        chessGame.load(position);
+      }
     } catch (error) {
-      console.error("Failed to load position into engine:", error);
+      console.error("Invalid FEN position:", error);
     }
   }, [position, chessGame]);
-  // Defer analysis to not block UI and allow debouncing
 
   // Handle enabling the engine
   const handleEnableEngine = useCallback(() => {
-    if (isEngineEnabled) return;
-    setIsEngineEnabled(true);
+    if (!isEngineEnabled) setIsEngineEnabled(true);
   }, [isEngineEnabled]);
 
   // Analyze position when it changes (only if engine is enabled)
@@ -50,12 +60,25 @@ export const useStockfish = (
     if (!isEngineEnabled) return;
     if (chessGame.isGameOver() || chessGame.isDraw()) return;
 
+    const fen = chessGame.fen();
+
     // Abort previous analysis if still running
     if (analysisAbortController.current) {
       analysisAbortController.current.abort();
     }
+
+    if (evalCache.has(fen)) {
+      const cached = evalCache.get(fen)!;
+      setPositionEvaluation(cached.evaluation);
+      setDepth(cached.depth);
+      setBestLine(cached.bestLine);
+      setPossibleMate(cached.possibleMate ?? "");
+      return;
+    }
+
     // Create new abort controller for the current analysis
-    analysisAbortController.current = new AbortController();
+    const abortController = new AbortController();
+    analysisAbortController.current = abortController;
 
     const timeoutId = setTimeout(async () => {
       try {
@@ -65,16 +88,20 @@ export const useStockfish = (
         setPositionEvaluation(0);
         setPossibleMate("");
 
-        const fen = chessGame.fen();
-
         // Call the server API for analysis
-        const result = await analyzePosition(fen, 15, 1);
+        const result = await analyzePosition(
+          fen,
+          maxDepth,
+          1,
+          abortController.signal,
+        );
 
-        // Update the UI with results
+        // cache and update UI
+        evalCache.set(fen, result);
         setPositionEvaluation(result.evaluation);
         setDepth(result.depth);
         setBestLine(result.bestLine);
-        setPossibleMate(result.possibleMate || "");
+        setPossibleMate(result.possibleMate ?? "");
       } catch (error) {
         if (error instanceof Error && error.name !== "AbortError") {
           console.error("Analysis failed:", error);
@@ -82,27 +109,21 @@ export const useStockfish = (
       } finally {
         setIsAnalyzing(false);
       }
-    }, 100); // Debounce for 500ms
+    }, debounceTime);
 
     // Cleanup function to abort analysis and clear timeout
     return () => {
       clearTimeout(timeoutId);
-      if (analysisAbortController.current) {
-        analysisAbortController.current.abort();
-      }
+      abortController.abort();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [position, isEngineEnabled, chessGame]);
+  }, [position, isEngineEnabled, chessGame, maxDepth, debounceTime]);
 
   return {
     isEngineEnabled,
-
     isAnalyzing,
-
     positionEvaluation,
-
     depth,
-
     bestLine,
     possibleMate,
     enableEngine: handleEnableEngine,
