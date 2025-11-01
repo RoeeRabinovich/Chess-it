@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo, useEffect, memo } from "react";
 import { Chessboard } from "react-chessboard";
-import { Chess } from "chess.js";
+import { Chess, Square } from "chess.js";
 import { ChessBoardProps } from "../../types/chess";
 import { useChessBoardOptions } from "./useChessBoardOptions";
 import { useChessBoardInteractions } from "./useChessBoardInteractions";
@@ -65,7 +65,30 @@ const ChessBoard = ({
       boardOrientation: (isFlipped ? "black" : "white") as "white" | "black",
       squareStyles: optionSquares,
       allowDragging: isInteractive,
-      dragActivationDistance: 2,
+      canDragPiece: ({
+        piece,
+        square,
+      }: {
+        piece?: string;
+        square: string;
+        isSparePiece?: boolean;
+      }) => {
+        if (!isInteractive) return false;
+        const chess = chessGameRef.current;
+        if (!chess) return false;
+
+        // If no piece, can't drag
+        if (!piece) return false;
+
+        // Get piece from chess.js to verify it's your piece
+        const chessPiece = chess.get(square as Square);
+        if (!chessPiece) return false;
+
+        // Only allow dragging your own pieces
+        const turnColor = chess.turn();
+        return chessPiece.color === turnColor;
+      },
+      dragActivationDistance: 0,
       boardStyle: BOARD_STYLE,
       darkSquareStyle: DARK_SQUARE_STYLE,
       lightSquareStyle: LIGHT_SQUARE_STYLE,
