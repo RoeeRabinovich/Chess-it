@@ -1,7 +1,7 @@
 import { Card } from "flowbite-react";
-import { TFeatureItem } from "../../types/TFeatureItem";
+import { FeatureItem } from "../../types/featureItem";
 
-const FeatureCard = ({ icon, title, description }: TFeatureItem) => {
+const FeatureCard = ({ icon, title, description }: FeatureItem) => {
   return (
     <Card
       className="bg-background border-border group flex h-full flex-col items-center text-center transition-transform duration-200 hover:scale-[1.02] hover:shadow-md"

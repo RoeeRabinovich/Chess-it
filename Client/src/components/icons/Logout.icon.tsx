@@ -1,6 +1,6 @@
-import { TIconClasses } from "../../types/TIconClasses.type";
+import { IconClasses } from "../../types/iconClasses";
 
-export const Logout = (props: TIconClasses) => {
+export const Logout = (props: IconClasses) => {
   const { className } = props;
   return (
     <svg

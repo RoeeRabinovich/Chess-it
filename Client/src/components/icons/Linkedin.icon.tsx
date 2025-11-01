@@ -1,6 +1,6 @@
-import { TIconClasses } from "../../types/TIconClasses.type";
+import { IconClasses } from "../../types/iconClasses";
 
-export const Linkedin = (props: TIconClasses) => {
+export const Linkedin = (props: IconClasses) => {
   const { className } = props;
   return (
     <svg

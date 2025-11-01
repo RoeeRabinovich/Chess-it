@@ -1,6 +1,6 @@
-import { TIconClasses } from "../../types/TIconClasses.type";
+import { IconClasses } from "../../types/iconClasses";
 //modified the icon so it could recieve classes through the Features component.
-export const Chessboard = (props: TIconClasses) => {
+export const Chessboard = (props: IconClasses) => {
   const { className } = props;
   return (
     <svg

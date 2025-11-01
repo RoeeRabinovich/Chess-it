@@ -1,5 +1,5 @@
 import FeatureCard from "../../components/ui/FeatureCard";
-import { TFeatureItem } from "../../types/TFeatureItem";
+import { FeatureItem } from "../../types/featureItem";
 import { motion } from "framer-motion";
 import { Chessboard } from "../../components/icons/ChessBoard.icon.";
 import { Book } from "../../components/icons/Book.icon";
@@ -8,7 +8,7 @@ import { Comment } from "../../components/icons/Comment.icon";
 import { PixelUser } from "../../components/icons/PixelUser.icon";
 import { Knight } from "../../components/icons/Knight.icon";
 
-const features: TFeatureItem[] = [
+const features: FeatureItem[] = [
   {
     icon: <Chessboard className="text-foreground h-10 w-10" aria-hidden />,
     title: "Interactive Chessboard Editor",
