@@ -1,10 +1,9 @@
-import { useEffect, useCallback, useState, lazy, Suspense } from "react";
-import { MoveNotation } from "../../components/MoveNotation/MoveNotation";
-import { ChessControls } from "../../components/ChessControls/ChessControls";
-import { EngineAnalysis } from "../../components/EngineAnalysis/EngineAnalysis";
+import { useEffect, useCallback, useState, lazy, Suspense, useMemo } from "react";
+import { ToolsSidebar } from "../../components/ToolsSidebar/ToolsSidebar";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useOpeningDetection } from "../../hooks/useOpeningDetection";
 import { useStockfish } from "../../hooks/useStockfish";
+import { convertUCIToSAN } from "../../utils/chessNotation";
 
 // Lazy load the heavy ChessBoard component
 const ChessBoard = lazy(() => import("../../components/ChessBoard/ChessBoard"));
@@ -49,6 +48,16 @@ export const CreateStudy = () => {
     detectOpening(gameState.moves);
   }, [gameState.moves, detectOpening]);
 
+  // Format engine lines to SAN notation
+  const formattedEngineLines = useMemo(() => {
+    return engineLines.map((line) => ({
+      sanNotation: convertUCIToSAN(line.moves, gameState.position),
+      evaluation: line.evaluation,
+      depth: line.depth,
+      possibleMate: line.possibleMate,
+    }));
+  }, [engineLines, gameState.position]);
+
   const handleMoveClick = useCallback(
     (moveIndex: number) => {
       navigateToMove(moveIndex);
@@ -71,126 +80,50 @@ export const CreateStudy = () => {
   };
 
   return (
-    <div className="py-10">
+    <div className="flex h-screen overflow-hidden bg-background">
       {/* Main Content Container */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 gap-8 xl:grid-cols-3">
-          {/* Left Column - Board */}
-          <div className="xl:col-span-2">
-            {/* Chess Board Container with fixed dimensions */}
-            <div className="bg-card rounded-2xl p-6 shadow-xl">
-              <div className="relative mx-auto flex items-center justify-center overflow-visible">
-                <div
-                  className="flex items-center justify-center transition-transform duration-200"
-                  style={{
-                    transform: `scale(${boardScale})`,
-                    transformOrigin: "center center",
-                  }}
-                >
-                  <Suspense
-                    fallback={
-                      <div className="flex h-[600px] w-[600px] items-center justify-center">
-                        <div className="bg-muted border-primary h-16 w-16 animate-spin rounded-full border-4 border-t-transparent"></div>
-                      </div>
-                    }
-                  >
-                    <ChessBoard
-                      position={gameState.position}
-                      onMove={makeMove}
-                      isFlipped={gameState.isFlipped}
-                      isInteractive={true}
-                    />
-                  </Suspense>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column - Analysis and Move Notation */}
-          <div className="space-y-6 xl:col-span-1">
-            {/* Engine Analysis Panel */}
-            <div className="bg-card rounded-2xl p-6 shadow-xl">
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`h-2 w-2 rounded-full ${isEngineEnabled ? (isAnalyzing ? "animate-pulse bg-yellow-500" : "bg-green-500") : "bg-gray-400"}`}
-                  ></div>
-                  <h3 className="text-foreground text-lg font-semibold">
-                    Engine Analysis
-                  </h3>
-                  {isAnalyzing && (
-                    <span className="text-muted-foreground text-xs">
-                      Analyzing...
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {!isEngineEnabled ? (
-                <div className="text-muted-foreground flex flex-col items-center justify-center py-12 text-center">
-                  <svg
-                    className="mb-4 h-16 w-16 opacity-50"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <p className="text-sm">
-                    Make a move to start engine analysis
-                  </p>
-                  <p className="text-muted-foreground mt-2 text-xs">
-                    Powered by Stockfish 17.1
-                  </p>
-                </div>
-              ) : (
-                <EngineAnalysis
-                  positionEvaluation={positionEvaluation}
-                  depth={depth}
-                  bestLine={bestLine}
-                  possibleMate={possibleMate}
-                  engineLines={engineLines}
-                  isAnalyzing={isAnalyzing}
-                  currentFen={gameState.position}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left Column - Board */}
+        <div className="flex flex-1 items-center justify-center overflow-auto bg-muted/30 p-6">
+          <div className="relative flex items-center justify-center">
+            <div
+              className="flex items-center justify-center transition-transform duration-200"
+              style={{
+                transform: `scale(${boardScale})`,
+                transformOrigin: "center center",
+              }}
+            >
+              <Suspense
+                fallback={
+                  <div className="flex h-[600px] w-[600px] items-center justify-center">
+                    <div className="bg-muted border-primary h-16 w-16 animate-spin rounded-full border-4 border-t-transparent"></div>
+                  </div>
+                }
+              >
+                <ChessBoard
+                  position={gameState.position}
+                  onMove={makeMove}
                   isFlipped={gameState.isFlipped}
+                  isInteractive={true}
                 />
-              )}
-            </div>
-
-            {/* Move Notation */}
-            <div className="bg-card rounded-2xl p-6 shadow-xl">
-              <div className="mb-4 flex items-center gap-3">
-                <div className="h-2 w-2 rounded-full bg-blue-500"></div>
-                <h3 className="text-foreground text-lg font-semibold">
-                  Move History
-                </h3>
-              </div>
-              <MoveNotation
-                moves={gameState.moves}
-                branches={gameState.branches}
-                currentMoveIndex={gameState.currentMoveIndex}
-                onMoveClick={handleMoveClick}
-                opening={opening || undefined}
-              />
+              </Suspense>
             </div>
           </div>
         </div>
 
-        {/* Bottom Controls */}
-        <div className="mt-8">
-          <div className="bg-card rounded-2xl p-6 shadow-xl">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="h-2 w-2 rounded-full bg-purple-500"></div>
-              <h3 className="text-foreground text-lg font-semibold">
-                Game Controls
-              </h3>
-            </div>
-            <ChessControls
+        {/* Right Column - Tools Sidebar */}
+        <div className="w-[400px] min-w-[400px] border-l border-border bg-background">
+          <div className="flex h-full flex-col overflow-hidden">
+            <ToolsSidebar
+              isEngineEnabled={isEngineEnabled}
+              isAnalyzing={isAnalyzing}
+              engineLines={engineLines}
+              formattedEngineLines={formattedEngineLines}
+              moves={gameState.moves}
+              branches={gameState.branches || []}
+              currentMoveIndex={gameState.currentMoveIndex}
+              onMoveClick={handleMoveClick}
+              opening={opening || undefined}
               onFlipBoard={flipBoard}
               onReset={resetGame}
               onUndo={undoMove}

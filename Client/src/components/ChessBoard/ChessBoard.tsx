@@ -107,7 +107,7 @@ const ChessBoard = ({
   );
 
   return (
-    <div className="mx-auto w-full max-w-lg">
+    <div style={{ width: "600px", height: "600px" }}>
       <Chessboard options={chessboardOptions as unknown as ChessBoardProps} />
     </div>
   );

@@ -26,50 +26,44 @@ export const ChessControls = ({
   onBoardScaleChange,
 }: ChessControlsProps) => {
   return (
-    <div className="flex flex-wrap items-center gap-4">
+    <div className="flex flex-wrap items-center gap-2 text-xs">
       {/* Board Controls */}
-      <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" onClick={onFlipBoard}>
-          Flip Board
-        </Button>
-        <Button variant="outline" size="sm" onClick={onReset}>
-          Reset
-        </Button>
-      </div>
+      <Button variant="outline" size="sm" onClick={onFlipBoard}>
+        Flip
+      </Button>
+      <Button variant="outline" size="sm" onClick={onReset}>
+        Reset
+      </Button>
 
       {/* Move Controls */}
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onUndo}
-          disabled={!canUndo}
-        >
-          Undo
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onRedo}
-          disabled={!canRedo}
-        >
-          Redo
-        </Button>
-      </div>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={onUndo}
+        disabled={!canUndo}
+      >
+        Undo
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={onRedo}
+        disabled={!canRedo}
+      >
+        Redo
+      </Button>
 
       {/* Import Controls */}
-      <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" onClick={onLoadFEN}>
-          Load FEN
-        </Button>
-        <Button variant="outline" size="sm" onClick={onLoadPGN}>
-          Load PGN
-        </Button>
-      </div>
+      <Button variant="outline" size="sm" onClick={onLoadFEN}>
+        FEN
+      </Button>
+      <Button variant="outline" size="sm" onClick={onLoadPGN}>
+        PGN
+      </Button>
 
       {/* Board Size Control */}
-      <div className="flex items-center gap-2">
-        <label className="text-foreground text-sm">
+      <div className="flex items-center gap-1.5">
+        <label className="text-muted-foreground text-xs whitespace-nowrap">
           Size: {Math.round(boardScale * 100)}%
         </label>
         <input
@@ -79,7 +73,7 @@ export const ChessControls = ({
           step="0.05"
           value={boardScale}
           onChange={(e) => onBoardScaleChange(parseFloat(e.target.value))}
-          className="h-2 w-32 cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700"
+          className="h-1.5 w-24 cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700"
         />
       </div>
     </div>
