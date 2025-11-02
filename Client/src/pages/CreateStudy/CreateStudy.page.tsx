@@ -33,8 +33,14 @@ export const CreateStudy = () => {
     depth,
     bestLine,
     possibleMate,
+    engineLines,
     enableEngine,
-  } = useStockfish(gameState.position, undefined, 12, 400);
+  } = useStockfish(
+    gameState.position,
+    gameState.moves.length,
+    12,
+    400,
+  );
 
   const { opening, detectOpening } = useOpeningDetection();
 
@@ -72,18 +78,18 @@ export const CreateStudy = () => {
           {/* Left Column - Board */}
           <div className="xl:col-span-2">
             {/* Chess Board Container with fixed dimensions */}
-            <div className="bg-card overflow-hidden rounded-2xl p-6 shadow-xl">
-              <div className="relative mx-auto flex h-[600px] w-[600px] max-w-full items-center justify-center">
+            <div className="bg-card rounded-2xl p-6 shadow-xl">
+              <div className="relative mx-auto flex items-center justify-center overflow-visible">
                 <div
-                  className="absolute inset-0 flex items-center justify-center"
+                  className="flex items-center justify-center transition-transform duration-200"
                   style={{
-                    scale: boardScale,
+                    transform: `scale(${boardScale})`,
                     transformOrigin: "center center",
                   }}
                 >
                   <Suspense
                     fallback={
-                      <div className="flex h-full w-full items-center justify-center">
+                      <div className="flex h-[600px] w-[600px] items-center justify-center">
                         <div className="bg-muted border-primary h-16 w-16 animate-spin rounded-full border-4 border-t-transparent"></div>
                       </div>
                     }
@@ -118,14 +124,6 @@ export const CreateStudy = () => {
                     </span>
                   )}
                 </div>
-                {!isEngineEnabled && (
-                  <button
-                    onClick={() => enableEngine()}
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
-                  >
-                    Enable Analysis
-                  </button>
-                )}
               </div>
 
               {!isEngineEnabled ? (
@@ -144,8 +142,7 @@ export const CreateStudy = () => {
                     />
                   </svg>
                   <p className="text-sm">
-                    Click "Enable Analysis" to start server-side engine
-                    evaluation
+                    Make a move to start engine analysis
                   </p>
                   <p className="text-muted-foreground mt-2 text-xs">
                     Powered by Stockfish 17.1
@@ -157,6 +154,10 @@ export const CreateStudy = () => {
                   depth={depth}
                   bestLine={bestLine}
                   possibleMate={possibleMate}
+                  engineLines={engineLines}
+                  isAnalyzing={isAnalyzing}
+                  currentFen={gameState.position}
+                  isFlipped={gameState.isFlipped}
                 />
               )}
             </div>
@@ -171,6 +172,7 @@ export const CreateStudy = () => {
               </div>
               <MoveNotation
                 moves={gameState.moves}
+                branches={gameState.branches}
                 currentMoveIndex={gameState.currentMoveIndex}
                 onMoveClick={handleMoveClick}
                 opening={opening || undefined}

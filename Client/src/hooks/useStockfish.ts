@@ -9,6 +9,12 @@ interface UseStockfishReturn {
   depth: number;
   bestLine: string;
   possibleMate: string;
+  engineLines: Array<{
+    moves: string[];
+    evaluation: number;
+    depth: number;
+    possibleMate?: string | null;
+  }>;
   enableEngine: () => void;
 }
 
@@ -19,29 +25,51 @@ const evalCache = new Map<
     depth: number;
     bestLine: string;
     possibleMate?: string | null;
+    lines?: Array<{
+      pv: string;
+      evaluation: number;
+      depth: number;
+      possibleMate?: string | null;
+    }>;
   }
 >();
 
 export const useStockfish = (
   position: string,
-  isEnabled?: boolean,
+  moveCount: number = 0, // Track number of moves to auto-enable after first move
   maxDepth: number = 15,
   debounceTime: number = 400,
 ): UseStockfishReturn => {
-  const [isEngineEnabled, setIsEngineEnabled] = useState(isEnabled ?? false);
+  // Auto-enable after first move
+  const [isEngineEnabled, setIsEngineEnabled] = useState(moveCount > 0);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [positionEvaluation, setPositionEvaluation] = useState(0);
   const [depth, setDepth] = useState(0);
   const [bestLine, setBestLine] = useState("");
   const [possibleMate, setPossibleMate] = useState("");
+  const [engineLines, setEngineLines] = useState<
+    Array<{
+      moves: string[];
+      evaluation: number;
+      depth: number;
+      possibleMate?: string | null;
+    }>
+  >([]);
 
   const analysisAbortController = useRef<AbortController | null>(null);
   // Create a chess game ref for engine analysis
   const chessGameRef = useRef(new Chess());
   const chessGame = chessGameRef.current;
 
-  const multipv = 1;
+  const multipv = 3; // Request 3 engine lines
   const cacheKey = `${position}|d=${maxDepth}|m=${multipv}`;
+
+  // Auto-enable engine when a move is made
+  useEffect(() => {
+    if (moveCount > 0 && !isEngineEnabled) {
+      setIsEngineEnabled(true);
+    }
+  }, [moveCount, isEngineEnabled]);
 
   useEffect(() => {
     try {
@@ -81,10 +109,35 @@ export const useStockfish = (
     // Check if the position is in the cache and update UI
     if (evalCache.has(cacheKey)) {
       const cached = evalCache.get(cacheKey)!;
-      setPositionEvaluation(cached.evaluation);
+      const whiteToMove = chessGame.turn() === "w";
+      const normalizeEval = whiteToMove
+        ? cached.evaluation
+        : -cached.evaluation;
+      
+      // Reconstruct engine lines from cache if available
+      const processedLines = (cached as any).lines ? (cached as any).lines.map((line: any) => {
+        const moves = line.pv ? line.pv.trim().split(/\s+/) : [];
+        const lineEval = whiteToMove ? line.evaluation : -line.evaluation;
+        return {
+          moves,
+          evaluation: lineEval,
+          depth: line.depth,
+          possibleMate: line.possibleMate,
+        };
+      }).sort((a: any, b: any) => {
+        if (a.possibleMate && b.possibleMate) {
+          return parseInt(a.possibleMate) - parseInt(b.possibleMate);
+        }
+        if (a.possibleMate) return -1;
+        if (b.possibleMate) return 1;
+        return b.evaluation - a.evaluation;
+      }) : [];
+      
+      setPositionEvaluation(normalizeEval);
       setDepth(cached.depth);
       setBestLine(cached.bestLine);
       setPossibleMate(cached.possibleMate ?? "");
+      setEngineLines(processedLines);
       return;
     }
 
@@ -99,18 +152,42 @@ export const useStockfish = (
         setBestLine("");
         setPositionEvaluation(0);
         setPossibleMate("");
+        setEngineLines([]);
 
-        // Call the server API for analysis
+        // Call the server API for analysis (request 3 lines)
         const result = await analyzePosition(
           fen,
           maxDepth,
-          1,
+          multipv,
           abortController.signal,
         );
         const whiteToMove = chessGame.turn() === "w";
         const normalizeEval = whiteToMove
           ? result.evaluation
           : -result.evaluation;
+        
+        // Process engine lines: convert UCI moves to arrays and normalize evals
+        const processedLines = result.lines.map((line) => {
+          const moves = line.pv ? line.pv.trim().split(/\s+/) : [];
+          const lineEval = whiteToMove
+            ? line.evaluation
+            : -line.evaluation;
+          return {
+            moves,
+            evaluation: lineEval,
+            depth: line.depth,
+            possibleMate: line.possibleMate,
+          };
+        }).sort((a, b) => {
+          // Sort by evaluation (best first)
+          if (a.possibleMate && b.possibleMate) {
+            return parseInt(a.possibleMate) - parseInt(b.possibleMate);
+          }
+          if (a.possibleMate) return -1;
+          if (b.possibleMate) return 1;
+          return b.evaluation - a.evaluation;
+        });
+
         // cache and update UI
         evalCache.set(cacheKey, { ...result, evaluation: normalizeEval });
 
@@ -118,6 +195,7 @@ export const useStockfish = (
         setDepth(result.depth);
         setBestLine(result.bestLine);
         setPossibleMate(result.possibleMate ?? "");
+        setEngineLines(processedLines);
       } catch (error) {
         if (error instanceof Error && error.name !== "AbortError") {
           console.error("Analysis failed:", error);
@@ -144,6 +222,7 @@ export const useStockfish = (
     depth,
     bestLine,
     possibleMate,
+    engineLines,
     enableEngine: handleEnableEngine,
   };
 };

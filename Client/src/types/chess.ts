@@ -68,6 +68,17 @@ export interface VariationNode {
   children: VariationNode[];
   parent?: string;
   isMainLine: boolean;
+  moveIndex: number; // Index in the main line
+}
+
+/**
+ * Represents a branch/variation in the move tree
+ */
+export interface MoveBranch {
+  id: string;
+  parentMoveIndex: number; // Index of the parent move in main line
+  moves: ChessMove[]; // Moves in this branch
+  startIndex: number; // Starting move index in main line
 }
 
 /**
@@ -75,8 +86,8 @@ export interface VariationNode {
  */
 export interface ChessGameState {
   position: string; // FEN
-  moves: ChessMove[];
-  currentVariation: VariationNode[];
+  moves: ChessMove[]; // Main line moves
+  branches: MoveBranch[]; // All branches/variations
   currentMoveIndex: number;
   isFlipped: boolean;
   opening?: {

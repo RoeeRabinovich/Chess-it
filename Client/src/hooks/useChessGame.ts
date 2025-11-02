@@ -2,9 +2,9 @@ import { useState, useCallback, useRef } from "react";
 import { Chess } from "chess.js";
 import {
   ChessMove,
-  VariationNode,
   ChessGameState,
   MoveData,
+  MoveBranch,
 } from "../types/chess";
 
 export const useChessGame = () => {
@@ -12,46 +12,107 @@ export const useChessGame = () => {
   const [gameState, setGameState] = useState<ChessGameState>({
     position: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
     moves: [],
-    currentVariation: [],
+    branches: [],
     currentMoveIndex: -1,
     isFlipped: false,
   });
 
-  const [variationTree, setVariationTree] = useState<VariationNode[]>([]);
-
   const makeMove = useCallback((move: MoveData) => {
     try {
-      const result = chessRef.current.move(move);
-      if (result) {
-        const newMove: ChessMove = {
-          from: result.from,
-          to: result.to,
-          promotion: result.promotion,
-          san: result.san,
-          lan: result.lan,
-          before: result.before,
-          after: result.after,
-          captured: result.captured,
-          flags: result.flags,
-          piece: result.piece,
-          color: result.color,
-        };
+      // Check if we're at the end of the main line
+      const isAtEndOfMainLine =
+        gameState.currentMoveIndex === gameState.moves.length - 1;
 
-        setGameState((prev) => ({
-          ...prev,
-          position: chessRef.current.fen(),
-          moves: [...prev.moves, newMove],
-          currentMoveIndex: prev.currentMoveIndex + 1,
-        }));
+      // If we're not at the end, we're creating a branch
+      if (!isAtEndOfMainLine) {
+        // Find existing branch at this position
+        const existingBranch = gameState.branches.find(
+          (b) => b.startIndex === gameState.currentMoveIndex,
+        );
 
-        return true;
+        const result = chessRef.current.move(move);
+        if (result) {
+          const newMove: ChessMove = {
+            from: result.from,
+            to: result.to,
+            promotion: result.promotion,
+            san: result.san,
+            lan: result.lan,
+            before: result.before,
+            after: result.after,
+            captured: result.captured,
+            flags: result.flags,
+            piece: result.piece,
+            color: result.color,
+          };
+
+          if (existingBranch) {
+            // Update existing branch by appending the new move
+            setGameState((prev) => ({
+              ...prev,
+              position: chessRef.current.fen(),
+              branches: prev.branches.map((b) =>
+                b.id === existingBranch.id
+                  ? { ...b, moves: [...b.moves, newMove] }
+                  : b,
+              ),
+              currentMoveIndex: prev.currentMoveIndex + 1,
+            }));
+          } else {
+            // Create new branch
+            const branchId = `branch-${gameState.currentMoveIndex}-${Date.now()}`;
+            const newBranch: MoveBranch = {
+              id: branchId,
+              parentMoveIndex: gameState.currentMoveIndex,
+              moves: [newMove],
+              startIndex: gameState.currentMoveIndex,
+            };
+
+            setGameState((prev) => ({
+              ...prev,
+              position: chessRef.current.fen(),
+              branches: [...prev.branches, newBranch],
+              currentMoveIndex: prev.currentMoveIndex + 1,
+            }));
+          }
+
+          return true;
+        }
+        return false;
+      } else {
+        // Normal move at the end of main line
+        const result = chessRef.current.move(move);
+        if (result) {
+          const newMove: ChessMove = {
+            from: result.from,
+            to: result.to,
+            promotion: result.promotion,
+            san: result.san,
+            lan: result.lan,
+            before: result.before,
+            after: result.after,
+            captured: result.captured,
+            flags: result.flags,
+            piece: result.piece,
+            color: result.color,
+          };
+
+          setGameState((prev) => ({
+            ...prev,
+            position: chessRef.current.fen(),
+            moves: [...prev.moves, newMove],
+            currentMoveIndex: prev.currentMoveIndex + 1,
+          }));
+
+          return true;
+        }
+        return false;
       }
-      return false;
     } catch (error) {
       console.error("Invalid move:", error);
       return false;
     }
-  }, []);
+  }, [gameState]);
 
   const undoMove = useCallback(() => {
     try {
@@ -83,11 +144,10 @@ export const useChessGame = () => {
     setGameState({
       position: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
       moves: [],
-      currentVariation: [],
+      branches: [],
       currentMoveIndex: -1,
       isFlipped: false,
     });
-    setVariationTree([]);
   }, []);
 
   const flipBoard = useCallback(() => {
@@ -104,6 +164,7 @@ export const useChessGame = () => {
         ...prev,
         position: fen,
         moves: [],
+        branches: [],
         currentMoveIndex: -1,
       }));
       return true;
@@ -121,6 +182,7 @@ export const useChessGame = () => {
         ...prev,
         position: chessRef.current.fen(),
         moves,
+        branches: [],
         currentMoveIndex: moves.length - 1,
       }));
       return true;
@@ -158,7 +220,6 @@ export const useChessGame = () => {
 
   return {
     gameState,
-    variationTree,
     makeMove,
     undoMove,
     redoMove,
