@@ -1,3 +1,5 @@
+import { useRef, useEffect } from "react";
+
 interface EngineLine {
   moves: string[];
   sanNotation?: string;
@@ -17,6 +19,18 @@ export const EngineLines = ({
   isAnalyzing,
   onMoveClick,
 }: EngineLinesProps) => {
+  // Keep previous lines visible during analysis to prevent layout shifts
+  const stableLinesRef = useRef<EngineLine[]>([]);
+  
+  useEffect(() => {
+    // Only update stable lines when new lines actually arrive (not during analysis)
+    if (lines.length > 0) {
+      stableLinesRef.current = lines;
+    }
+  }, [lines]);
+  
+  // Use stable lines if current lines are empty during analysis, otherwise use current lines
+  const displayLines = lines.length > 0 ? lines : stableLinesRef.current;
   const formatEvaluation = (evaluation: number, mate?: number) => {
     if (mate) {
       return mate > 0 ? `+M${Math.abs(mate)}` : `-M${Math.abs(mate)}`;
@@ -30,51 +44,42 @@ export const EngineLines = ({
     return "text-gray-600 dark:text-gray-400";
   };
 
-  if (isAnalyzing && lines.length === 0) {
-    return (
-      <div className="rounded-lg bg-muted p-4">
-        <div className="flex items-center space-x-2">
-          <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-primary"></div>
-          <span className="text-sm text-muted-foreground">
-            Analyzing position...
-          </span>
-        </div>
-      </div>
-    );
-  }
-
-  if (lines.length === 0) {
-    return null;
-  }
-
   return (
     <div className="space-y-1">
-      <h3 className="mb-1 text-xs font-semibold text-foreground">
+      <h3 className="text-foreground mb-1 text-xs font-semibold">
         Top Engine Lines
       </h3>
-      {lines.slice(0, 3).map((line, index) => (
-        <div
-          key={index}
-          className={`flex cursor-pointer items-center gap-2 rounded border px-2 py-1 transition-colors ${
-            index === 0
-              ? "border-primary bg-primary/5"
-              : "border-border bg-card hover:bg-muted"
-          }`}
-          onClick={() => onMoveClick?.(line.moves)}
-        >
-          <span className="text-xs font-medium text-muted-foreground">
-            {index + 1}.
-          </span>
-          <span className="flex-1 truncate font-mono text-xs text-foreground">
-            {line.sanNotation || line.moves.join(" ")}
-          </span>
-          <div
-            className={`shrink-0 font-mono text-xs font-semibold ${getEvaluationColor(line.evaluation)}`}
-          >
-            {formatEvaluation(line.evaluation, line.mate)}
-          </div>
+      {displayLines.length === 0 ? (
+        // Empty state (shouldn't happen since we only render when moves exist)
+        <div className="text-muted-foreground py-2 text-xs">
+          No engine lines available
         </div>
-      ))}
+      ) : (
+        // Render engine lines (using stable lines to prevent layout shifts)
+        displayLines.slice(0, 3).map((line, index) => (
+          <div
+            key={index}
+            className={`flex cursor-pointer items-center gap-2 rounded border px-2 py-1 transition-colors ${
+              index === 0
+                ? "border-primary bg-primary/5"
+                : "border-border bg-card hover:bg-muted"
+            }`}
+            onClick={() => onMoveClick?.(line.moves)}
+          >
+            <span className="text-muted-foreground text-xs font-medium">
+              {index + 1}.
+            </span>
+            <span className="text-foreground flex-1 truncate font-mono text-xs">
+              {line.sanNotation || line.moves.join(" ")}
+            </span>
+            <div
+              className={`shrink-0 font-mono text-xs font-semibold ${getEvaluationColor(line.evaluation)}`}
+            >
+              {formatEvaluation(line.evaluation, line.mate)}
+            </div>
+          </div>
+        ))
+      )}
     </div>
   );
 };

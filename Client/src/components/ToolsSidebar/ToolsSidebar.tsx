@@ -64,44 +64,43 @@ export const ToolsSidebar = ({
 }: ToolsSidebarProps) => {
   return (
     <div className="bg-card flex h-full max-h-full flex-col overflow-hidden p-4">
-      {/* Engine Lines Section */}
-      {isEngineEnabled && (
-        <>
-          <div className="mb-3 flex items-center gap-2">
+      {/* Engine Lines Section - Always show, but conditionally show content */}
+      <>
+        <div className="mb-3 flex items-center gap-2">
+          {isEngineEnabled && (
             <div
               className={`h-2 w-2 rounded-full ${isAnalyzing ? "animate-pulse bg-yellow-500" : "bg-green-500"}`}
             ></div>
-            <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-              Engine Lines
-            </span>
-            {isAnalyzing && (
+          )}
+          <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+            Engine Lines
+          </span>
+        </div>
+        <div className="mb-4 flex min-h-[120px] flex-col">
+          {moves.length === 0 ? (
+            // Show placeholder only if no moves have been made
+            <div className="flex flex-1 items-center justify-center">
               <span className="text-muted-foreground text-xs">
-                Analyzing...
-              </span>
-            )}
-          </div>
-          <div className="mb-4">
-            {formattedEngineLines.length > 0 ? (
-              <EngineLines
-                lines={formattedEngineLines.map((line) => ({
-                  moves: line.sanNotation.split(" "),
-                  evaluation: line.evaluation,
-                  depth: line.depth,
-                  mate: line.possibleMate
-                    ? parseInt(line.possibleMate)
-                    : undefined,
-                }))}
-                isAnalyzing={isAnalyzing}
-              />
-            ) : (
-              <div className="text-muted-foreground py-2 text-xs">
                 Make a move to see engine analysis
-              </div>
-            )}
-          </div>
-          <hr className="border-border/30 my-4" />
-        </>
-      )}
+              </span>
+            </div>
+          ) : (
+            // Always show EngineLines container when moves exist (even if empty during analysis)
+            <EngineLines
+              lines={formattedEngineLines.map((line) => ({
+                moves: line.sanNotation.split(" "),
+                evaluation: line.evaluation,
+                depth: line.depth,
+                mate: line.possibleMate
+                  ? parseInt(line.possibleMate)
+                  : undefined,
+              }))}
+              isAnalyzing={isAnalyzing}
+            />
+          )}
+        </div>
+        <hr className="border-border/30 my-4" />
+      </>
 
       {/* Move History Section */}
       <div className="mb-3 flex items-center gap-2">
