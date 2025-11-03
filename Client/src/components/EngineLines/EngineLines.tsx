@@ -48,32 +48,28 @@ export const EngineLines = ({
   }
 
   return (
-    <div className="space-y-2">
-      <h3 className="mb-2 text-sm font-semibold text-foreground">
+    <div className="space-y-1">
+      <h3 className="mb-1 text-xs font-semibold text-foreground">
         Top Engine Lines
       </h3>
       {lines.slice(0, 3).map((line, index) => (
         <div
           key={index}
-          className={`flex cursor-pointer items-center justify-between rounded-lg border p-2.5 transition-colors ${
+          className={`flex cursor-pointer items-center gap-2 rounded border px-2 py-1 transition-colors ${
             index === 0
               ? "border-primary bg-primary/5"
               : "border-border bg-card hover:bg-muted"
           }`}
           onClick={() => onMoveClick?.(line.moves)}
         >
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-muted-foreground">
-                {index + 1}.
-              </span>
-              <span className="text-sm font-mono text-foreground">
-                {line.sanNotation || line.moves.join(" ")}
-              </span>
-            </div>
-          </div>
+          <span className="text-xs font-medium text-muted-foreground">
+            {index + 1}.
+          </span>
+          <span className="flex-1 truncate font-mono text-xs text-foreground">
+            {line.sanNotation || line.moves.join(" ")}
+          </span>
           <div
-            className={`ml-2 font-mono text-sm font-semibold ${getEvaluationColor(line.evaluation)}`}
+            className={`shrink-0 font-mono text-xs font-semibold ${getEvaluationColor(line.evaluation)}`}
           >
             {formatEvaluation(line.evaluation, line.mate)}
           </div>

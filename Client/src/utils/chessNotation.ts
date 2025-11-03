@@ -67,8 +67,14 @@ export function convertUCIToSAN(
             // White's move - add move number
             sanMoves.push(`${moveNumber}. ${move.san}`);
           } else {
-            // Black's move - just the move, move number already added
-            sanMoves.push(move.san);
+            // Black's move
+            if (sanMoves.length === 0) {
+              // First move in sequence is black's move - show "1... move"
+              sanMoves.push(`${moveNumber}... ${move.san}`);
+            } else {
+              // Black's move after white's move in the same pair - show "... move"
+              sanMoves.push(`... ${move.san}`);
+            }
             moveNumber++; // Increment after black's move
           }
         }
