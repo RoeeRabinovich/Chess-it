@@ -19,7 +19,7 @@ app.use(router);
 
 //Error Handling Middleware
 app.use((err, req, res, next) => {
-  handleError(res, err.status, err.message) || 500, err.message;
+  handleError(res, err.status || 500, err.message || "Internal Server Error");
 });
 
 // Initialize Server

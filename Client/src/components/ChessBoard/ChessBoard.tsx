@@ -107,7 +107,7 @@ const ChessBoard = ({
   );
 
   return (
-    <div style={{ width: "600px", height: "600px" }}>
+    <div style={{ width: "550px", height: "550px" }}>
       <Chessboard options={chessboardOptions as unknown as ChessBoardProps} />
     </div>
   );

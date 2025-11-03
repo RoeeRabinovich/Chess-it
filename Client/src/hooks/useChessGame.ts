@@ -17,102 +17,141 @@ export const useChessGame = () => {
     isFlipped: false,
   });
 
-  const makeMove = useCallback((move: MoveData) => {
-    try {
-      // Check if we're at the end of the main line
-      const isAtEndOfMainLine =
-        gameState.currentMoveIndex === gameState.moves.length - 1;
+  const makeMove = useCallback(
+    (move: MoveData | ChessMove) => {
+      try {
+        // Extract only the necessary properties for making a move
+        const moveData: MoveData = {
+          from: move.from,
+          to: move.to,
+          promotion: move.promotion,
+        };
 
-      // If we're not at the end, we're creating a branch
-      if (!isAtEndOfMainLine) {
-        // Find existing branch at this position
-        const existingBranch = gameState.branches.find(
-          (b) => b.startIndex === gameState.currentMoveIndex,
-        );
+        // Check if we're at the end of the main line
+        const isAtEndOfMainLine =
+          gameState.currentMoveIndex === gameState.moves.length - 1;
 
-        const result = chessRef.current.move(move);
-        if (result) {
-          const newMove: ChessMove = {
-            from: result.from,
-            to: result.to,
-            promotion: result.promotion,
-            san: result.san,
-            lan: result.lan,
-            before: result.before,
-            after: result.after,
-            captured: result.captured,
-            flags: result.flags,
-            piece: result.piece,
-            color: result.color,
-          };
+        // If we're not at the end, we're creating a branch
+        if (!isAtEndOfMainLine) {
+          // First, ensure chess instance is at the branch point
+          // Load the position directly from gameState to ensure sync
+          try {
+            chessRef.current.load(gameState.position);
+          } catch (error) {
+            // If loading position fails, replay moves as fallback
+            console.error("Error loading position:", error);
+            chessRef.current.reset();
+            const movesToBranchPoint = gameState.moves.slice(
+              0,
+              gameState.currentMoveIndex + 1,
+            );
+            for (const m of movesToBranchPoint) {
+              const moveResult = chessRef.current.move({
+                from: m.from,
+                to: m.to,
+                promotion: m.promotion,
+              });
+              if (!moveResult) {
+                // If replay fails, reset and exit
+                chessRef.current.reset();
+                return false;
+              }
+            }
+          }
 
-          if (existingBranch) {
-            // Update existing branch by appending the new move
-            setGameState((prev) => ({
-              ...prev,
-              position: chessRef.current.fen(),
-              branches: prev.branches.map((b) =>
-                b.id === existingBranch.id
-                  ? { ...b, moves: [...b.moves, newMove] }
-                  : b,
-              ),
-              currentMoveIndex: prev.currentMoveIndex + 1,
-            }));
-          } else {
-            // Create new branch
-            const branchId = `branch-${gameState.currentMoveIndex}-${Date.now()}`;
-            const newBranch: MoveBranch = {
-              id: branchId,
-              parentMoveIndex: gameState.currentMoveIndex,
-              moves: [newMove],
-              startIndex: gameState.currentMoveIndex,
+          // Find existing branch at this position
+          // Branch starts at currentMoveIndex + 1 (the next move after currentMoveIndex)
+          const existingBranch = gameState.branches.find(
+            (b) => b.startIndex === gameState.currentMoveIndex + 1,
+          );
+
+          const result = chessRef.current.move(moveData);
+          if (result) {
+            const newMove: ChessMove = {
+              from: result.from,
+              to: result.to,
+              promotion: result.promotion,
+              san: result.san,
+              lan: result.lan,
+              before: result.before,
+              after: result.after,
+              captured: result.captured,
+              flags: result.flags,
+              piece: result.piece,
+              color: result.color,
+            };
+
+            if (existingBranch) {
+              // Update existing branch by appending the new move
+              setGameState((prev) => ({
+                ...prev,
+                position: chessRef.current.fen(),
+                branches: prev.branches.map((b) =>
+                  b.id === existingBranch.id
+                    ? { ...b, moves: [...b.moves, newMove] }
+                    : b,
+                ),
+                // Don't increment currentMoveIndex - we're in a branch, not main line
+              }));
+            } else {
+              // Create new branch
+              // startIndex should be currentMoveIndex + 1 because the branch is an alternative
+              // to the NEXT move after currentMoveIndex
+              const branchId = `branch-${gameState.currentMoveIndex}-${Date.now()}`;
+              const newBranch: MoveBranch = {
+                id: branchId,
+                parentMoveIndex: gameState.currentMoveIndex,
+                moves: [newMove],
+                startIndex: gameState.currentMoveIndex + 1,
+              };
+
+              setGameState((prev) => ({
+                ...prev,
+                position: chessRef.current.fen(),
+                branches: [...prev.branches, newBranch],
+                // Don't increment currentMoveIndex - we're in a branch, not main line
+              }));
+            }
+
+            return true;
+          }
+          return false;
+        } else {
+          // Normal move at the end of main line
+          const result = chessRef.current.move(moveData);
+          if (result) {
+            const newMove: ChessMove = {
+              from: result.from,
+              to: result.to,
+              promotion: result.promotion,
+              san: result.san,
+              lan: result.lan,
+              before: result.before,
+              after: result.after,
+              captured: result.captured,
+              flags: result.flags,
+              piece: result.piece,
+              color: result.color,
             };
 
             setGameState((prev) => ({
               ...prev,
               position: chessRef.current.fen(),
-              branches: [...prev.branches, newBranch],
+              moves: [...prev.moves, newMove],
               currentMoveIndex: prev.currentMoveIndex + 1,
             }));
+
+            return true;
           }
-
-          return true;
+          return false;
         }
-        return false;
-      } else {
-        // Normal move at the end of main line
-        const result = chessRef.current.move(move);
-        if (result) {
-          const newMove: ChessMove = {
-            from: result.from,
-            to: result.to,
-            promotion: result.promotion,
-            san: result.san,
-            lan: result.lan,
-            before: result.before,
-            after: result.after,
-            captured: result.captured,
-            flags: result.flags,
-            piece: result.piece,
-            color: result.color,
-          };
-
-          setGameState((prev) => ({
-            ...prev,
-            position: chessRef.current.fen(),
-            moves: [...prev.moves, newMove],
-            currentMoveIndex: prev.currentMoveIndex + 1,
-          }));
-
-          return true;
-        }
+      } catch (error) {
+        console.error("Invalid move:", error);
         return false;
       }
-    } catch (error) {
-      console.error("Invalid move:", error);
-      return false;
-    }
-  }, [gameState]);
+    },
+    [gameState],
+  );
 
   const undoMove = useCallback(() => {
     try {
@@ -218,6 +257,56 @@ export const useChessGame = () => {
     [gameState.moves],
   );
 
+  const navigateToBranchMove = useCallback(
+    (branchId: string, moveIndexInBranch: number) => {
+      try {
+        const branch = gameState.branches.find((b) => b.id === branchId);
+        if (!branch) return;
+
+        // Replay main line up to (but not including) branch point
+        // branch.startIndex is where the branch starts, so we need moves up to that point
+        chessRef.current.reset();
+        const movesToBranchPoint = gameState.moves.slice(0, branch.startIndex);
+
+        for (const move of movesToBranchPoint) {
+          const result = chessRef.current.move({
+            from: move.from,
+            to: move.to,
+            promotion: move.promotion,
+          });
+          if (!result) {
+            throw new Error(`Failed to replay main line move: ${move.san}`);
+          }
+        }
+
+        // Replay branch moves up to the specified index
+        const branchMovesToReplay = branch.moves.slice(
+          0,
+          moveIndexInBranch + 1,
+        );
+        for (const move of branchMovesToReplay) {
+          const result = chessRef.current.move({
+            from: move.from,
+            to: move.to,
+            promotion: move.promotion,
+          });
+          if (!result) {
+            throw new Error(`Failed to replay branch move: ${move.san}`);
+          }
+        }
+
+        setGameState((prev) => ({
+          ...prev,
+          position: chessRef.current.fen(),
+          currentMoveIndex: branch.startIndex - 1, // Position before branch starts
+        }));
+      } catch (error) {
+        console.error("Error navigating to branch move:", error);
+      }
+    },
+    [gameState.moves, gameState.branches],
+  );
+
   return {
     gameState,
     makeMove,
@@ -228,7 +317,8 @@ export const useChessGame = () => {
     loadFEN,
     loadPGN,
     navigateToMove,
+    navigateToBranchMove,
     canUndo: gameState.currentMoveIndex >= 0,
-    canRedo: false, // Simplified - would need move history for proper redo
+    canRedo: false,
   };
 };

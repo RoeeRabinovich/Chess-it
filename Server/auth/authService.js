@@ -4,10 +4,12 @@ const config = require("config");
 const tokenGenerator = config.get("TOKEN_GENERATOR");
 
 // Authentication middleware
-const auth = (res, req, next) => {
+const auth = (req, res, next) => {
   if (tokenGenerator === "jwt") {
     try {
-      let tokenFromClient = req.headers("x-auth-token");
+      let tokenFromClient =
+        req.headers["x-auth-token"] ||
+        req.headers["authorization"]?.replace("Bearer ", "");
 
       if (!tokenFromClient) {
         return handleError(res, 401, "Unauthorized");

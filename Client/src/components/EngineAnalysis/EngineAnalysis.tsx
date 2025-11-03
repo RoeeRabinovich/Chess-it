@@ -5,7 +5,6 @@ import { convertUCIToSAN } from "../../utils/chessNotation";
 interface EngineAnalysisProps {
   positionEvaluation: number;
   depth: number;
-  bestLine: string;
   possibleMate: string;
   engineLines: Array<{
     moves: string[];
@@ -21,7 +20,6 @@ interface EngineAnalysisProps {
 export const EngineAnalysis = ({
   positionEvaluation,
   depth,
-  bestLine,
   possibleMate,
   engineLines,
   isAnalyzing,
@@ -45,10 +43,10 @@ export const EngineAnalysis = ({
             isFlipped={isFlipped}
           />
           <div className="flex-1">
-            <div className="mb-1 text-xs text-muted-foreground">
+            <div className="text-muted-foreground mb-1 text-xs">
               Depth: {depth}
             </div>
-            <div className="text-sm font-medium text-foreground">
+            <div className="text-foreground text-sm font-medium">
               {possibleMate
                 ? `Mate in ${possibleMate}`
                 : `Evaluation: ${positionEvaluation > 0 ? "+" : ""}${positionEvaluation.toFixed(2)}`}

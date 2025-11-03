@@ -1,4 +1,11 @@
-import { useEffect, useCallback, useState, lazy, Suspense, useMemo } from "react";
+import {
+  useEffect,
+  useCallback,
+  useState,
+  lazy,
+  Suspense,
+  useMemo,
+} from "react";
 import { ToolsSidebar } from "../../components/ToolsSidebar/ToolsSidebar";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useOpeningDetection } from "../../hooks/useOpeningDetection";
@@ -22,19 +29,11 @@ export const CreateStudy = () => {
     loadFEN,
     loadPGN,
     navigateToMove,
+    navigateToBranchMove,
     canUndo,
     canRedo,
   } = useChessGame();
-  const {
-    isEngineEnabled,
-    isAnalyzing,
-    positionEvaluation,
-    depth,
-    bestLine,
-    possibleMate,
-    engineLines,
-    enableEngine,
-  } = useStockfish(
+  const { isEngineEnabled, isAnalyzing, engineLines } = useStockfish(
     gameState.position,
     gameState.moves.length,
     12,
@@ -65,6 +64,13 @@ export const CreateStudy = () => {
     [navigateToMove],
   );
 
+  const handleBranchMoveClick = useCallback(
+    (branchId: string, moveIndexInBranch: number) => {
+      navigateToBranchMove(branchId, moveIndexInBranch);
+    },
+    [navigateToBranchMove],
+  );
+
   const handleLoadFEN = () => {
     const fen = prompt("Enter FEN position:");
     if (fen) {
@@ -80,11 +86,11 @@ export const CreateStudy = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="bg-background flex h-screen overflow-hidden pt-14 md:pt-16">
       {/* Main Content Container */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Column - Board */}
-        <div className="flex flex-1 items-center justify-center overflow-auto bg-muted/30 p-6">
+        <div className="bg-muted/30 flex flex-1 items-center justify-center overflow-auto p-6">
           <div className="relative flex items-center justify-center">
             <div
               className="flex items-center justify-center transition-transform duration-200"
@@ -112,7 +118,7 @@ export const CreateStudy = () => {
         </div>
 
         {/* Right Column - Tools Sidebar */}
-        <div className="w-[400px] min-w-[400px] border-l border-border bg-background">
+        <div className="border-border bg-background w-[400px] min-w-[400px] border-l">
           <div className="flex h-full flex-col overflow-hidden">
             <ToolsSidebar
               isEngineEnabled={isEngineEnabled}
@@ -123,6 +129,7 @@ export const CreateStudy = () => {
               branches={gameState.branches || []}
               currentMoveIndex={gameState.currentMoveIndex}
               onMoveClick={handleMoveClick}
+              onBranchMoveClick={handleBranchMoveClick}
               opening={opening || undefined}
               onFlipBoard={flipBoard}
               onReset={resetGame}
