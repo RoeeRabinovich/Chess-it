@@ -7,6 +7,7 @@ import {
   useMemo,
 } from "react";
 import { ToolsSidebar } from "../../components/ToolsSidebar/ToolsSidebar";
+import { EvaluationBar } from "../../components/EvaluationBar/EvaluationBar";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useOpeningDetection } from "../../hooks/useOpeningDetection";
 import { useStockfish } from "../../hooks/useStockfish";
@@ -33,12 +34,14 @@ export const CreateStudy = () => {
     canUndo,
     canRedo,
   } = useChessGame();
-  const { isEngineEnabled, isAnalyzing, engineLines } = useStockfish(
-    gameState.position,
-    gameState.moves.length,
-    12,
-    400,
-  );
+  const {
+    isEngineEnabled,
+    isAnalyzing,
+    engineLines,
+    positionEvaluation,
+    depth,
+    possibleMate,
+  } = useStockfish(gameState.position, gameState.moves.length, 12, 400);
 
   const { opening, detectOpening } = useOpeningDetection();
 
@@ -89,16 +92,31 @@ export const CreateStudy = () => {
     <div className="bg-background flex h-screen overflow-hidden pt-14 md:pt-16">
       {/* Main Content Container */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Column - Board */}
+        {/* Left Column - Evaluation Bar + Board */}
         <div className="bg-muted/30 flex flex-1 items-center justify-center overflow-auto p-6">
-          <div className="relative flex items-center justify-center">
-            <div
-              className="flex items-center justify-center transition-transform duration-200"
-              style={{
-                transform: `scale(${boardScale})`,
-                transformOrigin: "center center",
-              }}
-            >
+          <div
+            className="relative flex items-center justify-center transition-transform duration-200"
+            style={{
+              transform: `scale(${boardScale})`,
+              transformOrigin: "center center",
+            }}
+          >
+            {/* Evaluation Bar - Show when analysis data is available, scales with board */}
+            {isEngineEnabled && depth > 0 && (
+              <div
+                className="flex-shrink-0"
+                style={{ marginRight: `${10 / boardScale}px` }}
+              >
+                <EvaluationBar
+                  evaluation={positionEvaluation}
+                  possibleMate={possibleMate}
+                  isFlipped={gameState.isFlipped}
+                  height={550}
+                />
+              </div>
+            )}
+            {/* Board */}
+            <div className="flex items-center justify-center">
               <Suspense
                 fallback={
                   <div className="flex h-[600px] w-[600px] items-center justify-center">
