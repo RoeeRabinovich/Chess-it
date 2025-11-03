@@ -154,21 +154,20 @@ export const CreateStudy = () => {
   return (
     <div className="bg-background flex h-screen overflow-hidden pt-14 md:pt-16">
       {/* Main Content Container */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden lg:flex-row">
         {/* Left Column - Evaluation Bar + Board */}
-        <div className="bg-muted/30 flex flex-1 items-center justify-center overflow-auto p-6">
-          <div
-            className="relative flex items-center justify-center transition-transform duration-200"
-            style={{
-              transform: `scale(${boardScale})`,
-              transformOrigin: "center center",
-            }}
-          >
+        <div className="bg-muted/30 relative flex min-h-0 flex-1 items-center justify-center overflow-auto p-3 lg:max-h-screen lg:max-w-[calc(100%-400px)] lg:p-6">
+          <div className="relative flex h-full min-h-[300px] w-full items-center justify-center gap-2.5 sm:min-h-[400px] md:min-h-[500px] lg:min-h-[550px]">
             {/* Evaluation Bar - Show when engine is enabled, uses stable values to prevent flickering */}
             {isEngineEnabled && (
               <div
-                className="flex-shrink-0"
-                style={{ marginRight: `${10 / boardScale}px` }}
+                className="relative z-10 flex-shrink-0 transition-transform duration-200"
+                style={{
+                  transform: `scale(${boardScale})`,
+                  transformOrigin: "center center",
+                  width: "48px",
+                  height: "550px",
+                }}
               >
                 <EvaluationBar
                   evaluation={displayEvaluation.evaluation}
@@ -179,10 +178,16 @@ export const CreateStudy = () => {
               </div>
             )}
             {/* Board */}
-            <div className="flex items-center justify-center">
+            <div
+              className="relative z-0 flex-shrink-0 transition-transform duration-200"
+              style={{
+                transform: `scale(${boardScale})`,
+                transformOrigin: "center center",
+              }}
+            >
               <Suspense
                 fallback={
-                  <div className="flex h-[600px] w-[600px] items-center justify-center">
+                  <div className="flex h-[300px] w-[300px] items-center justify-center sm:h-[400px] sm:w-[400px] md:h-[500px] md:w-[500px] lg:h-[550px] lg:w-[550px]">
                     <div className="bg-muted border-primary h-16 w-16 animate-spin rounded-full border-4 border-t-transparent"></div>
                   </div>
                 }
@@ -199,7 +204,7 @@ export const CreateStudy = () => {
         </div>
 
         {/* Right Column - Tools Sidebar */}
-        <div className="border-border bg-background w-[400px] min-w-[400px] border-l">
+        <div className="border-border bg-background w-full border-l lg:w-[400px] lg:max-w-[400px] lg:min-w-[400px]">
           <div className="flex h-full flex-col overflow-hidden">
             <ToolsSidebar
               isEngineEnabled={isEngineEnabled}

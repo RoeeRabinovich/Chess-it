@@ -63,7 +63,7 @@ export const ToolsSidebar = ({
   onBoardScaleChange,
 }: ToolsSidebarProps) => {
   return (
-    <div className="bg-card flex h-full max-h-full flex-col overflow-hidden p-4">
+    <div className="bg-card flex h-full max-h-full flex-col overflow-hidden p-2 sm:p-3 lg:p-4">
       {/* Engine Lines Section - Always show, but conditionally show content */}
       <>
         <div className="mb-3 flex items-center gap-2">
@@ -76,7 +76,7 @@ export const ToolsSidebar = ({
             Engine Lines
           </span>
         </div>
-        <div className="mb-4 flex min-h-[120px] flex-col">
+        <div className="mb-3 flex min-h-[100px] flex-col sm:mb-4 sm:min-h-[120px]">
           {moves.length === 0 ? (
             // Show placeholder only if no moves have been made
             <div className="flex flex-1 items-center justify-center">
@@ -99,17 +99,17 @@ export const ToolsSidebar = ({
             />
           )}
         </div>
-        <hr className="border-border/30 my-4" />
+        <hr className="border-border/30 my-2 sm:my-3 lg:my-4" />
       </>
 
       {/* Move History Section */}
-      <div className="mb-3 flex items-center gap-2">
+      <div className="mb-2 flex items-center gap-2 sm:mb-3">
         <div className="h-2 w-2 rounded-full bg-blue-500"></div>
         <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
           Move History
         </span>
       </div>
-      <div className="mb-4 flex-1 overflow-y-auto">
+      <div className="mb-3 flex-1 overflow-y-auto sm:mb-4">
         <MoveNotation
           moves={moves}
           branches={branches}
@@ -119,7 +119,7 @@ export const ToolsSidebar = ({
           opening={opening}
         />
       </div>
-      <hr className="border-border/30 my-4" />
+      <hr className="border-border/30 my-2 sm:my-3 lg:my-4" />
 
       {/* Game Controls Section */}
       <div className="flex-shrink-0">
