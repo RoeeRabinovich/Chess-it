@@ -16,19 +16,19 @@ interface EngineLinesProps {
 
 export const EngineLines = ({
   lines,
-  isAnalyzing,
+
   onMoveClick,
 }: EngineLinesProps) => {
   // Keep previous lines visible during analysis to prevent layout shifts
   const stableLinesRef = useRef<EngineLine[]>([]);
-  
+
   useEffect(() => {
     // Only update stable lines when new lines actually arrive (not during analysis)
     if (lines.length > 0) {
       stableLinesRef.current = lines;
     }
   }, [lines]);
-  
+
   // Use stable lines if current lines are empty during analysis, otherwise use current lines
   const displayLines = lines.length > 0 ? lines : stableLinesRef.current;
   const formatEvaluation = (evaluation: number, mate?: number) => {
