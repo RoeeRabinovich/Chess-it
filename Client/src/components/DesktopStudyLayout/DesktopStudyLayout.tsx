@@ -1,0 +1,162 @@
+import { useState, useEffect } from "react";
+import { EvaluationBar } from "../EvaluationBar/EvaluationBar";
+import { ToolsSidebar } from "../ToolsSidebar/ToolsSidebar";
+import ChessBoard from "../ChessBoard/ChessBoard";
+import { StudyLayoutProps } from "../../types/studyLayout";
+
+export const DesktopStudyLayout = ({
+  gameState,
+  makeMove,
+  onMoveClick,
+  onBranchMoveClick,
+  isEngineEnabled,
+  isAnalyzing,
+  formattedEngineLines,
+  displayEvaluation,
+  onFlipBoard,
+  onUndo,
+  onRedo,
+  onLoadFEN,
+  onLoadPGN,
+  canUndo,
+  canRedo,
+  canGoToPreviousMove,
+  canGoToNextMove,
+  onPreviousMove,
+  onNextMove,
+  isEngineEnabledForSettings,
+  onEngineToggle,
+  engineLinesCount,
+  onEngineLinesCountChange,
+  engineDepth,
+  onEngineDepthChange,
+  boardScale,
+  onBoardScaleChange,
+  opening,
+}: StudyLayoutProps) => {
+  // Calculate board size to match ChessBoard component logic
+  const [boardSize, setBoardSize] = useState(() => {
+    if (typeof window !== "undefined") {
+      const width = window.innerWidth;
+      if (width >= 1024) return 550; // lg desktop
+      if (width >= 768) return 400; // md tablet
+      return 400; // default
+    }
+    return 550; // default fallback
+  });
+
+  useEffect(() => {
+    const updateSize = () => {
+      const width = window.innerWidth;
+      let newSize = 550;
+      if (width >= 1024) {
+        newSize = 550; // lg
+      } else if (width >= 768) {
+        newSize = 400; // md
+      } else {
+        newSize = 400; // default
+      }
+      setBoardSize(newSize);
+    };
+
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+
+  return (
+    <div className="flex flex-1 flex-row overflow-hidden">
+      {/* Left Column - Evaluation Bar + Board */}
+      <div className="bg-muted/30 relative flex min-h-0 flex-1 items-center justify-center overflow-auto p-3 sm:p-4 lg:max-h-screen lg:max-w-[calc(100%-400px)] lg:p-6">
+        <div className="flex items-center justify-center">
+          {/* Desktop: Vertical evaluation bar on left */}
+          {isEngineEnabled && (
+            <div className="hidden lg:block">
+              <div
+                className="relative z-10 flex-shrink-0 transition-transform duration-200"
+                style={{
+                  width: "20px",
+                  height: `${boardSize}px`,
+                  transform: `scale(${boardScale}) translateX(calc(-${boardSize}px * (${boardScale} - 1) / 2))`,
+                  transformOrigin: "center center",
+                }}
+              >
+                <EvaluationBar
+                  evaluation={displayEvaluation.evaluation}
+                  possibleMate={displayEvaluation.possibleMate}
+                  isFlipped={gameState.isFlipped}
+                  height={boardSize}
+                  width={20}
+                />
+              </div>
+            </div>
+          )}
+          {/* Scaled 4px gap between eval bar and board */}
+          {isEngineEnabled && (
+            <div 
+              className="hidden lg:block flex-shrink-0 transition-all duration-200"
+              style={{
+                width: `${4 * boardScale}px`,
+              }}
+            />
+          )}
+          {/* Board */}
+          <div className="relative flex items-center justify-center">
+            <div
+              className="relative z-0 flex-shrink-0 transition-transform duration-200"
+              style={{
+                transform: `scale(${boardScale})`,
+                transformOrigin: "center center",
+              }}
+            >
+              <ChessBoard
+                position={gameState.position}
+                onMove={makeMove}
+                isFlipped={gameState.isFlipped}
+                isInteractive={true}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Column - Tools Sidebar */}
+      <div className="border-border bg-background w-full border-l lg:w-[400px] lg:max-w-[400px] lg:min-w-[400px]">
+        <div className="flex h-full flex-col overflow-hidden">
+          <ToolsSidebar
+            isEngineEnabled={isEngineEnabled}
+            isAnalyzing={isAnalyzing}
+            engineLines={[]} // Not used in desktop sidebar
+            formattedEngineLines={formattedEngineLines}
+            moves={gameState.moves}
+            branches={gameState.branches || []}
+            currentMoveIndex={gameState.currentMoveIndex}
+            onMoveClick={onMoveClick}
+            onBranchMoveClick={onBranchMoveClick}
+            opening={opening}
+            onFlipBoard={onFlipBoard}
+            onUndo={onUndo}
+            onRedo={onRedo}
+            onLoadFEN={onLoadFEN}
+            onLoadPGN={onLoadPGN}
+            canUndo={canUndo}
+            canRedo={canRedo}
+            canGoToPreviousMove={canGoToPreviousMove}
+            canGoToNextMove={canGoToNextMove}
+            onPreviousMove={onPreviousMove}
+            onNextMove={onNextMove}
+            isEngineEnabledForSettings={isEngineEnabledForSettings}
+            onEngineToggle={onEngineToggle}
+            engineLinesCount={engineLinesCount}
+            onEngineLinesCountChange={onEngineLinesCountChange}
+            engineDepth={engineDepth}
+            onEngineDepthChange={onEngineDepthChange}
+            boardScale={boardScale}
+            onBoardScaleChange={onBoardScaleChange}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+

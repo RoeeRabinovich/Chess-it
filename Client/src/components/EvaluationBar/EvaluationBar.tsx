@@ -167,7 +167,7 @@ export const EvaluationBar = ({
       {/* Evaluation text */}
       <div className="absolute inset-0 z-10 flex items-center justify-center">
         <span
-          className={`${isHorizontal ? "text-[10px]" : "text-xs"} font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)] ${
+          className={`${isHorizontal ? "text-[10px]" : "text-[10px]"} font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)] ${
             normalizedEval < -0.1 ? "text-white" : "text-foreground"
           }`}
         >

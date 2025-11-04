@@ -45,7 +45,7 @@ export const EngineLines = ({
   };
 
   return (
-    <div className="space-y-1">
+    <div className="w-full max-w-screen space-y-1">
       <h3 className="text-foreground mb-1 text-[10px] font-semibold sm:text-xs">
         Top Engine Lines
       </h3>
@@ -62,21 +62,21 @@ export const EngineLines = ({
           return (
             <div
               key={index}
-              className={`flex cursor-pointer items-center gap-1.5 rounded border px-1.5 py-0.5 transition-colors sm:gap-2 sm:px-2 sm:py-1 ${
+              className={`flex w-full max-w-screen cursor-pointer items-center gap-1 rounded border px-1.5 py-1 transition-colors sm:gap-1.5 sm:px-2 sm:py-1.5 ${
                 index === 0
                   ? "border-primary bg-primary/5"
                   : "border-border bg-card hover:bg-muted"
               } ${isMobile ? "hidden sm:flex" : ""}`}
               onClick={() => onMoveClick?.(line.moves)}
             >
-              <span className="text-muted-foreground text-[10px] font-medium sm:text-xs">
+              <span className="text-muted-foreground shrink-0 text-[9px] font-medium sm:text-[10px]">
                 {index + 1}.
               </span>
-              <span className="text-foreground flex-1 truncate font-mono text-[10px] sm:text-xs">
+              <span className="text-foreground min-w-0 flex-1 truncate font-mono text-[9px] leading-tight sm:text-[10px]">
                 {line.sanNotation || line.moves.join(" ")}
               </span>
               <div
-                className={`shrink-0 font-mono text-[10px] font-semibold sm:text-xs ${getEvaluationColor(line.evaluation)}`}
+                className={`shrink-0 font-mono text-[9px] font-semibold sm:text-[10px] ${getEvaluationColor(line.evaluation)}`}
               >
                 {formatEvaluation(line.evaluation, line.mate)}
               </div>

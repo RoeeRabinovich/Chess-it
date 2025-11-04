@@ -1,22 +1,10 @@
-import {
-  useEffect,
-  useCallback,
-  useState,
-  lazy,
-  Suspense,
-  useMemo,
-  useRef,
-} from "react";
-import { ToolsSidebar } from "../../components/ToolsSidebar/ToolsSidebar";
-import { EvaluationBar } from "../../components/EvaluationBar/EvaluationBar";
-import { EngineLines } from "../../components/EngineLines/EngineLines";
+import { useEffect, useCallback, useState, useMemo, useRef } from "react";
+import { MobileStudyLayout } from "../../components/MobileStudyLayout/MobileStudyLayout";
+import { DesktopStudyLayout } from "../../components/DesktopStudyLayout/DesktopStudyLayout";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useOpeningDetection } from "../../hooks/useOpeningDetection";
 import { useStockfish } from "../../hooks/useStockfish";
 import { convertUCIToSAN } from "../../utils/chessNotation";
-
-// Lazy load the heavy ChessBoard component
-const ChessBoard = lazy(() => import("../../components/ChessBoard/ChessBoard"));
 
 export const CreateStudy = () => {
   // Engine settings state
@@ -172,136 +160,47 @@ export const CreateStudy = () => {
     setEngineEnabled(enabled);
   };
 
+  // Prepare shared props for layout components
+  const layoutProps = {
+    gameState,
+    makeMove,
+    onMoveClick: handleMoveClick,
+    onBranchMoveClick: handleBranchMoveClick,
+    isEngineEnabled,
+    isAnalyzing,
+    formattedEngineLines,
+    displayEvaluation,
+    onFlipBoard: flipBoard,
+    onUndo: undoMove,
+    onRedo: redoMove,
+    onLoadFEN: handleLoadFEN,
+    onLoadPGN: handleLoadPGN,
+    canUndo,
+    canRedo,
+    canGoToPreviousMove,
+    canGoToNextMove,
+    onPreviousMove: goToPreviousMove,
+    onNextMove: goToNextMove,
+    isEngineEnabledForSettings: engineEnabled,
+    onEngineToggle: handleEngineToggle,
+    engineLinesCount,
+    onEngineLinesCountChange: setEngineLinesCount,
+    engineDepth,
+    onEngineDepthChange: setEngineDepth,
+    boardScale,
+    onBoardScaleChange: setBoardScale,
+    opening: opening || undefined,
+  };
+
   return (
     <div className="bg-background flex h-screen overflow-hidden pt-16 sm:pt-20 md:pt-24">
-      {/* Main Content Container */}
-      <div className="flex flex-1 flex-col overflow-hidden lg:flex-row">
-        {/* Left Column - Evaluation Bar + Board */}
-        <div className="bg-muted/30 relative flex min-h-0 flex-1 flex-col items-center justify-center p-3 sm:p-4 lg:max-h-screen lg:max-w-[calc(100%-400px)] lg:flex-row lg:p-6">
-          {/* Mobile: Engine Lines Section */}
-          <div className="mb-2 w-full lg:hidden">
-            {gameState.moves.length > 0 && (
-              <EngineLines
-                lines={formattedEngineLines.map((line) => ({
-                  moves: line.sanNotation.split(" "),
-                  evaluation: line.evaluation,
-                  depth: line.depth,
-                  mate: line.possibleMate
-                    ? parseInt(line.possibleMate)
-                    : undefined,
-                }))}
-                isAnalyzing={isAnalyzing}
-              />
-            )}
-          </div>
-          {/* Mobile: Horizontal evaluation bar on top */}
-          {isEngineEnabled && (
-            <div className="mb-2 flex w-full justify-center sm:mb-3 lg:hidden">
-              <div
-                className="relative z-10 flex-shrink-0"
-                style={{
-                  width: "100%",
-                  maxWidth: "280px",
-                  height: "24px",
-                  transform: `scale(${boardScale})`,
-                  transformOrigin: "center center",
-                }}
-              >
-                <EvaluationBar
-                  evaluation={displayEvaluation.evaluation}
-                  possibleMate={displayEvaluation.possibleMate}
-                  isFlipped={gameState.isFlipped}
-                  height={24}
-                  width="100%"
-                />
-              </div>
-            </div>
-          )}
-          {/* Desktop: Vertical evaluation bar on left */}
-          {isEngineEnabled && (
-            <div className="hidden lg:block">
-              <div
-                className="relative z-10 flex-shrink-0"
-                style={{
-                  width: "32px",
-                  height: "550px",
-                  marginRight: "4px",
-                  transform: `scale(${boardScale})`,
-                  transformOrigin: "center center",
-                }}
-              >
-                <EvaluationBar
-                  evaluation={displayEvaluation.evaluation}
-                  possibleMate={displayEvaluation.possibleMate}
-                  isFlipped={gameState.isFlipped}
-                  height={550}
-                />
-              </div>
-            </div>
-          )}
-          <div className="relative flex w-full flex-1 items-center justify-center py-2 sm:py-4">
-            {/* Board */}
-            <div
-              className="relative z-0 flex-shrink-0 transition-transform duration-200"
-              style={{
-                transform: `scale(${boardScale})`,
-                transformOrigin: "center center",
-              }}
-            >
-              <Suspense
-                fallback={
-                  <div className="flex h-[300px] w-[300px] items-center justify-center sm:h-[400px] sm:w-[400px] md:h-[500px] md:w-[500px] lg:h-[550px] lg:w-[550px]">
-                    <div className="bg-muted border-primary h-16 w-16 animate-spin rounded-full border-4 border-t-transparent"></div>
-                  </div>
-                }
-              >
-                <ChessBoard
-                  position={gameState.position}
-                  onMove={makeMove}
-                  isFlipped={gameState.isFlipped}
-                  isInteractive={true}
-                />
-              </Suspense>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column - Tools Sidebar */}
-        <div className="border-border bg-background w-full border-l lg:w-[400px] lg:max-w-[400px] lg:min-w-[400px]">
-          <div className="flex h-full flex-col overflow-hidden">
-            <ToolsSidebar
-              isEngineEnabled={isEngineEnabled}
-              isAnalyzing={isAnalyzing}
-              engineLines={engineLines}
-              formattedEngineLines={formattedEngineLines}
-              moves={gameState.moves}
-              branches={gameState.branches || []}
-              currentMoveIndex={gameState.currentMoveIndex}
-              onMoveClick={handleMoveClick}
-              onBranchMoveClick={handleBranchMoveClick}
-              opening={opening || undefined}
-              onFlipBoard={flipBoard}
-              onUndo={undoMove}
-              onRedo={redoMove}
-              onLoadFEN={handleLoadFEN}
-              onLoadPGN={handleLoadPGN}
-              canUndo={canUndo}
-              canRedo={canRedo}
-              canGoToPreviousMove={canGoToPreviousMove}
-              canGoToNextMove={canGoToNextMove}
-              onPreviousMove={goToPreviousMove}
-              onNextMove={goToNextMove}
-              isEngineEnabledForSettings={engineEnabled}
-              onEngineToggle={handleEngineToggle}
-              engineLinesCount={engineLinesCount}
-              onEngineLinesCountChange={setEngineLinesCount}
-              engineDepth={engineDepth}
-              onEngineDepthChange={setEngineDepth}
-              boardScale={boardScale}
-              onBoardScaleChange={setBoardScale}
-            />
-          </div>
-        </div>
+      {/* Mobile Layout */}
+      <div className="flex flex-1 lg:hidden">
+        <MobileStudyLayout {...layoutProps} />
+      </div>
+      {/* Desktop Layout */}
+      <div className="hidden flex-1 lg:flex">
+        <DesktopStudyLayout {...layoutProps} />
       </div>
     </div>
   );

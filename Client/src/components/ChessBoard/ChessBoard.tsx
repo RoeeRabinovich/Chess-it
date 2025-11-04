@@ -19,8 +19,87 @@ const ChessBoard = ({
 }: ChessBoardProps) => {
   const chessGameRef = useRef(new Chess(position));
   const positionRef = useRef(position);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const [chessPosition, setChessPosition] = useState(position);
+  const [boardSize, setBoardSize] = useState(() => {
+    // Initialize size immediately based on window width
+    if (typeof window !== "undefined") {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      // For mobile, use viewport-based sizing
+      if (width < 640) {
+        // Mobile: fit within viewport, accounting for padding and other sections
+        const availableHeight = height - 200; // Account for nav, engine lines, eval bar, controls
+        const availableWidth = width - 32; // Account for padding
+        return Math.min(availableWidth, availableHeight, 350);
+      } else if (width >= 1024) {
+        return 550; // lg desktop
+      } else if (width >= 768) {
+        return 400; // md tablet - reduced from 500
+      } else {
+        // 640-768px range - make it smaller to fit better
+        const availableHeight = height - 250; // Account for all sections
+        const availableWidth = width - 64; // Account for padding
+        return Math.min(availableWidth, availableHeight, 350);
+      }
+    }
+    return 300; // default fallback
+  });
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Determine board size based on window width and height
+  useEffect(() => {
+    const updateSize = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      let newSize = 300;
+      
+      if (width < 640) {
+        // Mobile: fit within viewport
+        const availableHeight = height - 200;
+        const availableWidth = width - 32;
+        newSize = Math.min(availableWidth, availableHeight, 350);
+      } else if (width >= 1024) {
+        newSize = 550; // lg
+      } else if (width >= 768) {
+        newSize = 400; // md tablet - reduced from 500
+      } else {
+        // 640-768px range - make it smaller to fit better
+        const availableHeight = height - 250;
+        const availableWidth = width - 64;
+        newSize = Math.min(availableWidth, availableHeight, 350);
+      }
+      
+      setBoardSize(newSize);
+    };
+
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+
+  // Ensure container is mounted and has dimensions before rendering chessboard
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const checkReady = () => {
+      if (containerRef.current) {
+        const { offsetWidth, offsetHeight } = containerRef.current;
+        if (offsetWidth > 0 && offsetHeight > 0) {
+          setIsMounted(true);
+        } else {
+          // Retry after a short delay
+          setTimeout(checkReady, 50);
+        }
+      }
+    };
+
+    // Use double RAF to ensure DOM is fully laid out
+    requestAnimationFrame(() => {
+      requestAnimationFrame(checkReady);
+    });
+  }, [boardSize]);
 
   const { optionSquares, getMoveOptions, clearOptions } =
     useChessBoardOptions(chessGameRef);
@@ -107,8 +186,32 @@ const ChessBoard = ({
   );
 
   return (
-    <div className="w-[300px] h-[300px] min-w-[300px] min-h-[300px] sm:w-[400px] sm:h-[400px] sm:min-w-[400px] sm:min-h-[400px] md:w-[500px] md:h-[500px] md:min-w-[500px] md:min-h-[500px] lg:w-[550px] lg:h-[550px] lg:min-w-[550px] lg:min-h-[550px]">
-      <Chessboard options={chessboardOptions as unknown as ChessBoardProps} />
+    <div
+      ref={containerRef}
+      style={{
+        width: `${boardSize}px`,
+        height: `${boardSize}px`,
+        minWidth: `${boardSize}px`,
+        minHeight: `${boardSize}px`,
+        position: "relative",
+        display: "block",
+      }}
+    >
+      {isMounted ? (
+        <Chessboard options={chessboardOptions as unknown as ChessBoardProps} />
+      ) : (
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div className="bg-muted border-primary h-16 w-16 animate-spin rounded-full border-4 border-t-transparent"></div>
+        </div>
+      )}
     </div>
   );
 };
