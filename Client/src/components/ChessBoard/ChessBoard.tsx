@@ -16,6 +16,7 @@ const ChessBoard = ({
   onMove,
   isFlipped = false,
   isInteractive = true,
+  boardScale = 1.0,
 }: ChessBoardProps) => {
   const chessGameRef = useRef(new Chess(position));
   const positionRef = useRef(position);
@@ -185,14 +186,17 @@ const ChessBoard = ({
     ],
   );
 
+  // Calculate scaled board size - apply scale directly to dimensions
+  const scaledBoardSize = boardSize * boardScale;
+
   return (
     <div
       ref={containerRef}
       style={{
-        width: `${boardSize}px`,
-        height: `${boardSize}px`,
-        minWidth: `${boardSize}px`,
-        minHeight: `${boardSize}px`,
+        width: `${scaledBoardSize}px`,
+        height: `${scaledBoardSize}px`,
+        minWidth: `${scaledBoardSize}px`,
+        minHeight: `${scaledBoardSize}px`,
         position: "relative",
         display: "block",
       }}

@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { EvaluationBar } from "../EvaluationBar/EvaluationBar";
 import { EngineLines } from "../EngineLines/EngineLines";
 import { MoveNotation } from "../MoveNotation/MoveNotation";
@@ -35,6 +36,19 @@ export const MobileStudyLayout = ({
   onBoardScaleChange,
   opening,
 }: StudyLayoutProps) => {
+  const [evalBarWidth, setEvalBarWidth] = useState(280);
+
+  useEffect(() => {
+    const updateWidth = () => {
+      if (typeof window !== "undefined") {
+        setEvalBarWidth(Math.min(280, window.innerWidth - 32));
+      }
+    };
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+    return () => window.removeEventListener("resize", updateWidth);
+  }, []);
+
   return (
     <div className="flex h-full flex-col overflow-y-auto">
       {/* Top: Engine Lines (2 lines default) */}
@@ -70,21 +84,19 @@ export const MobileStudyLayout = ({
       {isEngineEnabled && (
         <div className="border-border bg-card w-full border-b px-2 py-1.5 sm:px-3 sm:py-2">
           <div
-            className="mx-auto flex-shrink-0"
+            className="mx-auto flex-shrink-0 transition-all duration-200"
             style={{
-              width: "100%",
-              maxWidth: "min(280px, calc(100vw - 32px))",
-              height: "24px",
-              transform: `scale(${boardScale})`,
-              transformOrigin: "center center",
+              width: `${evalBarWidth * boardScale}px`,
+              maxWidth: `min(${280 * boardScale}px, calc(100vw - 32px))`,
+              height: `${24 * boardScale}px`,
             }}
           >
             <EvaluationBar
               evaluation={displayEvaluation.evaluation}
               possibleMate={displayEvaluation.possibleMate}
               isFlipped={gameState.isFlipped}
-              height={24}
-              width="100%"
+              height={24 * boardScale}
+              width={evalBarWidth * boardScale}
             />
           </div>
         </div>
@@ -93,18 +105,13 @@ export const MobileStudyLayout = ({
       {/* Chessboard */}
       <div className="bg-muted/30 flex flex-shrink-0 items-center justify-center p-2 sm:p-3 md:p-4">
         <div className="m-auto">
-          <div
-            className="relative z-0 flex-shrink-0 transition-transform duration-200"
-            style={{
-              transform: `scale(${boardScale})`,
-              transformOrigin: "center center",
-            }}
-          >
+          <div className="relative z-0 flex-shrink-0 transition-all duration-200">
             <ChessBoard
               position={gameState.position}
               onMove={makeMove}
               isFlipped={gameState.isFlipped}
               isInteractive={true}
+              boardScale={boardScale}
             />
           </div>
         </div>

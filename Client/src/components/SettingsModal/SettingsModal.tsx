@@ -197,8 +197,8 @@ export const SettingsModal = ({
               </div>
             </div>
 
-            {/* Board Size Control */}
-            <div>
+            {/* Board Size Control - Hidden on mobile */}
+            <div className="hidden lg:block">
               <label
                 htmlFor="board-scale"
                 className="text-muted-foreground mb-2 block text-sm font-medium"

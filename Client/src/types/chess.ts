@@ -46,6 +46,8 @@ export interface ChessBoardProps {
   isFlipped?: boolean;
   /** Allow or disallow user moves */
   isInteractive?: boolean;
+  /** Scale factor for the board (0.5 to 1.5) */
+  boardScale?: number;
 }
 
 /**

@@ -73,25 +73,23 @@ export const DesktopStudyLayout = ({
           {isEngineEnabled && (
             <div className="hidden lg:block">
               <div
-                className="relative z-10 flex-shrink-0 transition-transform duration-200"
+                className="relative z-10 flex-shrink-0 transition-all duration-200"
                 style={{
-                  width: "20px",
-                  height: `${boardSize}px`,
-                  transform: `scale(${boardScale}) translateX(calc(-${boardSize}px * (${boardScale} - 1) / 2))`,
-                  transformOrigin: "center center",
+                  width: `${20 * boardScale}px`,
+                  height: `${boardSize * boardScale}px`,
                 }}
               >
                 <EvaluationBar
                   evaluation={displayEvaluation.evaluation}
                   possibleMate={displayEvaluation.possibleMate}
                   isFlipped={gameState.isFlipped}
-                  height={boardSize}
-                  width={20}
+                  height={boardSize * boardScale}
+                  width={20 * boardScale}
                 />
               </div>
             </div>
           )}
-          {/* Scaled 4px gap between eval bar and board */}
+          {/* 4px gap between eval bar and board (scaled) */}
           {isEngineEnabled && (
             <div 
               className="hidden lg:block flex-shrink-0 transition-all duration-200"
@@ -102,18 +100,13 @@ export const DesktopStudyLayout = ({
           )}
           {/* Board */}
           <div className="relative flex items-center justify-center">
-            <div
-              className="relative z-0 flex-shrink-0 transition-transform duration-200"
-              style={{
-                transform: `scale(${boardScale})`,
-                transformOrigin: "center center",
-              }}
-            >
+            <div className="relative z-0 flex-shrink-0 transition-all duration-200">
               <ChessBoard
                 position={gameState.position}
                 onMove={makeMove}
                 isFlipped={gameState.isFlipped}
                 isInteractive={true}
+                boardScale={boardScale}
               />
             </div>
           </div>
