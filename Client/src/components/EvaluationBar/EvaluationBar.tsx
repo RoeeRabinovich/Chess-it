@@ -3,6 +3,7 @@ interface EvaluationBarProps {
   possibleMate?: string | null;
   isFlipped?: boolean;
   height?: string | number;
+  width?: string | number;
 }
 
 export const EvaluationBar = ({
@@ -10,9 +11,17 @@ export const EvaluationBar = ({
   possibleMate,
   isFlipped = false,
   height = "100%",
+  width,
 }: EvaluationBarProps) => {
   // Normalize evaluation: positive is good for white, negative is good for black
   const normalizedEval = isFlipped ? -evaluation : evaluation;
+
+  // Determine if horizontal (width > height) or vertical
+  const heightNum =
+    typeof height === "number" ? height : parseFloat(height) || 100;
+  const widthNum =
+    typeof width === "number" ? width : parseFloat(width || "0") || 48;
+  const isHorizontal = widthNum > heightNum;
 
   // Handle mate: show 100% of winning side's color
   let whitePercentage: number;
@@ -58,14 +67,49 @@ export const EvaluationBar = ({
   };
 
   const heightStyle = typeof height === "number" ? `${height}px` : height;
+  const widthStyle = width
+    ? typeof width === "number"
+      ? `${width}px`
+      : width
+    : undefined;
+
+  // For horizontal: white fills from left, black from right (when not flipped)
+  // For vertical: white fills from bottom, black from top (when not flipped)
+  const whiteFromLeft = isHorizontal && !isFlipped;
+  const blackFromRight = isHorizontal && !isFlipped;
 
   return (
     <div
-      className="border-border bg-muted relative flex w-12 flex-col overflow-hidden rounded-lg border-2"
-      style={{ height: heightStyle }}
+      className={`border-border bg-muted relative overflow-hidden rounded-lg border-2 ${
+        isHorizontal ? "flex-row" : "flex w-12 flex-col"
+      }`}
+      style={{
+        height: heightStyle,
+        width: widthStyle || (isHorizontal ? "100%" : undefined),
+      }}
     >
-      {/* White section - fills from bottom when isFlipped === false, from top when isFlipped === true */}
-      {whiteFromBottom ? (
+      {/* White section */}
+      {isHorizontal ? (
+        // Horizontal: fill from left or right
+        whiteFromLeft ? (
+          <div
+            className="absolute top-0 left-0 h-full bg-white transition-all duration-300 dark:bg-white"
+            style={{
+              width: `${whitePercentage}%`,
+              minWidth: whitePercentage > 0 ? "4px" : "0",
+            }}
+          />
+        ) : (
+          <div
+            className="absolute top-0 right-0 h-full bg-white transition-all duration-300 dark:bg-white"
+            style={{
+              width: `${whitePercentage}%`,
+              minWidth: whitePercentage > 0 ? "4px" : "0",
+            }}
+          />
+        )
+      ) : // Vertical: fill from bottom or top
+      whiteFromBottom ? (
         <div
           className="absolute bottom-0 w-full bg-white transition-all duration-300 dark:bg-white"
           style={{
@@ -82,8 +126,28 @@ export const EvaluationBar = ({
           }}
         />
       )}
-      {/* Black section - fills from bottom when isFlipped === true, from top when isFlipped === false */}
-      {blackFromBottom ? (
+      {/* Black section */}
+      {isHorizontal ? (
+        // Horizontal: fill from right or left
+        blackFromRight ? (
+          <div
+            className="absolute top-0 right-0 h-full bg-gray-800 transition-all duration-300 dark:bg-gray-900"
+            style={{
+              width: `${blackPercentage}%`,
+              minWidth: blackPercentage > 0 ? "4px" : "0",
+            }}
+          />
+        ) : (
+          <div
+            className="absolute top-0 left-0 h-full bg-gray-800 transition-all duration-300 dark:bg-gray-900"
+            style={{
+              width: `${blackPercentage}%`,
+              minWidth: blackPercentage > 0 ? "4px" : "0",
+            }}
+          />
+        )
+      ) : // Vertical: fill from top or bottom
+      blackFromBottom ? (
         <div
           className="absolute bottom-0 w-full bg-gray-800 transition-all duration-300 dark:bg-gray-900"
           style={{
@@ -103,7 +167,7 @@ export const EvaluationBar = ({
       {/* Evaluation text */}
       <div className="absolute inset-0 z-10 flex items-center justify-center">
         <span
-          className={`text-xs font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)] ${
+          className={`${isHorizontal ? "text-[10px]" : "text-xs"} font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)] ${
             normalizedEval < -0.1 ? "text-white" : "text-foreground"
           }`}
         >
@@ -111,7 +175,11 @@ export const EvaluationBar = ({
         </span>
       </div>
       {/* Center line */}
-      <div className="bg-border absolute top-1/2 right-0 left-0 h-0.5 opacity-50" />
+      {isHorizontal ? (
+        <div className="bg-border absolute top-0 bottom-0 left-1/2 w-0.5 -translate-x-1/2 opacity-50" />
+      ) : (
+        <div className="bg-border absolute top-1/2 right-0 left-0 h-0.5 opacity-50" />
+      )}
     </div>
   );
 };

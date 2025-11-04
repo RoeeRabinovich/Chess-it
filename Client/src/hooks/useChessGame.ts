@@ -307,6 +307,18 @@ export const useChessGame = () => {
     [gameState.moves, gameState.branches],
   );
 
+  const goToPreviousMove = useCallback(() => {
+    if (gameState.currentMoveIndex >= 0) {
+      navigateToMove(gameState.currentMoveIndex - 1);
+    }
+  }, [gameState.currentMoveIndex, navigateToMove]);
+
+  const goToNextMove = useCallback(() => {
+    if (gameState.currentMoveIndex < gameState.moves.length - 1) {
+      navigateToMove(gameState.currentMoveIndex + 1);
+    }
+  }, [gameState.currentMoveIndex, gameState.moves.length, navigateToMove]);
+
   return {
     gameState,
     makeMove,
@@ -318,7 +330,11 @@ export const useChessGame = () => {
     loadPGN,
     navigateToMove,
     navigateToBranchMove,
+    goToPreviousMove,
+    goToNextMove,
     canUndo: gameState.currentMoveIndex >= 0,
     canRedo: false,
+    canGoToPreviousMove: gameState.currentMoveIndex >= 0,
+    canGoToNextMove: gameState.currentMoveIndex < gameState.moves.length - 1,
   };
 };

@@ -46,39 +46,43 @@ export const EngineLines = ({
 
   return (
     <div className="space-y-1">
-      <h3 className="text-foreground mb-1 text-xs font-semibold">
+      <h3 className="text-foreground mb-1 text-[10px] font-semibold sm:text-xs">
         Top Engine Lines
       </h3>
       {displayLines.length === 0 ? (
         // Empty state (shouldn't happen since we only render when moves exist)
-        <div className="text-muted-foreground py-2 text-xs">
+        <div className="text-muted-foreground py-2 text-[10px] sm:text-xs">
           No engine lines available
         </div>
       ) : (
         // Render engine lines (using stable lines to prevent layout shifts)
-        displayLines.slice(0, 3).map((line, index) => (
-          <div
-            key={index}
-            className={`flex cursor-pointer items-center gap-2 rounded border px-2 py-1 transition-colors ${
-              index === 0
-                ? "border-primary bg-primary/5"
-                : "border-border bg-card hover:bg-muted"
-            }`}
-            onClick={() => onMoveClick?.(line.moves)}
-          >
-            <span className="text-muted-foreground text-xs font-medium">
-              {index + 1}.
-            </span>
-            <span className="text-foreground flex-1 truncate font-mono text-xs">
-              {line.sanNotation || line.moves.join(" ")}
-            </span>
+        // Show 1 line on mobile, 3 on desktop
+        displayLines.slice(0, 3).map((line, index) => {
+          const isMobile = index >= 1; // Hide lines 2 and 3 on mobile
+          return (
             <div
-              className={`shrink-0 font-mono text-xs font-semibold ${getEvaluationColor(line.evaluation)}`}
+              key={index}
+              className={`flex cursor-pointer items-center gap-1.5 rounded border px-1.5 py-0.5 transition-colors sm:gap-2 sm:px-2 sm:py-1 ${
+                index === 0
+                  ? "border-primary bg-primary/5"
+                  : "border-border bg-card hover:bg-muted"
+              } ${isMobile ? "hidden sm:flex" : ""}`}
+              onClick={() => onMoveClick?.(line.moves)}
             >
-              {formatEvaluation(line.evaluation, line.mate)}
+              <span className="text-muted-foreground text-[10px] font-medium sm:text-xs">
+                {index + 1}.
+              </span>
+              <span className="text-foreground flex-1 truncate font-mono text-[10px] sm:text-xs">
+                {line.sanNotation || line.moves.join(" ")}
+              </span>
+              <div
+                className={`shrink-0 font-mono text-[10px] font-semibold sm:text-xs ${getEvaluationColor(line.evaluation)}`}
+              >
+                {formatEvaluation(line.evaluation, line.mate)}
+              </div>
             </div>
-          </div>
-        ))
+          );
+        })
       )}
     </div>
   );

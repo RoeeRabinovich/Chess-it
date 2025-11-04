@@ -30,13 +30,23 @@ interface ToolsSidebarProps {
 
   // Game Controls
   onFlipBoard: () => void;
-  onReset: () => void;
   onUndo: () => void;
   onRedo: () => void;
   onLoadFEN: () => void;
   onLoadPGN: () => void;
   canUndo: boolean;
   canRedo: boolean;
+  canGoToPreviousMove: boolean;
+  canGoToNextMove: boolean;
+  onPreviousMove: () => void;
+  onNextMove: () => void;
+  // Settings props
+  isEngineEnabledForSettings: boolean;
+  onEngineToggle: (enabled: boolean) => void;
+  engineLinesCount: number;
+  onEngineLinesCountChange: (count: number) => void;
+  engineDepth: number;
+  onEngineDepthChange: (depth: number) => void;
   boardScale: number;
   onBoardScaleChange: (scale: number) => void;
 }
@@ -52,35 +62,44 @@ export const ToolsSidebar = ({
   onBranchMoveClick,
   opening,
   onFlipBoard,
-  onReset,
   onUndo,
   onRedo,
   onLoadFEN,
   onLoadPGN,
   canUndo,
   canRedo,
+  canGoToPreviousMove,
+  canGoToNextMove,
+  onPreviousMove,
+  onNextMove,
+  isEngineEnabledForSettings,
+  onEngineToggle,
+  engineLinesCount,
+  onEngineLinesCountChange,
+  engineDepth,
+  onEngineDepthChange,
   boardScale,
   onBoardScaleChange,
 }: ToolsSidebarProps) => {
   return (
-    <div className="bg-card flex h-full max-h-full flex-col overflow-hidden p-2 sm:p-3 lg:p-4">
+    <div className="bg-card flex h-full max-h-full flex-col overflow-hidden p-1.5 sm:p-2 lg:p-4">
       {/* Engine Lines Section - Always show, but conditionally show content */}
       <>
-        <div className="mb-3 flex items-center gap-2">
+        <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
           {isEngineEnabled && (
             <div
-              className={`h-2 w-2 rounded-full ${isAnalyzing ? "animate-pulse bg-yellow-500" : "bg-green-500"}`}
+              className={`h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2 ${isAnalyzing ? "animate-pulse bg-yellow-500" : "bg-green-500"}`}
             ></div>
           )}
-          <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+          <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
             Engine Lines
           </span>
         </div>
-        <div className="mb-3 flex min-h-[100px] flex-col sm:mb-4 sm:min-h-[120px]">
+        <div className="mb-2 flex min-h-[60px] flex-col sm:mb-3 sm:min-h-[80px] lg:mb-4 lg:min-h-[120px]">
           {moves.length === 0 ? (
             // Show placeholder only if no moves have been made
             <div className="flex flex-1 items-center justify-center">
-              <span className="text-muted-foreground text-xs">
+              <span className="text-muted-foreground text-[10px] sm:text-xs">
                 Make a move to see engine analysis
               </span>
             </div>
@@ -99,17 +118,17 @@ export const ToolsSidebar = ({
             />
           )}
         </div>
-        <hr className="border-border/30 my-2 sm:my-3 lg:my-4" />
+        <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />
       </>
 
       {/* Move History Section */}
-      <div className="mb-2 flex items-center gap-2 sm:mb-3">
-        <div className="h-2 w-2 rounded-full bg-blue-500"></div>
-        <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+      <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
+        <div className="h-1.5 w-1.5 rounded-full bg-blue-500 sm:h-2 sm:w-2"></div>
+        <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
           Move History
         </span>
       </div>
-      <div className="mb-3 flex-1 overflow-y-auto sm:mb-4">
+      <div className="mb-2 flex-1 overflow-y-auto sm:mb-3 lg:mb-4">
         <MoveNotation
           moves={moves}
           branches={branches}
@@ -119,19 +138,28 @@ export const ToolsSidebar = ({
           opening={opening}
         />
       </div>
-      <hr className="border-border/30 my-2 sm:my-3 lg:my-4" />
+      <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />
 
       {/* Game Controls Section */}
-      <div className="flex-shrink-0">
+      <div className="flex-shrink-0 pt-1 sm:pt-0">
         <ChessControls
           onFlipBoard={onFlipBoard}
-          onReset={onReset}
           onUndo={onUndo}
           onRedo={onRedo}
           onLoadFEN={onLoadFEN}
           onLoadPGN={onLoadPGN}
           canUndo={canUndo}
           canRedo={canRedo}
+          canGoToPreviousMove={canGoToPreviousMove}
+          canGoToNextMove={canGoToNextMove}
+          onPreviousMove={onPreviousMove}
+          onNextMove={onNextMove}
+          isEngineEnabled={isEngineEnabledForSettings}
+          onEngineToggle={onEngineToggle}
+          engineLinesCount={engineLinesCount}
+          onEngineLinesCountChange={onEngineLinesCountChange}
+          engineDepth={engineDepth}
+          onEngineDepthChange={onEngineDepthChange}
           boardScale={boardScale}
           onBoardScaleChange={onBoardScaleChange}
         />

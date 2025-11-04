@@ -16,6 +16,8 @@ interface UseStockfishReturn {
     possibleMate?: string | null;
   }>;
   enableEngine: () => void;
+  disableEngine: () => void;
+  toggleEngine: () => void;
 }
 
 const evalCache = new Map<
@@ -39,9 +41,13 @@ export const useStockfish = (
   moveCount: number = 0, // Track number of moves to auto-enable after first move
   maxDepth: number = 15,
   debounceTime: number = 400,
+  multipv: number = 3, // Number of engine lines to return
+  initialEngineEnabled?: boolean, // Allow external control of engine state
 ): UseStockfishReturn => {
-  // Auto-enable after first move
-  const [isEngineEnabled, setIsEngineEnabled] = useState(moveCount > 0);
+  // Auto-enable after first move, or use initialEngineEnabled if provided
+  const [isEngineEnabled, setIsEngineEnabled] = useState(
+    initialEngineEnabled !== undefined ? initialEngineEnabled : moveCount > 0
+  );
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [positionEvaluation, setPositionEvaluation] = useState(0);
   const [depth, setDepth] = useState(0);
@@ -61,15 +67,14 @@ export const useStockfish = (
   const chessGameRef = useRef(new Chess());
   const chessGame = chessGameRef.current;
 
-  const multipv = 3; // Request 3 engine lines
   const cacheKey = `${position}|d=${maxDepth}|m=${multipv}`;
 
-  // Auto-enable engine when a move is made
+  // Auto-enable engine when a move is made (only if initialEngineEnabled was not provided)
   useEffect(() => {
-    if (moveCount > 0 && !isEngineEnabled) {
+    if (initialEngineEnabled === undefined && moveCount > 0 && !isEngineEnabled) {
       setIsEngineEnabled(true);
     }
-  }, [moveCount, isEngineEnabled]);
+  }, [moveCount, isEngineEnabled, initialEngineEnabled]);
 
   useEffect(() => {
     try {
@@ -85,6 +90,16 @@ export const useStockfish = (
   const handleEnableEngine = useCallback(() => {
     if (!isEngineEnabled) setIsEngineEnabled(true);
   }, [isEngineEnabled]);
+
+  // Handle disabling the engine
+  const handleDisableEngine = useCallback(() => {
+    if (isEngineEnabled) setIsEngineEnabled(false);
+  }, [isEngineEnabled]);
+
+  // Handle toggling the engine
+  const handleToggleEngine = useCallback(() => {
+    setIsEngineEnabled((prev) => !prev);
+  }, []);
 
   // Analyze position when it changes (only if engine is enabled)
   useEffect(() => {
@@ -224,5 +239,7 @@ export const useStockfish = (
     possibleMate,
     engineLines,
     enableEngine: handleEnableEngine,
+    disableEngine: handleDisableEngine,
+    toggleEngine: handleToggleEngine,
   };
 };

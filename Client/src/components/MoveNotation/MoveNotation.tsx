@@ -90,7 +90,7 @@ export const MoveNotation = ({
       <div key={branch.id} className={depth > 0 ? "" : ""}>
         <div className="flex flex-wrap items-center gap-1">
           {/* Branch start: move number with ellipsis */}
-          <span className="text-muted-foreground text-xs font-medium">
+          <span className="text-muted-foreground text-[10px] font-medium sm:text-xs">
             {actualStartIsWhite ? (
               <>{actualStartMoveNumber}.</>
             ) : (
@@ -107,13 +107,13 @@ export const MoveNotation = ({
             const moveNumber = Math.floor(actualIndex / 2) + 1;
 
             return (
-              <div key={moveIdx} className="flex items-center gap-1">
+              <div key={moveIdx} className="flex items-center gap-0.5 sm:gap-1">
                 {/* First move already has prefix (1. or 1...), subsequent moves need their own */}
                 {moveIdx === 0 ? (
                   // First move: prefix already shown above, just show the move
                   <button
                     onClick={() => onBranchMoveClick?.(branch.id, moveIdx)}
-                    className="text-muted-foreground hover:text-foreground hover:bg-muted rounded px-1.5 py-0.5 text-xs transition-colors"
+                    className="text-muted-foreground hover:text-foreground hover:bg-muted rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs"
                   >
                     {branchMove.move}
                   </button>
@@ -121,16 +121,16 @@ export const MoveNotation = ({
                   // Subsequent moves: white gets moveNumber., black gets ...
                   <>
                     {isWhiteMove && (
-                      <span className="text-muted-foreground text-xs font-medium">
+                      <span className="text-muted-foreground text-[10px] font-medium sm:text-xs">
                         {moveNumber}.
                       </span>
                     )}
                     {isBlackMove && (
-                      <span className="text-muted-foreground text-xs">...</span>
+                      <span className="text-muted-foreground text-[10px] sm:text-xs">...</span>
                     )}
                     <button
                       onClick={() => onBranchMoveClick?.(branch.id, moveIdx)}
-                      className="text-muted-foreground hover:text-foreground hover:bg-muted rounded px-1.5 py-0.5 text-xs transition-colors"
+                      className="text-muted-foreground hover:text-foreground hover:bg-muted rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs"
                     >
                       {branchMove.move}
                     </button>
@@ -143,7 +143,7 @@ export const MoveNotation = ({
           {/* Nested branches in parentheses on same line */}
           {branchBranches.length > 0 && (
             <>
-              <span className="text-muted-foreground text-xs">(</span>
+              <span className="text-muted-foreground text-[10px] sm:text-xs">(</span>
               {branchBranches.map((nestedBranch, nestedIdx) => {
                 const nestedMoveNumber =
                   Math.floor(nestedBranch.startIndex / 2) + 1;
@@ -152,9 +152,9 @@ export const MoveNotation = ({
                 return (
                   <div
                     key={nestedBranch.id}
-                    className="inline-flex flex-wrap items-center gap-1"
+                    className="inline-flex flex-wrap items-center gap-0.5 sm:gap-1"
                   >
-                    <span className="text-muted-foreground text-xs font-medium">
+                    <span className="text-muted-foreground text-[10px] font-medium sm:text-xs">
                       {nestedIsWhite ? (
                         <>{nestedMoveNumber}.</>
                       ) : (
@@ -171,16 +171,16 @@ export const MoveNotation = ({
                       return (
                         <span
                           key={idx}
-                          className="inline-flex items-center gap-1"
+                          className="inline-flex items-center gap-0.5 sm:gap-1"
                         >
                           {/* First move already has prefix, subsequent moves need their own */}
                           {idx > 0 && isWhiteMove && (
-                            <span className="text-muted-foreground text-xs font-medium">
+                            <span className="text-muted-foreground text-[10px] font-medium sm:text-xs">
                               {nestedMoveNumber}.
                             </span>
                           )}
                           {idx > 0 && isBlackMove && (
-                            <span className="text-muted-foreground text-xs">
+                            <span className="text-muted-foreground text-[10px] sm:text-xs">
                               ...
                             </span>
                           )}
@@ -188,7 +188,7 @@ export const MoveNotation = ({
                             onClick={() =>
                               onBranchMoveClick?.(nestedBranch.id, idx)
                             }
-                            className="text-muted-foreground hover:text-foreground hover:bg-muted rounded px-1 py-0.5 text-xs transition-colors"
+                            className="text-muted-foreground hover:text-foreground hover:bg-muted rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs"
                           >
                             {bm.san}
                           </button>
@@ -196,12 +196,12 @@ export const MoveNotation = ({
                       );
                     })}
                     {nestedIdx < branchBranches.length - 1 && (
-                      <span className="text-muted-foreground text-xs">;</span>
+                      <span className="text-muted-foreground text-[10px] sm:text-xs">;</span>
                     )}
                   </div>
                 );
               })}
-              <span className="text-muted-foreground text-xs">)</span>
+              <span className="text-muted-foreground text-[10px] sm:text-xs">)</span>
             </>
           )}
         </div>
@@ -210,36 +210,36 @@ export const MoveNotation = ({
   };
 
   return (
-    <div className="bg-card h-full rounded-2xl p-6">
-      <div className="mb-4">
-        <h3 className="text-foreground mb-2 text-lg font-semibold">Opening</h3>
+    <div className="bg-card h-full rounded-lg p-2 sm:rounded-2xl sm:p-4 lg:p-6">
+      <div className="mb-2 sm:mb-3 lg:mb-4">
+        <h3 className="text-foreground mb-1 text-xs font-semibold sm:mb-2 sm:text-sm lg:text-lg">Opening</h3>
         {opening ? (
           <div>
-            <p className="text-foreground text-sm font-medium">
+            <p className="text-foreground text-[10px] font-medium sm:text-xs lg:text-sm">
               {opening.name}
             </p>
-            <p className="text-muted-foreground text-xs">{opening.eco}</p>
+            <p className="text-muted-foreground text-[9px] sm:text-[10px] lg:text-xs">{opening.eco}</p>
           </div>
         ) : (
-          <p className="text-muted-foreground text-sm">Custom Position</p>
+          <p className="text-muted-foreground text-[10px] sm:text-xs lg:text-sm">Custom Position</p>
         )}
       </div>
 
-      <div className="mb-4">
-        <h3 className="text-foreground mb-2 text-lg font-semibold">Moves</h3>
+      <div className="mb-2 sm:mb-3 lg:mb-4">
+        <h3 className="text-foreground mb-1 text-xs font-semibold sm:mb-2 sm:text-sm lg:text-lg">Moves</h3>
         <div className="max-h-96 overflow-y-auto">
-          <div className="space-y-1 text-sm">
+          <div className="space-y-0.5 text-[10px] sm:space-y-1 sm:text-xs lg:text-sm">
             {formattedMovePairs.map((pair) => (
               <div key={pair.moveNumber} className="space-y-1">
                 {/* Main line: move pair on its own line */}
-                <div className="flex flex-wrap items-center gap-1">
-                  <span className="text-muted-foreground font-medium">
+                <div className="flex flex-wrap items-center gap-0.5 sm:gap-1">
+                  <span className="text-muted-foreground text-[10px] font-medium sm:text-xs lg:text-sm">
                     {pair.moveNumber}.
                   </span>
                   {pair.whiteMove && (
                     <button
                       onClick={() => onMoveClick(pair.whiteMove!.index)}
-                      className={`rounded px-2 py-0.5 transition-colors ${
+                      className={`rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs lg:px-2 lg:text-sm ${
                         pair.whiteMove.index === currentMoveIndex
                           ? "bg-primary text-primary-foreground"
                           : "text-foreground hover:bg-muted"
@@ -250,10 +250,10 @@ export const MoveNotation = ({
                   )}
                   {pair.blackMove && (
                     <>
-                      <span className="text-muted-foreground">...</span>
+                      <span className="text-muted-foreground text-[10px] sm:text-xs lg:text-sm">...</span>
                       <button
                         onClick={() => onMoveClick(pair.blackMove!.index)}
-                        className={`rounded px-2 py-0.5 transition-colors ${
+                        className={`rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs lg:px-2 lg:text-sm ${
                           pair.blackMove.index === currentMoveIndex
                             ? "bg-primary text-primary-foreground"
                             : "text-foreground hover:bg-muted"

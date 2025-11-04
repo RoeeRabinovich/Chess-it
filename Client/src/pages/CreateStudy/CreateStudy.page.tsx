@@ -9,6 +9,7 @@ import {
 } from "react";
 import { ToolsSidebar } from "../../components/ToolsSidebar/ToolsSidebar";
 import { EvaluationBar } from "../../components/EvaluationBar/EvaluationBar";
+import { EngineLines } from "../../components/EngineLines/EngineLines";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useOpeningDetection } from "../../hooks/useOpeningDetection";
 import { useStockfish } from "../../hooks/useStockfish";
@@ -18,23 +19,32 @@ import { convertUCIToSAN } from "../../utils/chessNotation";
 const ChessBoard = lazy(() => import("../../components/ChessBoard/ChessBoard"));
 
 export const CreateStudy = () => {
+  // Engine settings state
+  const [engineEnabled, setEngineEnabled] = useState(true);
+  const [engineLinesCount, setEngineLinesCount] = useState(3);
+  const [engineDepth, setEngineDepth] = useState(12);
   const [boardScale, setBoardScale] = useState(1.0);
 
-  // Engine state
+  // Game state
   const {
     gameState,
     makeMove,
     undoMove,
     redoMove,
-    resetGame,
     flipBoard,
     loadFEN,
     loadPGN,
     navigateToMove,
     navigateToBranchMove,
+    goToPreviousMove,
+    goToNextMove,
     canUndo,
     canRedo,
+    canGoToPreviousMove,
+    canGoToNextMove,
   } = useChessGame();
+
+  // Engine analysis - use configurable settings
   const {
     isEngineEnabled,
     isAnalyzing,
@@ -42,7 +52,14 @@ export const CreateStudy = () => {
     positionEvaluation,
     depth,
     possibleMate,
-  } = useStockfish(gameState.position, gameState.moves.length, 12, 400);
+  } = useStockfish(
+    gameState.position,
+    gameState.moves.length,
+    engineDepth,
+    400,
+    engineLinesCount,
+    engineEnabled,
+  );
 
   // Keep stable evaluation values to prevent flickering during analysis
   // Track both the position FEN and the evaluation to ensure we show correct data
@@ -151,22 +168,66 @@ export const CreateStudy = () => {
     }
   };
 
+  const handleEngineToggle = (enabled: boolean) => {
+    setEngineEnabled(enabled);
+  };
+
   return (
-    <div className="bg-background flex h-screen overflow-hidden pt-14 md:pt-16">
+    <div className="bg-background flex h-screen overflow-hidden pt-16 sm:pt-20 md:pt-24">
       {/* Main Content Container */}
       <div className="flex flex-1 flex-col overflow-hidden lg:flex-row">
         {/* Left Column - Evaluation Bar + Board */}
-        <div className="bg-muted/30 relative flex min-h-0 flex-1 items-center justify-center overflow-auto p-3 lg:max-h-screen lg:max-w-[calc(100%-400px)] lg:p-6">
-          <div className="relative flex h-full min-h-[300px] w-full items-center justify-center gap-2.5 sm:min-h-[400px] md:min-h-[500px] lg:min-h-[550px]">
-            {/* Evaluation Bar - Show when engine is enabled, uses stable values to prevent flickering */}
-            {isEngineEnabled && (
+        <div className="bg-muted/30 relative flex min-h-0 flex-1 flex-col items-center justify-center p-3 sm:p-4 lg:max-h-screen lg:max-w-[calc(100%-400px)] lg:flex-row lg:p-6">
+          {/* Mobile: Engine Lines Section */}
+          <div className="mb-2 w-full lg:hidden">
+            {gameState.moves.length > 0 && (
+              <EngineLines
+                lines={formattedEngineLines.map((line) => ({
+                  moves: line.sanNotation.split(" "),
+                  evaluation: line.evaluation,
+                  depth: line.depth,
+                  mate: line.possibleMate
+                    ? parseInt(line.possibleMate)
+                    : undefined,
+                }))}
+                isAnalyzing={isAnalyzing}
+              />
+            )}
+          </div>
+          {/* Mobile: Horizontal evaluation bar on top */}
+          {isEngineEnabled && (
+            <div className="mb-2 flex w-full justify-center sm:mb-3 lg:hidden">
               <div
-                className="relative z-10 flex-shrink-0 transition-transform duration-200"
+                className="relative z-10 flex-shrink-0"
                 style={{
+                  width: "100%",
+                  maxWidth: "280px",
+                  height: "24px",
                   transform: `scale(${boardScale})`,
                   transformOrigin: "center center",
-                  width: "48px",
+                }}
+              >
+                <EvaluationBar
+                  evaluation={displayEvaluation.evaluation}
+                  possibleMate={displayEvaluation.possibleMate}
+                  isFlipped={gameState.isFlipped}
+                  height={24}
+                  width="100%"
+                />
+              </div>
+            </div>
+          )}
+          {/* Desktop: Vertical evaluation bar on left */}
+          {isEngineEnabled && (
+            <div className="hidden lg:block">
+              <div
+                className="relative z-10 flex-shrink-0"
+                style={{
+                  width: "32px",
                   height: "550px",
+                  marginRight: "4px",
+                  transform: `scale(${boardScale})`,
+                  transformOrigin: "center center",
                 }}
               >
                 <EvaluationBar
@@ -176,7 +237,9 @@ export const CreateStudy = () => {
                   height={550}
                 />
               </div>
-            )}
+            </div>
+          )}
+          <div className="relative flex w-full flex-1 items-center justify-center py-2 sm:py-4">
             {/* Board */}
             <div
               className="relative z-0 flex-shrink-0 transition-transform duration-200"
@@ -218,13 +281,22 @@ export const CreateStudy = () => {
               onBranchMoveClick={handleBranchMoveClick}
               opening={opening || undefined}
               onFlipBoard={flipBoard}
-              onReset={resetGame}
               onUndo={undoMove}
               onRedo={redoMove}
               onLoadFEN={handleLoadFEN}
               onLoadPGN={handleLoadPGN}
               canUndo={canUndo}
               canRedo={canRedo}
+              canGoToPreviousMove={canGoToPreviousMove}
+              canGoToNextMove={canGoToNextMove}
+              onPreviousMove={goToPreviousMove}
+              onNextMove={goToNextMove}
+              isEngineEnabledForSettings={engineEnabled}
+              onEngineToggle={handleEngineToggle}
+              engineLinesCount={engineLinesCount}
+              onEngineLinesCountChange={setEngineLinesCount}
+              engineDepth={engineDepth}
+              onEngineDepthChange={setEngineDepth}
               boardScale={boardScale}
               onBoardScaleChange={setBoardScale}
             />
