@@ -12,12 +12,15 @@ interface EngineLinesProps {
   lines: EngineLine[];
   isAnalyzing: boolean;
   onMoveClick?: (moves: string[]) => void;
+  maxLines?: number;
 }
 
 export const EngineLines = ({
   lines,
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  isAnalyzing, // Reserved for future use
   onMoveClick,
+  maxLines = 3,
 }: EngineLinesProps) => {
   // Keep previous lines visible during analysis to prevent layout shifts
   const stableLinesRef = useRef<EngineLine[]>([]);
@@ -56,8 +59,8 @@ export const EngineLines = ({
         </div>
       ) : (
         // Render engine lines (using stable lines to prevent layout shifts)
-        // Show 1 line on mobile, 3 on desktop
-        displayLines.slice(0, 3).map((line, index) => {
+        // Show 1 line on mobile, maxLines on desktop
+        displayLines.slice(0, maxLines).map((line, index) => {
           const isMobile = index >= 1; // Hide lines 2 and 3 on mobile
           return (
             <div

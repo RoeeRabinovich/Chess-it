@@ -115,6 +115,7 @@ export const ToolsSidebar = ({
                   : undefined,
               }))}
               isAnalyzing={isAnalyzing}
+              maxLines={engineLinesCount}
             />
           )}
         </div>

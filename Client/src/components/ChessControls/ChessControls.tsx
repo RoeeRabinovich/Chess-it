@@ -66,7 +66,7 @@ export const ChessControls = ({
             onClick={onPreviousMove}
             disabled={!canGoToPreviousMove}
             aria-label="Previous move"
-            className="h-12 w-full flex-1 sm:h-14"
+            className="h-12 w-full flex-1 bg-secondary sm:h-14"
           >
             <LeftArrow className="h-8 w-8 sm:h-10 sm:w-10" />
           </Button>
@@ -76,7 +76,7 @@ export const ChessControls = ({
             onClick={onNextMove}
             disabled={!canGoToNextMove}
             aria-label="Next move"
-            className="h-12 w-full flex-1 sm:h-14"
+            className="h-12 w-full flex-1 bg-secondary sm:h-14"
           >
             <RightArrow className="h-8 w-8 sm:h-10 sm:w-10" />
           </Button>

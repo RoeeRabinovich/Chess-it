@@ -53,7 +53,7 @@ export const SettingsModal = ({
       />
       {/* Modal */}
       <div
-        className="fixed left-1/2 top-1/2 z-50 w-[90%] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-card p-6 shadow-lg"
+        className="fixed left-1/2 top-1/2 z-50 w-[90%] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-secondary p-6 shadow-lg"
         role="dialog"
         aria-modal="true"
         aria-labelledby="settings-modal-title"
@@ -130,7 +130,7 @@ export const SettingsModal = ({
                   id="engine-toggle"
                   onClick={() => onEngineToggle(!isEngineEnabled)}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
-                    isEngineEnabled ? "bg-primary" : "bg-gray-300 dark:bg-gray-600"
+                    isEngineEnabled ? "bg-pastel-mint" : "bg-pastel-red"
                   }`}
                   role="switch"
                   aria-checked={isEngineEnabled}

@@ -69,6 +69,13 @@ export const useStockfish = (
 
   const cacheKey = `${position}|d=${maxDepth}|m=${multipv}`;
 
+  // Sync internal state with external initialEngineEnabled prop when it changes
+  useEffect(() => {
+    if (initialEngineEnabled !== undefined) {
+      setIsEngineEnabled(initialEngineEnabled);
+    }
+  }, [initialEngineEnabled]);
+
   // Auto-enable engine when a move is made (only if initialEngineEnabled was not provided)
   useEffect(() => {
     if (initialEngineEnabled === undefined && moveCount > 0 && !isEngineEnabled) {

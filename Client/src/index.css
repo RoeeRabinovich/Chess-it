@@ -32,6 +32,7 @@
     --accent: 143.1 47.4% 73.1%;
     --accent-foreground: 0 0% 10%;
     --pastel-mint: 143.1 47.4% 73.1%;
+    --pastel-red: 0 60% 75%;
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 90%;
@@ -52,6 +53,7 @@
     --accent: 165 60% 85%;
     --accent-foreground: 0 0% 10%;
     --pastel-mint: 143.1 47.4% 73.1%;
+    --pastel-red: 0 60% 75%;
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 20%;
@@ -152,6 +154,9 @@
   }
   .bg-pastel-mint {
     background-color: hsl(var(--pastel-mint));
+  }
+  .bg-pastel-red {
+    background-color: hsl(var(--pastel-red));
   }
   .bg-primary {
     background-color: hsl(var(--primary));

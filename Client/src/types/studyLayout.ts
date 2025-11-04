@@ -9,7 +9,7 @@ export interface StudyLayoutProps {
     currentMoveIndex: number;
     isFlipped: boolean;
   };
-  makeMove: (move: any) => boolean;
+  makeMove: (move: ChessMove) => boolean;
   onMoveClick: (moveIndex: number) => void;
   onBranchMoveClick: (branchId: string, moveIndexInBranch: number) => void;
 
