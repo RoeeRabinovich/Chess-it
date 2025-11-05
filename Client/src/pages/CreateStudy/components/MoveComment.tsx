@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Comment } from "../../../components/icons/Comment.icon";
 
 interface MoveCommentProps {
   currentMoveComment: string;
@@ -29,7 +30,7 @@ export const MoveComment = ({
   return (
     <div className="border-border bg-card w-full flex-shrink-0 border-t px-2 py-1.5 sm:px-3 sm:py-2">
       <div className="mb-1.5 flex items-center gap-1.5">
-        <div className="h-1.5 w-1.5 rounded-full bg-purple-500"></div>
+        <Comment className="h-3 w-3 text-purple-500 sm:h-3.5 sm:w-3.5" />
         <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
           Move Comment
         </span>

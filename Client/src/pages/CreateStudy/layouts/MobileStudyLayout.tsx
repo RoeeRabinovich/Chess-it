@@ -137,6 +137,7 @@ export const MobileStudyLayout = ({
             onMoveClick={onMoveClick}
             onBranchMoveClick={onBranchMoveClick}
             opening={opening}
+            comments={gameState.comments}
           />
         </div>
       </div>

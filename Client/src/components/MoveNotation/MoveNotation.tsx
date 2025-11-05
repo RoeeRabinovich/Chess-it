@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { ChessMove, MoveBranch } from "../../types/chess";
+import { Comment } from "../icons/Comment.icon";
 
 interface MoveNotationProps {
   moves: ChessMove[];
@@ -8,6 +9,7 @@ interface MoveNotationProps {
   onMoveClick: (moveIndex: number) => void;
   onBranchMoveClick?: (branchId: string, moveIndexInBranch: number) => void;
   opening?: { name: string; eco: string };
+  comments?: Map<string, string>;
 }
 
 export const MoveNotation = ({
@@ -17,7 +19,19 @@ export const MoveNotation = ({
   onMoveClick,
   onBranchMoveClick,
   opening,
+  comments = new Map(),
 }: MoveNotationProps) => {
+  // Helper function to check if a main line move has a comment
+  const hasComment = (moveIndex: number): boolean => {
+    const commentKey = `main-${moveIndex}`;
+    return comments.has(commentKey) && comments.get(commentKey)?.trim() !== "";
+  };
+
+  // Helper function to check if a branch move has a comment
+  const hasBranchComment = (branchId: string, moveIndexInBranch: number): boolean => {
+    const commentKey = `branch-${branchId}-${moveIndexInBranch}`;
+    return comments.has(commentKey) && comments.get(commentKey)?.trim() !== "";
+  };
   const formattedMovePairs = useMemo(() => {
     // Group moves into pairs (white + black)
     const pairs: Array<{
@@ -111,12 +125,17 @@ export const MoveNotation = ({
                 {/* First move already has prefix (1. or 1...), subsequent moves need their own */}
                 {moveIdx === 0 ? (
                   // First move: prefix already shown above, just show the move
-                  <button
-                    onClick={() => onBranchMoveClick?.(branch.id, moveIdx)}
-                    className="text-muted-foreground hover:text-foreground hover:bg-muted rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs"
-                  >
-                    {branchMove.move}
-                  </button>
+                  <div className="flex items-center gap-0.5">
+                    <button
+                      onClick={() => onBranchMoveClick?.(branch.id, moveIdx)}
+                      className="text-muted-foreground hover:text-foreground hover:bg-muted rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs"
+                    >
+                      {branchMove.move}
+                    </button>
+                    {hasBranchComment(branch.id, moveIdx) && (
+                      <Comment className="h-2.5 w-2.5 text-purple-500 sm:h-3 sm:w-3" />
+                    )}
+                  </div>
                 ) : (
                   // Subsequent moves: white gets moveNumber., black gets ...
                   <>
@@ -128,12 +147,17 @@ export const MoveNotation = ({
                     {isBlackMove && (
                       <span className="text-muted-foreground text-[10px] sm:text-xs">...</span>
                     )}
-                    <button
-                      onClick={() => onBranchMoveClick?.(branch.id, moveIdx)}
-                      className="text-muted-foreground hover:text-foreground hover:bg-muted rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs"
-                    >
-                      {branchMove.move}
-                    </button>
+                    <div className="flex items-center gap-0.5">
+                      <button
+                        onClick={() => onBranchMoveClick?.(branch.id, moveIdx)}
+                        className="text-muted-foreground hover:text-foreground hover:bg-muted rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs"
+                      >
+                        {branchMove.move}
+                      </button>
+                      {hasBranchComment(branch.id, moveIdx) && (
+                        <Comment className="h-2.5 w-2.5 text-purple-500 sm:h-3 sm:w-3" />
+                      )}
+                    </div>
                   </>
                 )}
               </div>
@@ -184,14 +208,19 @@ export const MoveNotation = ({
                               ...
                             </span>
                           )}
-                          <button
-                            onClick={() =>
-                              onBranchMoveClick?.(nestedBranch.id, idx)
-                            }
-                            className="text-muted-foreground hover:text-foreground hover:bg-muted rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs"
-                          >
-                            {bm.san}
-                          </button>
+                          <div className="flex items-center gap-0.5">
+                            <button
+                              onClick={() =>
+                                onBranchMoveClick?.(nestedBranch.id, idx)
+                              }
+                              className="text-muted-foreground hover:text-foreground hover:bg-muted rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs"
+                            >
+                              {bm.san}
+                            </button>
+                            {hasBranchComment(nestedBranch.id, idx) && (
+                              <Comment className="h-2.5 w-2.5 text-purple-500 sm:h-3 sm:w-3" />
+                            )}
+                          </div>
                         </span>
                       );
                     })}
@@ -237,30 +266,40 @@ export const MoveNotation = ({
                     {pair.moveNumber}.
                   </span>
                   {pair.whiteMove && (
-                    <button
-                      onClick={() => onMoveClick(pair.whiteMove!.index)}
-                      className={`rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs lg:px-2 lg:text-sm ${
-                        pair.whiteMove.index === currentMoveIndex
-                          ? "bg-primary text-primary-foreground"
-                          : "text-foreground hover:bg-muted"
-                      }`}
-                    >
-                      {pair.whiteMove.move}
-                    </button>
-                  )}
-                  {pair.blackMove && (
-                    <>
-                      <span className="text-muted-foreground text-[10px] sm:text-xs lg:text-sm">...</span>
+                    <div className="flex items-center gap-0.5">
                       <button
-                        onClick={() => onMoveClick(pair.blackMove!.index)}
+                        onClick={() => onMoveClick(pair.whiteMove!.index)}
                         className={`rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs lg:px-2 lg:text-sm ${
-                          pair.blackMove.index === currentMoveIndex
+                          pair.whiteMove.index === currentMoveIndex
                             ? "bg-primary text-primary-foreground"
                             : "text-foreground hover:bg-muted"
                         }`}
                       >
-                        {pair.blackMove.move}
+                        {pair.whiteMove.move}
                       </button>
+                      {hasComment(pair.whiteMove.index) && (
+                        <Comment className="h-2.5 w-2.5 text-purple-500 sm:h-3 sm:w-3" />
+                      )}
+                    </div>
+                  )}
+                  {pair.blackMove && (
+                    <>
+                      <span className="text-muted-foreground text-[10px] sm:text-xs lg:text-sm">...</span>
+                      <div className="flex items-center gap-0.5">
+                        <button
+                          onClick={() => onMoveClick(pair.blackMove!.index)}
+                          className={`rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs lg:px-2 lg:text-sm ${
+                            pair.blackMove.index === currentMoveIndex
+                              ? "bg-primary text-primary-foreground"
+                              : "text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          {pair.blackMove.move}
+                        </button>
+                        {hasComment(pair.blackMove.index) && (
+                          <Comment className="h-2.5 w-2.5 text-purple-500 sm:h-3 sm:w-3" />
+                        )}
+                      </div>
                     </>
                   )}
                 </div>

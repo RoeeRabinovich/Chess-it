@@ -152,6 +152,7 @@ export const DesktopStudyLayout = ({
             currentMoveComment={currentMoveComment}
             onSaveComment={onSaveComment}
             canComment={gameState.currentMoveIndex >= 0}
+            comments={gameState.comments}
           />
         </div>
       </div>

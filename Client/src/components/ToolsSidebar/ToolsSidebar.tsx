@@ -55,6 +55,7 @@ interface ToolsSidebarProps {
   currentMoveComment: string;
   onSaveComment: (comment: string) => void;
   canComment: boolean;
+  comments?: Map<string, string>;
 }
 
 export const ToolsSidebar = ({
@@ -89,6 +90,7 @@ export const ToolsSidebar = ({
   currentMoveComment,
   onSaveComment,
   canComment,
+  comments,
 }: ToolsSidebarProps) => {
   return (
     <div className="bg-card flex h-full max-h-full flex-col overflow-hidden p-1.5 sm:p-2 lg:p-4">
@@ -146,6 +148,7 @@ export const ToolsSidebar = ({
           onMoveClick={onMoveClick}
           onBranchMoveClick={onBranchMoveClick}
           opening={opening}
+          comments={comments}
         />
       </div>
       <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />
