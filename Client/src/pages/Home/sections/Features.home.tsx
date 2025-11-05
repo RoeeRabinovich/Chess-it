@@ -1,12 +1,12 @@
-import FeatureCard from "../../components/ui/FeatureCard";
-import { FeatureItem } from "../../types/featureItem";
+import FeatureCard from "../../../components/ui/FeatureCard";
+import { FeatureItem } from "../../../types/featureItem";
 import { motion } from "framer-motion";
-import { Chessboard } from "../../components/icons/ChessBoard.icon.";
-import { Book } from "../../components/icons/Book.icon";
-import { Computer } from "../../components/icons/Computer.icon";
-import { Comment } from "../../components/icons/Comment.icon";
-import { PixelUser } from "../../components/icons/PixelUser.icon";
-import { Knight } from "../../components/icons/Knight.icon";
+import { Chessboard } from "../../../components/icons/ChessBoard.icon.";
+import { Book } from "../../../components/icons/Book.icon";
+import { Computer } from "../../../components/icons/Computer.icon";
+import { Comment } from "../../../components/icons/Comment.icon";
+import { PixelUser } from "../../../components/icons/PixelUser.icon";
+import { Knight } from "../../../components/icons/Knight.icon";
 
 const features: FeatureItem[] = [
   {

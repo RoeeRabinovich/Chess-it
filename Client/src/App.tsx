@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import Footer from "./components/Footer/Footer";
 import Navbar from "./components/Navbar/Navbar";
-import Home from "./pages/Home/Home";
+import Home from "./pages/Home/Home.page";
 import Register from "./pages/Register/Register.page";
 import Login from "./pages/Login/Login.page";
 import { CreateStudy } from "./pages/CreateStudy/CreateStudy.page";

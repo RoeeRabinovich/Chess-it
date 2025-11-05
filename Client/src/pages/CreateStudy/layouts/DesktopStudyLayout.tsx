@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { EvaluationBar } from "../EvaluationBar/EvaluationBar";
-import { ToolsSidebar } from "../ToolsSidebar/ToolsSidebar";
-import ChessBoard from "../ChessBoard/ChessBoard";
-import { StudyLayoutProps } from "../../types/studyLayout";
+import { EvaluationBar } from "../../../components/EvaluationBar/EvaluationBar";
+import { ToolsSidebar } from "../../../components/ToolsSidebar/ToolsSidebar";
+import ChessBoard from "../../../components/ChessBoard/ChessBoard";
+import { ChessMove } from "../../../types/chess";
+import { StudyLayoutProps } from "../../../types/studyLayout";
 
 export const DesktopStudyLayout = ({
   gameState,
@@ -91,8 +92,8 @@ export const DesktopStudyLayout = ({
           )}
           {/* 4px gap between eval bar and board (scaled) */}
           {isEngineEnabled && (
-            <div 
-              className="hidden lg:block flex-shrink-0 transition-all duration-200"
+            <div
+              className="hidden flex-shrink-0 transition-all duration-200 lg:block"
               style={{
                 width: `${4 * boardScale}px`,
               }}
@@ -103,7 +104,7 @@ export const DesktopStudyLayout = ({
             <div className="relative z-0 flex-shrink-0 transition-all duration-200">
               <ChessBoard
                 position={gameState.position}
-                onMove={makeMove}
+                onMove={(move) => makeMove(move as ChessMove)}
                 isFlipped={gameState.isFlipped}
                 isInteractive={true}
                 boardScale={boardScale}
@@ -152,4 +153,3 @@ export const DesktopStudyLayout = ({
     </div>
   );
 };
-

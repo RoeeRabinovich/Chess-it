@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useState, useMemo, useRef } from "react";
-import { MobileStudyLayout } from "../../components/MobileStudyLayout/MobileStudyLayout";
-import { DesktopStudyLayout } from "../../components/DesktopStudyLayout/DesktopStudyLayout";
+import { MobileStudyLayout } from "./layouts/MobileStudyLayout";
+import { DesktopStudyLayout } from "./layouts/DesktopStudyLayout";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useOpeningDetection } from "../../hooks/useOpeningDetection";
 import { useStockfish } from "../../hooks/useStockfish";

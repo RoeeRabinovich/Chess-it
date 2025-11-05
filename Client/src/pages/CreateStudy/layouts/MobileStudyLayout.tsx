@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { EvaluationBar } from "../EvaluationBar/EvaluationBar";
-import { EngineLines } from "../EngineLines/EngineLines";
-import { MoveNotation } from "../MoveNotation/MoveNotation";
-import { ChessControls } from "../ChessControls/ChessControls";
-import ChessBoard from "../ChessBoard/ChessBoard";
-import { StudyLayoutProps } from "../../types/studyLayout";
+import { EvaluationBar } from "../../../components/EvaluationBar/EvaluationBar";
+import { EngineLines } from "../../../components/EngineLines/EngineLines";
+import { MoveNotation } from "../../../components/MoveNotation/MoveNotation";
+import { ChessControls } from "../../../components/ChessControls/ChessControls";
+import ChessBoard from "../../../components/ChessBoard/ChessBoard";
+import { StudyLayoutProps } from "../../../types/studyLayout";
+import { ChessMove } from "../../../types/chess";
 
 export const MobileStudyLayout = ({
   gameState,
@@ -108,7 +109,7 @@ export const MobileStudyLayout = ({
           <div className="relative z-0 flex-shrink-0 transition-all duration-200">
             <ChessBoard
               position={gameState.position}
-              onMove={makeMove}
+              onMove={(move) => makeMove(move as ChessMove)}
               isFlipped={gameState.isFlipped}
               isInteractive={true}
               boardScale={boardScale}
@@ -164,4 +165,3 @@ export const MobileStudyLayout = ({
     </div>
   );
 };
-

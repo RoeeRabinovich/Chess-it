@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Button } from "../../components/ui/Button";
-import { Pawn } from "../../components/icons/Pawn.icon";
-import { RightArrow } from "../../components/icons/RightArrow.pixel";
-import heroImage from "../../assets/images/pixel-hero-image (1).png";
+import { Button } from "../../../components/ui/Button";
+import { Pawn } from "../../../components/icons/Pawn.icon";
+import { RightArrow } from "../../../components/icons/RightArrow.pixel";
+import heroImage from "../../../assets/images/pixel-hero-image (1).png";
 import { useNavigate } from "react-router";
 
 //Hero section

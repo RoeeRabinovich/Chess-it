@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Button } from "../ui/Button";
 
 interface SettingsModalProps {
@@ -53,16 +53,13 @@ export const SettingsModal = ({
       />
       {/* Modal */}
       <div
-        className="fixed left-1/2 top-1/2 z-50 w-[90%] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-secondary p-6 shadow-lg"
+        className="border-border bg-secondary fixed top-1/2 left-1/2 z-50 w-[90%] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border p-6 shadow-lg"
         role="dialog"
         aria-modal="true"
         aria-labelledby="settings-modal-title"
       >
         <div className="mb-4 flex items-center justify-between">
-          <h2
-            id="settings-modal-title"
-            className="text-lg font-semibold"
-          >
+          <h2 id="settings-modal-title" className="text-lg font-semibold">
             Settings
           </h2>
           <button
@@ -89,7 +86,7 @@ export const SettingsModal = ({
         <div className="space-y-6">
           {/* Import/Export Section */}
           <div>
-            <h3 className="text-muted-foreground mb-3 text-sm font-medium uppercase tracking-wide">
+            <h3 className="text-muted-foreground mb-3 text-sm font-medium tracking-wide uppercase">
               Import / Export
             </h3>
             <div className="flex gap-2">
@@ -114,22 +111,19 @@ export const SettingsModal = ({
 
           {/* Engine Settings Section */}
           <div>
-            <h3 className="text-muted-foreground mb-3 text-sm font-medium uppercase tracking-wide">
+            <h3 className="text-muted-foreground mb-3 text-sm font-medium tracking-wide uppercase">
               Engine Settings
             </h3>
             <div className="space-y-4">
               {/* Engine Toggle */}
               <div className="flex items-center justify-between">
-                <label
-                  htmlFor="engine-toggle"
-                  className="text-sm font-medium"
-                >
+                <label htmlFor="engine-toggle" className="text-sm font-medium">
                   Enable Engine
                 </label>
                 <button
                   id="engine-toggle"
                   onClick={() => onEngineToggle(!isEngineEnabled)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                  className={`focus:ring-primary relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none ${
                     isEngineEnabled ? "bg-pastel-mint" : "bg-pastel-red"
                   }`}
                   role="switch"
@@ -159,7 +153,7 @@ export const SettingsModal = ({
                     onEngineLinesCountChange(parseInt(e.target.value))
                   }
                   disabled={!isEngineEnabled}
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
+                  className="border-border bg-background focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-sm focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {[1, 2, 3, 4, 5].map((num) => (
                     <option key={num} value={num}>
@@ -209,17 +203,15 @@ export const SettingsModal = ({
                 id="board-scale"
                 type="range"
                 min="0.5"
-                max="1.5"
-                step="0.05"
+                max="1.4"
+                step="0.01"
                 value={boardScale}
-                onChange={(e) =>
-                  onBoardScaleChange(parseFloat(e.target.value))
-                }
+                onChange={(e) => onBoardScaleChange(parseFloat(e.target.value))}
                 className="w-full cursor-pointer"
               />
               <div className="text-muted-foreground mt-1 flex justify-between text-xs">
                 <span>50%</span>
-                <span>150%</span>
+                <span>140%</span>
               </div>
             </div>
           </div>
@@ -228,4 +220,3 @@ export const SettingsModal = ({
     </>
   );
 };
-
