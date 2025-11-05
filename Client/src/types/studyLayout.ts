@@ -52,4 +52,8 @@ export interface StudyLayoutProps {
 
   // Other
   opening?: { name: string; eco: string };
+
+  // Comments
+  currentMoveComment: string;
+  onSaveComment: (comment: string) => void;
 }

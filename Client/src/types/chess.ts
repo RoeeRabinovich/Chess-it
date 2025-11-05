@@ -96,4 +96,5 @@ export interface ChessGameState {
     name: string;
     eco: string;
   };
+  comments?: Map<string, string>; // Key format: "main-{index}" or "branch-{branchId}-{index}"
 }

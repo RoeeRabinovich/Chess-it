@@ -30,6 +30,8 @@ export const CreateStudy = () => {
     canRedo,
     canGoToPreviousMove,
     canGoToNextMove,
+    addComment,
+    getComment,
   } = useChessGame();
 
   // Engine analysis - use configurable settings
@@ -160,6 +162,18 @@ export const CreateStudy = () => {
     setEngineEnabled(enabled);
   };
 
+  // Get current move comment
+  const currentMoveComment = useMemo(() => {
+    return getComment();
+  }, [getComment, gameState.currentMoveIndex, gameState.comments]);
+
+  const handleSaveComment = useCallback(
+    (comment: string) => {
+      addComment(comment);
+    },
+    [addComment],
+  );
+
   // Prepare shared props for layout components
   const layoutProps = {
     gameState,
@@ -190,6 +204,8 @@ export const CreateStudy = () => {
     boardScale,
     onBoardScaleChange: setBoardScale,
     opening: opening || undefined,
+    currentMoveComment,
+    onSaveComment: handleSaveComment,
   };
 
   return (

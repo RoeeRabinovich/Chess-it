@@ -34,6 +34,8 @@ export const DesktopStudyLayout = ({
   boardScale,
   onBoardScaleChange,
   opening,
+  currentMoveComment,
+  onSaveComment,
 }: StudyLayoutProps) => {
   // Calculate board size to match ChessBoard component logic
   const [boardSize, setBoardSize] = useState(() => {
@@ -147,6 +149,9 @@ export const DesktopStudyLayout = ({
             onEngineDepthChange={onEngineDepthChange}
             boardScale={boardScale}
             onBoardScaleChange={onBoardScaleChange}
+            currentMoveComment={currentMoveComment}
+            onSaveComment={onSaveComment}
+            canComment={gameState.currentMoveIndex >= 0}
           />
         </div>
       </div>

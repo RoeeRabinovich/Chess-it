@@ -1,6 +1,7 @@
 import { MoveNotation } from "../MoveNotation/MoveNotation";
 import { ChessControls } from "../ChessControls/ChessControls";
 import { EngineLines } from "../EngineLines/EngineLines";
+import { MoveComment } from "../../pages/CreateStudy/components/MoveComment";
 import { ChessMove, MoveBranch } from "../../types/chess";
 
 interface ToolsSidebarProps {
@@ -49,6 +50,11 @@ interface ToolsSidebarProps {
   onEngineDepthChange: (depth: number) => void;
   boardScale: number;
   onBoardScaleChange: (scale: number) => void;
+
+  // Comments
+  currentMoveComment: string;
+  onSaveComment: (comment: string) => void;
+  canComment: boolean;
 }
 
 export const ToolsSidebar = ({
@@ -80,6 +86,9 @@ export const ToolsSidebar = ({
   onEngineDepthChange,
   boardScale,
   onBoardScaleChange,
+  currentMoveComment,
+  onSaveComment,
+  canComment,
 }: ToolsSidebarProps) => {
   return (
     <div className="bg-card flex h-full max-h-full flex-col overflow-hidden p-1.5 sm:p-2 lg:p-4">
@@ -137,6 +146,16 @@ export const ToolsSidebar = ({
           onMoveClick={onMoveClick}
           onBranchMoveClick={onBranchMoveClick}
           opening={opening}
+        />
+      </div>
+      <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />
+
+      {/* Move Comment Section */}
+      <div className="mb-2 flex-shrink-0 sm:mb-3 lg:mb-4">
+        <MoveComment
+          currentMoveComment={currentMoveComment}
+          onSaveComment={onSaveComment}
+          canComment={canComment}
         />
       </div>
       <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />

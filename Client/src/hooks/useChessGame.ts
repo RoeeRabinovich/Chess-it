@@ -15,7 +15,25 @@ export const useChessGame = () => {
     branches: [],
     currentMoveIndex: -1,
     isFlipped: false,
+    comments: new Map<string, string>(),
   });
+
+  // Track current branch context for comments
+  const [currentBranchContext, setCurrentBranchContext] = useState<{
+    branchId: string;
+    moveIndexInBranch: number;
+  } | null>(null);
+
+  // Helper to generate comment key
+  const getCommentKey = useCallback(
+    (moveIndex: number, branchId?: string, moveIndexInBranch?: number): string => {
+      if (branchId !== undefined && moveIndexInBranch !== undefined) {
+        return `branch-${branchId}-${moveIndexInBranch}`;
+      }
+      return `main-${moveIndex}`;
+    },
+    [],
+  );
 
   const makeMove = useCallback(
     (move: MoveData | ChessMove) => {
@@ -157,12 +175,28 @@ export const useChessGame = () => {
     try {
       const move = chessRef.current.undo();
       if (move) {
-        setGameState((prev) => ({
-          ...prev,
-          position: chessRef.current.fen(),
-          moves: prev.moves.slice(0, -1),
-          currentMoveIndex: Math.max(-1, prev.currentMoveIndex - 1),
-        }));
+        setGameState((prev) => {
+          const newMoves = prev.moves.slice(0, -1);
+          const newCurrentIndex = Math.max(-1, prev.currentMoveIndex - 1);
+          
+          // Delete comment for the undone move
+          const commentKey = getCommentKey(prev.moves.length - 1);
+          const newComments = new Map(prev.comments || new Map());
+          newComments.delete(commentKey);
+          
+          // Also clear branch context if we're undoing back to main line
+          if (newCurrentIndex < prev.moves.length - 1) {
+            setCurrentBranchContext(null);
+          }
+          
+          return {
+            ...prev,
+            position: chessRef.current.fen(),
+            moves: newMoves,
+            currentMoveIndex: newCurrentIndex,
+            comments: newComments,
+          };
+        });
         return true;
       }
       return false;
@@ -170,7 +204,7 @@ export const useChessGame = () => {
       console.error("Cannot undo:", error);
       return false;
     }
-  }, []);
+  }, [getCommentKey]);
 
   const redoMove = useCallback(() => {
     // For redo, we need to implement move history tracking
@@ -186,7 +220,9 @@ export const useChessGame = () => {
       branches: [],
       currentMoveIndex: -1,
       isFlipped: false,
+      comments: new Map<string, string>(),
     });
+    setCurrentBranchContext(null);
   }, []);
 
   const flipBoard = useCallback(() => {
@@ -205,7 +241,9 @@ export const useChessGame = () => {
         moves: [],
         branches: [],
         currentMoveIndex: -1,
+        comments: new Map<string, string>(),
       }));
+      setCurrentBranchContext(null);
       return true;
     } catch (error) {
       console.error("Invalid FEN:", error);
@@ -223,7 +261,9 @@ export const useChessGame = () => {
         moves,
         branches: [],
         currentMoveIndex: moves.length - 1,
+        comments: new Map<string, string>(),
       }));
+      setCurrentBranchContext(null);
       return true;
     } catch (error) {
       console.error("Invalid PGN:", error);
@@ -250,6 +290,8 @@ export const useChessGame = () => {
           position: chessRef.current.fen(),
           currentMoveIndex: moveIndex,
         }));
+        // Clear branch context when navigating to main line
+        setCurrentBranchContext(null);
       } catch (error) {
         console.error("Error navigating to move:", error);
       }
@@ -300,6 +342,8 @@ export const useChessGame = () => {
           position: chessRef.current.fen(),
           currentMoveIndex: branch.startIndex - 1, // Position before branch starts
         }));
+        // Set branch context for comments
+        setCurrentBranchContext({ branchId, moveIndexInBranch });
       } catch (error) {
         console.error("Error navigating to branch move:", error);
       }
@@ -319,6 +363,64 @@ export const useChessGame = () => {
     }
   }, [gameState.currentMoveIndex, gameState.moves.length, navigateToMove]);
 
+  // Comment management functions
+  const addComment = useCallback(
+    (comment: string) => {
+      setGameState((prev) => {
+        const newComments = new Map(prev.comments || new Map());
+        
+        // Determine comment key based on current context
+        let commentKey: string;
+        if (currentBranchContext) {
+          // Branch move: use branch context
+          commentKey = getCommentKey(
+            0, // Not used for branch moves
+            currentBranchContext.branchId,
+            currentBranchContext.moveIndexInBranch,
+          );
+        } else {
+          // Main line move: use currentMoveIndex
+          commentKey = getCommentKey(prev.currentMoveIndex);
+        }
+        
+        if (comment.trim() === "") {
+          newComments.delete(commentKey);
+        } else {
+          newComments.set(commentKey, comment);
+        }
+        
+        return {
+          ...prev,
+          comments: newComments,
+        };
+      });
+    },
+    [currentBranchContext, getCommentKey],
+  );
+
+  const getComment = useCallback((): string => {
+    if (gameState.currentMoveIndex < 0 && !currentBranchContext) {
+      return ""; // No comments for initial position
+    }
+    
+    const comments = gameState.comments || new Map();
+    let commentKey: string;
+    
+    if (currentBranchContext) {
+      // Branch move: use branch context
+      commentKey = getCommentKey(
+        0, // Not used for branch moves
+        currentBranchContext.branchId,
+        currentBranchContext.moveIndexInBranch,
+      );
+    } else {
+      // Main line move: use currentMoveIndex
+      commentKey = getCommentKey(gameState.currentMoveIndex);
+    }
+    
+    return comments.get(commentKey) || "";
+  }, [gameState.currentMoveIndex, gameState.comments, currentBranchContext, getCommentKey]);
+
   return {
     gameState,
     makeMove,
@@ -336,5 +438,7 @@ export const useChessGame = () => {
     canRedo: false,
     canGoToPreviousMove: gameState.currentMoveIndex >= 0,
     canGoToNextMove: gameState.currentMoveIndex < gameState.moves.length - 1,
+    addComment,
+    getComment,
   };
 };

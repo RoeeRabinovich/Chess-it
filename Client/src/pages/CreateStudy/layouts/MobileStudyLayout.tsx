@@ -3,6 +3,7 @@ import { EvaluationBar } from "../../../components/EvaluationBar/EvaluationBar";
 import { EngineLines } from "../../../components/EngineLines/EngineLines";
 import { MoveNotation } from "../../../components/MoveNotation/MoveNotation";
 import { ChessControls } from "../../../components/ChessControls/ChessControls";
+import { MoveComment } from "../components/MoveComment";
 import ChessBoard from "../../../components/ChessBoard/ChessBoard";
 import { StudyLayoutProps } from "../../../types/studyLayout";
 import { ChessMove } from "../../../types/chess";
@@ -36,6 +37,8 @@ export const MobileStudyLayout = ({
   boardScale,
   onBoardScaleChange,
   opening,
+  currentMoveComment,
+  onSaveComment,
 }: StudyLayoutProps) => {
   const [evalBarWidth, setEvalBarWidth] = useState(280);
 
@@ -137,6 +140,13 @@ export const MobileStudyLayout = ({
           />
         </div>
       </div>
+
+      {/* Move Comment */}
+      <MoveComment
+        currentMoveComment={currentMoveComment}
+        onSaveComment={onSaveComment}
+        canComment={gameState.currentMoveIndex >= 0}
+      />
 
       {/* Game Controls */}
       <div className="border-border bg-card w-full border-t px-2 py-1.5 sm:px-3 sm:py-2">
