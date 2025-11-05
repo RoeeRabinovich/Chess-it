@@ -8,6 +8,7 @@ export interface StudyLayoutProps {
     branches: MoveBranch[];
     currentMoveIndex: number;
     isFlipped: boolean;
+    comments?: Map<string, string>;
   };
   makeMove: (move: ChessMove) => boolean;
   onMoveClick: (moveIndex: number) => void;
@@ -56,4 +57,7 @@ export interface StudyLayoutProps {
   // Comments
   currentMoveComment: string;
   onSaveComment: (comment: string) => void;
+
+  // Create Study
+  onCreateStudy?: () => void;
 }

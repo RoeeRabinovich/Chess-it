@@ -1,8 +1,8 @@
-import { MoveNotation } from "../MoveNotation/MoveNotation";
-import { ChessControls } from "../ChessControls/ChessControls";
-import { EngineLines } from "../EngineLines/EngineLines";
-import { MoveComment } from "../../pages/CreateStudy/components/MoveComment";
-import { ChessMove, MoveBranch } from "../../types/chess";
+import { MoveNotation } from "../../../components/MoveNotation/MoveNotation";
+import { ChessControls } from "../../../components/ChessControls/ChessControls";
+import { EngineLines } from "../../../components/EngineLines/EngineLines";
+import { MoveComment } from "./MoveComment";
+import { ChessMove, MoveBranch } from "../../../types/chess";
 
 interface ToolsSidebarProps {
   // Engine Analysis
@@ -56,6 +56,9 @@ interface ToolsSidebarProps {
   onSaveComment: (comment: string) => void;
   canComment: boolean;
   comments?: Map<string, string>;
+
+  // Create Study
+  onCreateStudy?: () => void;
 }
 
 export const ToolsSidebar = ({
@@ -91,6 +94,7 @@ export const ToolsSidebar = ({
   onSaveComment,
   canComment,
   comments,
+  onCreateStudy,
 }: ToolsSidebarProps) => {
   return (
     <div className="bg-card flex h-full max-h-full flex-col overflow-hidden p-1.5 sm:p-2 lg:p-4">
@@ -185,6 +189,7 @@ export const ToolsSidebar = ({
           onEngineDepthChange={onEngineDepthChange}
           boardScale={boardScale}
           onBoardScaleChange={onBoardScaleChange}
+          onCreateStudy={onCreateStudy}
         />
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Button } from "../ui/Button";
+import { Button } from "../../../components/ui/Button";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -220,3 +220,4 @@ export const SettingsModal = ({
     </>
   );
 };
+

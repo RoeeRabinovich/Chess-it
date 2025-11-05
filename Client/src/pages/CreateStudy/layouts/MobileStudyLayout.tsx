@@ -39,6 +39,7 @@ export const MobileStudyLayout = ({
   opening,
   currentMoveComment,
   onSaveComment,
+  onCreateStudy,
 }: StudyLayoutProps) => {
   const [evalBarWidth, setEvalBarWidth] = useState(280);
 
@@ -171,6 +172,7 @@ export const MobileStudyLayout = ({
           onEngineDepthChange={onEngineDepthChange}
           boardScale={boardScale}
           onBoardScaleChange={onBoardScaleChange}
+          onCreateStudy={onCreateStudy}
         />
       </div>
     </div>

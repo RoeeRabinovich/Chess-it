@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { AuthResponse, LoginData, RegisterData, ApiError } from "../types/auth";
 import { User } from "../types/user";
+import { ChessGameState } from "../types/chess";
 
 // Create axios instance with base configuration
 const apiClient = axios.create({
@@ -95,6 +96,40 @@ class ApiService {
 
   async getProfile(): Promise<User> {
     const response = await apiClient.get<User>("/users/profile");
+    return response.data;
+  }
+
+  // Study endpoints
+  async createStudy(data: {
+    studyName: string;
+    category: "Opening" | "Endgame" | "Strategy" | "Tactics";
+    description?: string;
+    isPublic: boolean;
+    gameState: ChessGameState;
+  }): Promise<{ id: string; studyName: string }> {
+    // Convert comments Map to plain object for JSON serialization
+    const commentsObject: Record<string, string> = {};
+    if (data.gameState.comments) {
+      data.gameState.comments.forEach((value, key) => {
+        commentsObject[key] = value;
+      });
+    }
+
+    const payload = {
+      studyName: data.studyName,
+      category: data.category,
+      description: data.description || "",
+      isPublic: data.isPublic,
+      gameState: {
+        ...data.gameState,
+        comments: commentsObject,
+      },
+    };
+
+    const response = await apiClient.post<{ id: string; studyName: string }>(
+      "/studies/create",
+      payload,
+    );
     return response.data;
   }
 

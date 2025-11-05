@@ -1,6 +1,7 @@
 import { useEffect, useCallback, useState, useMemo, useRef } from "react";
 import { MobileStudyLayout } from "./layouts/MobileStudyLayout";
 import { DesktopStudyLayout } from "./layouts/DesktopStudyLayout";
+import { CreateStudyModal } from "./components/CreateStudyModal";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useOpeningDetection } from "../../hooks/useOpeningDetection";
 import { useStockfish } from "../../hooks/useStockfish";
@@ -12,6 +13,9 @@ export const CreateStudy = () => {
   const [engineLinesCount, setEngineLinesCount] = useState(3);
   const [engineDepth, setEngineDepth] = useState(12);
   const [boardScale, setBoardScale] = useState(1.0);
+
+  // Create Study Modal state
+  const [isCreateStudyModalOpen, setIsCreateStudyModalOpen] = useState(false);
 
   // Game state
   const {
@@ -165,7 +169,7 @@ export const CreateStudy = () => {
   // Get current move comment
   const currentMoveComment = useMemo(() => {
     return getComment();
-  }, [getComment, gameState.currentMoveIndex, gameState.comments]);
+  }, [getComment]);
 
   const handleSaveComment = useCallback(
     (comment: string) => {
@@ -173,6 +177,10 @@ export const CreateStudy = () => {
     },
     [addComment],
   );
+
+  const handleCreateStudy = useCallback(() => {
+    setIsCreateStudyModalOpen(true);
+  }, []);
 
   // Prepare shared props for layout components
   const layoutProps = {
@@ -206,18 +214,28 @@ export const CreateStudy = () => {
     opening: opening || undefined,
     currentMoveComment,
     onSaveComment: handleSaveComment,
+    onCreateStudy: handleCreateStudy,
   };
 
   return (
-    <div className="bg-background flex h-screen overflow-hidden pt-16 sm:pt-20 md:pt-24">
-      {/* Mobile Layout */}
-      <div className="flex flex-1 lg:hidden">
-        <MobileStudyLayout {...layoutProps} />
+    <>
+      <div className="bg-background flex h-screen overflow-hidden pt-16 sm:pt-20 md:pt-24">
+        {/* Mobile Layout */}
+        <div className="flex flex-1 lg:hidden">
+          <MobileStudyLayout {...layoutProps} />
+        </div>
+        {/* Desktop Layout */}
+        <div className="hidden flex-1 lg:flex">
+          <DesktopStudyLayout {...layoutProps} />
+        </div>
       </div>
-      {/* Desktop Layout */}
-      <div className="hidden flex-1 lg:flex">
-        <DesktopStudyLayout {...layoutProps} />
-      </div>
-    </div>
+
+      {/* Create Study Modal */}
+      <CreateStudyModal
+        isOpen={isCreateStudyModalOpen}
+        onClose={() => setIsCreateStudyModalOpen(false)}
+        gameState={gameState}
+      />
+    </>
   );
 };

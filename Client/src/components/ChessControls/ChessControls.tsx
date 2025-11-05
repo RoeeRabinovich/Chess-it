@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Button } from "../ui/Button";
 import { Settings } from "../icons/Settings.icon";
-import { Flip } from "../icons/Flip.icon";
+import { Book } from "../icons/Book.icon";
 import { Undo } from "../icons/Undo.icon";
 import { Redo } from "../icons/Redo.icon";
+import { Flip } from "../icons/Flip.icon";
 import { LeftArrow } from "../icons/LeftArrow.icon";
 import { RightArrow } from "../icons/RightArrow.icon";
-import { SettingsModal } from "../SettingsModal/SettingsModal";
+import { SettingsModal } from "../../pages/CreateStudy/components/SettingsModal";
 
 interface ChessControlsProps {
   onFlipBoard: () => void;
@@ -30,6 +31,8 @@ interface ChessControlsProps {
   // Board scale props
   boardScale: number;
   onBoardScaleChange: (scale: number) => void;
+  // Create Study
+  onCreateStudy?: () => void;
 }
 
 export const ChessControls = ({
@@ -52,6 +55,7 @@ export const ChessControls = ({
   onEngineDepthChange,
   boardScale,
   onBoardScaleChange,
+  onCreateStudy,
 }: ChessControlsProps) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -66,7 +70,7 @@ export const ChessControls = ({
             onClick={onPreviousMove}
             disabled={!canGoToPreviousMove}
             aria-label="Previous move"
-            className="h-12 w-full flex-1 bg-secondary sm:h-14"
+            className="bg-secondary h-12 w-full flex-1 sm:h-14"
           >
             <LeftArrow className="h-8 w-8 sm:h-10 sm:w-10" />
           </Button>
@@ -76,13 +80,13 @@ export const ChessControls = ({
             onClick={onNextMove}
             disabled={!canGoToNextMove}
             aria-label="Next move"
-            className="h-12 w-full flex-1 bg-secondary sm:h-14"
+            className="bg-secondary h-12 w-full flex-1 sm:h-14"
           >
             <RightArrow className="h-8 w-8 sm:h-10 sm:w-10" />
           </Button>
         </div>
 
-        {/* Bottom Row: Undo, Redo on left, Settings on right */}
+        {/* Bottom Row: Undo, Redo on left, Create Study in middle, Settings on right */}
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2">
             <Button
@@ -105,16 +109,38 @@ export const ChessControls = ({
             >
               <Redo className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onFlipBoard}
+              aria-label="Flip board"
+              className="h-8 w-8 sm:h-9 sm:w-9"
+            >
+              <Flip className="h-4 w-4 sm:h-5 sm:w-5" />
+            </Button>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsSettingsOpen(true)}
-            aria-label="Open settings"
-            className="h-8 w-8 sm:h-9 sm:w-9"
-          >
-            <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
-          </Button>
+          <div className="flex items-center gap-2">
+            {onCreateStudy && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onCreateStudy}
+                aria-label="Create Study"
+                className="h-8 w-8 sm:h-9 sm:w-9"
+              >
+                <Book className="h-4 w-4 sm:h-5 sm:w-5" />
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsSettingsOpen(true)}
+              aria-label="Open settings"
+              className="h-8 w-8 sm:h-9 sm:w-9"
+            >
+              <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
+            </Button>
+          </div>
         </div>
       </div>
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { EvaluationBar } from "../../../components/EvaluationBar/EvaluationBar";
-import { ToolsSidebar } from "../../../components/ToolsSidebar/ToolsSidebar";
+import { ToolsSidebar } from "../components/ToolsSidebar";
 import ChessBoard from "../../../components/ChessBoard/ChessBoard";
 import { ChessMove } from "../../../types/chess";
 import { StudyLayoutProps } from "../../../types/studyLayout";
@@ -36,6 +36,7 @@ export const DesktopStudyLayout = ({
   opening,
   currentMoveComment,
   onSaveComment,
+  onCreateStudy,
 }: StudyLayoutProps) => {
   // Calculate board size to match ChessBoard component logic
   const [boardSize, setBoardSize] = useState(() => {
@@ -153,6 +154,7 @@ export const DesktopStudyLayout = ({
             onSaveComment={onSaveComment}
             canComment={gameState.currentMoveIndex >= 0}
             comments={gameState.comments}
+            onCreateStudy={onCreateStudy}
           />
         </div>
       </div>
