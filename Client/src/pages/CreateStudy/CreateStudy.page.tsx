@@ -55,19 +55,12 @@ export const CreateStudy = () => {
     engineEnabled,
   );
 
-  // Keep stable evaluation values to prevent flickering during analysis
-  // Track both the position FEN and the evaluation to ensure we show correct data
-  const stableEvalRef = useRef<{
-    position: string;
-    evaluation: number;
-    possibleMate: string | null;
-  }>({
+  const stableEvalRef = useRef({
     position: "",
     evaluation: 0,
-    possibleMate: null,
+    possibleMate: null as string | null,
   });
 
-  // Update stable values when new analysis data arrives for the current position
   useEffect(() => {
     if (depth > 0 && isEngineEnabled) {
       stableEvalRef.current = {
@@ -84,17 +77,13 @@ export const CreateStudy = () => {
     gameState.position,
   ]);
 
-  // Get the evaluation to display - use current if available, otherwise stable only if it matches current position
   const displayEvaluation = useMemo(() => {
-    // If we have current analysis data (depth > 0), always use it
     if (depth > 0 && isEngineEnabled) {
       return {
         evaluation: positionEvaluation,
         possibleMate: possibleMate || null,
       };
     }
-    // If no current data, only use stable values if they match the current position
-    // This prevents showing evaluation from a previous position
     if (
       stableEvalRef.current.position === gameState.position &&
       stableEvalRef.current.evaluation !== 0
@@ -104,11 +93,7 @@ export const CreateStudy = () => {
         possibleMate: stableEvalRef.current.possibleMate,
       };
     }
-    // Default to neutral if no valid data
-    return {
-      evaluation: 0,
-      possibleMate: null,
-    };
+    return { evaluation: 0, possibleMate: null };
   }, [
     depth,
     positionEvaluation,
@@ -124,27 +109,24 @@ export const CreateStudy = () => {
     detectOpening(gameState.moves);
   }, [gameState.moves, detectOpening]);
 
-  // Format engine lines to SAN notation
-  const formattedEngineLines = useMemo(() => {
-    return engineLines.map((line) => ({
-      sanNotation: convertUCIToSAN(line.moves, gameState.position),
-      evaluation: line.evaluation,
-      depth: line.depth,
-      possibleMate: line.possibleMate,
-    }));
-  }, [engineLines, gameState.position]);
-
-  const handleMoveClick = useCallback(
-    (moveIndex: number) => {
-      navigateToMove(moveIndex);
-    },
-    [navigateToMove],
+  const formattedEngineLines = useMemo(
+    () =>
+      engineLines.map((line) => ({
+        sanNotation: convertUCIToSAN(line.moves, gameState.position),
+        evaluation: line.evaluation,
+        depth: line.depth,
+        possibleMate: line.possibleMate,
+      })),
+    [engineLines, gameState.position],
   );
 
+  const handleMoveClick = useCallback(
+    (moveIndex: number) => navigateToMove(moveIndex),
+    [navigateToMove],
+  );
   const handleBranchMoveClick = useCallback(
-    (branchId: string, moveIndexInBranch: number) => {
-      navigateToBranchMove(branchId, moveIndexInBranch);
-    },
+    (branchId: string, moveIndexInBranch: number) =>
+      navigateToBranchMove(branchId, moveIndexInBranch),
     [navigateToBranchMove],
   );
 
@@ -166,21 +148,15 @@ export const CreateStudy = () => {
     setEngineEnabled(enabled);
   };
 
-  // Get current move comment
-  const currentMoveComment = useMemo(() => {
-    return getComment();
-  }, [getComment]);
-
+  const currentMoveComment = useMemo(() => getComment(), [getComment]);
   const handleSaveComment = useCallback(
-    (comment: string) => {
-      addComment(comment);
-    },
+    (comment: string) => addComment(comment),
     [addComment],
   );
-
-  const handleCreateStudy = useCallback(() => {
-    setIsCreateStudyModalOpen(true);
-  }, []);
+  const handleCreateStudy = useCallback(
+    () => setIsCreateStudyModalOpen(true),
+    [],
+  );
 
   // Prepare shared props for layout components
   const layoutProps = {

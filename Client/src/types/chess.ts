@@ -98,3 +98,45 @@ export interface ChessGameState {
   };
   comments?: Map<string, string>; // Key format: "main-{index}" or "branch-{branchId}-{index}"
 }
+
+/**
+ * Return type for the useStockfish hook
+ */
+export interface UseStockfishReturn {
+  isEngineEnabled: boolean;
+  isAnalyzing: boolean;
+  positionEvaluation: number;
+  depth: number;
+  bestLine: string;
+  possibleMate: string;
+  engineLines: Array<{
+    moves: string[];
+    evaluation: number;
+    depth: number;
+    possibleMate?: string | null;
+  }>;
+  enableEngine: () => void;
+  disableEngine: () => void;
+  toggleEngine: () => void;
+}
+
+/**
+ * Cached analysis data structure for Stockfish evaluations
+ */
+export interface CachedAnalysis {
+  evaluation: number;
+  depth: number;
+  bestLine: string;
+  possibleMate?: string | null;
+  lines?: import("../services/stockfishService").AnalysisLines[];
+}
+
+/**
+ * Processed engine line after normalization
+ */
+export interface ProcessedEngineLine {
+  moves: string[];
+  evaluation: number;
+  depth: number;
+  possibleMate?: string | null;
+}

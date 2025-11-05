@@ -1,40 +1,13 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Chess } from "chess.js";
-import { analyzePosition } from "../services/stockfishService";
+import { analyzePosition, AnalysisLines } from "../services/stockfishService";
+import {
+  UseStockfishReturn,
+  CachedAnalysis,
+  ProcessedEngineLine,
+} from "../types/chess";
 
-interface UseStockfishReturn {
-  isEngineEnabled: boolean;
-  isAnalyzing: boolean;
-  positionEvaluation: number;
-  depth: number;
-  bestLine: string;
-  possibleMate: string;
-  engineLines: Array<{
-    moves: string[];
-    evaluation: number;
-    depth: number;
-    possibleMate?: string | null;
-  }>;
-  enableEngine: () => void;
-  disableEngine: () => void;
-  toggleEngine: () => void;
-}
-
-const evalCache = new Map<
-  string,
-  {
-    evaluation: number;
-    depth: number;
-    bestLine: string;
-    possibleMate?: string | null;
-    lines?: Array<{
-      pv: string;
-      evaluation: number;
-      depth: number;
-      possibleMate?: string | null;
-    }>;
-  }
->();
+const evalCache = new Map<string, CachedAnalysis>();
 
 export const useStockfish = (
   position: string,
@@ -46,7 +19,7 @@ export const useStockfish = (
 ): UseStockfishReturn => {
   // Auto-enable after first move, or use initialEngineEnabled if provided
   const [isEngineEnabled, setIsEngineEnabled] = useState(
-    initialEngineEnabled !== undefined ? initialEngineEnabled : moveCount > 0
+    initialEngineEnabled !== undefined ? initialEngineEnabled : moveCount > 0,
   );
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [positionEvaluation, setPositionEvaluation] = useState(0);
@@ -78,7 +51,11 @@ export const useStockfish = (
 
   // Auto-enable engine when a move is made (only if initialEngineEnabled was not provided)
   useEffect(() => {
-    if (initialEngineEnabled === undefined && moveCount > 0 && !isEngineEnabled) {
+    if (
+      initialEngineEnabled === undefined &&
+      moveCount > 0 &&
+      !isEngineEnabled
+    ) {
       setIsEngineEnabled(true);
     }
   }, [moveCount, isEngineEnabled, initialEngineEnabled]);
@@ -135,26 +112,30 @@ export const useStockfish = (
       const normalizeEval = whiteToMove
         ? cached.evaluation
         : -cached.evaluation;
-      
+
       // Reconstruct engine lines from cache if available
-      const processedLines = (cached as any).lines ? (cached as any).lines.map((line: any) => {
-        const moves = line.pv ? line.pv.trim().split(/\s+/) : [];
-        const lineEval = whiteToMove ? line.evaluation : -line.evaluation;
-        return {
-          moves,
-          evaluation: lineEval,
-          depth: line.depth,
-          possibleMate: line.possibleMate,
-        };
-      }).sort((a: any, b: any) => {
-        if (a.possibleMate && b.possibleMate) {
-          return parseInt(a.possibleMate) - parseInt(b.possibleMate);
-        }
-        if (a.possibleMate) return -1;
-        if (b.possibleMate) return 1;
-        return b.evaluation - a.evaluation;
-      }) : [];
-      
+      const processedLines: ProcessedEngineLine[] = cached.lines
+        ? cached.lines
+            .map((line: AnalysisLines) => {
+              const moves = line.pv ? line.pv.trim().split(/\s+/) : [];
+              const lineEval = whiteToMove ? line.evaluation : -line.evaluation;
+              return {
+                moves,
+                evaluation: lineEval,
+                depth: line.depth,
+                possibleMate: line.possibleMate,
+              };
+            })
+            .sort((a: ProcessedEngineLine, b: ProcessedEngineLine) => {
+              if (a.possibleMate && b.possibleMate) {
+                return parseInt(a.possibleMate) - parseInt(b.possibleMate);
+              }
+              if (a.possibleMate) return -1;
+              if (b.possibleMate) return 1;
+              return b.evaluation - a.evaluation;
+            })
+        : [];
+
       setPositionEvaluation(normalizeEval);
       setDepth(cached.depth);
       setBestLine(cached.bestLine);
@@ -187,28 +168,28 @@ export const useStockfish = (
         const normalizeEval = whiteToMove
           ? result.evaluation
           : -result.evaluation;
-        
+
         // Process engine lines: convert UCI moves to arrays and normalize evals
-        const processedLines = result.lines.map((line) => {
-          const moves = line.pv ? line.pv.trim().split(/\s+/) : [];
-          const lineEval = whiteToMove
-            ? line.evaluation
-            : -line.evaluation;
-          return {
-            moves,
-            evaluation: lineEval,
-            depth: line.depth,
-            possibleMate: line.possibleMate,
-          };
-        }).sort((a, b) => {
-          // Sort by evaluation (best first)
-          if (a.possibleMate && b.possibleMate) {
-            return parseInt(a.possibleMate) - parseInt(b.possibleMate);
-          }
-          if (a.possibleMate) return -1;
-          if (b.possibleMate) return 1;
-          return b.evaluation - a.evaluation;
-        });
+        const processedLines = result.lines
+          .map((line) => {
+            const moves = line.pv ? line.pv.trim().split(/\s+/) : [];
+            const lineEval = whiteToMove ? line.evaluation : -line.evaluation;
+            return {
+              moves,
+              evaluation: lineEval,
+              depth: line.depth,
+              possibleMate: line.possibleMate,
+            };
+          })
+          .sort((a, b) => {
+            // Sort by evaluation (best first)
+            if (a.possibleMate && b.possibleMate) {
+              return parseInt(a.possibleMate) - parseInt(b.possibleMate);
+            }
+            if (a.possibleMate) return -1;
+            if (b.possibleMate) return 1;
+            return b.evaluation - a.evaluation;
+          });
 
         // cache and update UI
         evalCache.set(cacheKey, { ...result, evaluation: normalizeEval });

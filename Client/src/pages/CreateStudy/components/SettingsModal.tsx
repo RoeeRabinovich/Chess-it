@@ -1,5 +1,5 @@
-import { useEffect } from "react";
 import { Button } from "../../../components/ui/Button";
+import { Modal } from "../../../components/ui/Modal";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -30,60 +30,15 @@ export const SettingsModal = ({
   boardScale,
   onBoardScaleChange,
 }: SettingsModalProps) => {
-  // Close on Escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
-
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-      {/* Modal */}
-      <div
-        className="border-border bg-secondary fixed top-1/2 left-1/2 z-50 w-[90%] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border p-6 shadow-lg"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="settings-modal-title"
-      >
-        <div className="mb-4 flex items-center justify-between">
-          <h2 id="settings-modal-title" className="text-lg font-semibold">
-            Settings
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-muted-foreground hover:text-foreground rounded p-1 transition-colors"
-            aria-label="Close settings"
-          >
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
-
-        <div className="space-y-6">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Settings"
+      titleId="settings-modal-title"
+      closeLabel="Close settings"
+    >
+      <div className="space-y-6">
           {/* Import/Export Section */}
           <div>
             <h3 className="text-muted-foreground mb-3 text-sm font-medium tracking-wide uppercase">
@@ -216,8 +171,7 @@ export const SettingsModal = ({
             </div>
           </div>
         </div>
-      </div>
-    </>
+    </Modal>
   );
 };
 
