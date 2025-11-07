@@ -3,7 +3,7 @@ import { Button } from "../ui/Button";
 import { Settings } from "../icons/Settings.icon";
 import { Book } from "../icons/Book.icon";
 import { Undo } from "../icons/Undo.icon";
-import { Redo } from "../icons/Redo.icon";
+import { Redo as ResetIcon } from "../icons/Redo.icon";
 import { Flip } from "../icons/Flip.icon";
 import { LeftArrow } from "../icons/LeftArrow.icon";
 import { RightArrow } from "../icons/RightArrow.icon";
@@ -12,11 +12,10 @@ import { SettingsModal } from "../../pages/CreateStudy/components/SettingsModal"
 interface ChessControlsProps {
   onFlipBoard: () => void;
   onUndo: () => void;
-  onRedo: () => void;
+  onReset: () => void;
   onLoadFEN: () => void;
   onLoadPGN: () => void;
   canUndo: boolean;
-  canRedo: boolean;
   canGoToPreviousMove: boolean;
   canGoToNextMove: boolean;
   onPreviousMove: () => void;
@@ -38,11 +37,10 @@ interface ChessControlsProps {
 export const ChessControls = ({
   onFlipBoard,
   onUndo,
-  onRedo,
+  onReset,
   onLoadFEN,
   onLoadPGN,
   canUndo,
-  canRedo,
   canGoToPreviousMove,
   canGoToNextMove,
   onPreviousMove,
@@ -86,7 +84,7 @@ export const ChessControls = ({
           </Button>
         </div>
 
-        {/* Bottom Row: Undo, Redo on left, Create Study in middle, Settings on right */}
+        {/* Bottom Row: Undo, Reset on left, Create Study in middle, Settings on right */}
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2">
             <Button
@@ -102,12 +100,11 @@ export const ChessControls = ({
             <Button
               variant="ghost"
               size="icon"
-              onClick={onRedo}
-              disabled={!canRedo}
-              aria-label="Redo move"
+              onClick={onReset}
+              aria-label="Reset study"
               className="h-8 w-8 sm:h-9 sm:w-9"
             >
-              <Redo className="h-4 w-4 sm:h-5 sm:w-5" />
+              <ResetIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
             <Button
               variant="ghost"

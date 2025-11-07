@@ -19,11 +19,10 @@ export const MobileStudyLayout = ({
   displayEvaluation,
   onFlipBoard,
   onUndo,
-  onRedo,
+  onReset,
   onLoadFEN,
   onLoadPGN,
   canUndo,
-  canRedo,
   canGoToPreviousMove,
   canGoToNextMove,
   onPreviousMove,
@@ -155,11 +154,10 @@ export const MobileStudyLayout = ({
         <ChessControls
           onFlipBoard={onFlipBoard}
           onUndo={onUndo}
-          onRedo={onRedo}
+          onReset={onReset}
           onLoadFEN={onLoadFEN}
           onLoadPGN={onLoadPGN}
           canUndo={canUndo}
-          canRedo={canRedo}
           canGoToPreviousMove={canGoToPreviousMove}
           canGoToNextMove={canGoToNextMove}
           onPreviousMove={onPreviousMove}

@@ -140,3 +140,11 @@ export interface ProcessedEngineLine {
   depth: number;
   possibleMate?: string | null;
 }
+
+/**
+ * Tracks the current position within a variation branch
+ */
+export interface BranchContext {
+  branchId: string;
+  moveIndexInBranch: number;
+}

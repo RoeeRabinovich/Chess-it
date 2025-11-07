@@ -32,11 +32,10 @@ interface ToolsSidebarProps {
   // Game Controls
   onFlipBoard: () => void;
   onUndo: () => void;
-  onRedo: () => void;
+  onReset: () => void;
   onLoadFEN: () => void;
   onLoadPGN: () => void;
   canUndo: boolean;
-  canRedo: boolean;
   canGoToPreviousMove: boolean;
   canGoToNextMove: boolean;
   onPreviousMove: () => void;
@@ -73,11 +72,10 @@ export const ToolsSidebar = ({
   opening,
   onFlipBoard,
   onUndo,
-  onRedo,
+  onReset,
   onLoadFEN,
   onLoadPGN,
   canUndo,
-  canRedo,
   canGoToPreviousMove,
   canGoToNextMove,
   onPreviousMove,
@@ -172,11 +170,10 @@ export const ToolsSidebar = ({
         <ChessControls
           onFlipBoard={onFlipBoard}
           onUndo={onUndo}
-          onRedo={onRedo}
+          onReset={onReset}
           onLoadFEN={onLoadFEN}
           onLoadPGN={onLoadPGN}
           canUndo={canUndo}
-          canRedo={canRedo}
           canGoToPreviousMove={canGoToPreviousMove}
           canGoToNextMove={canGoToNextMove}
           onPreviousMove={onPreviousMove}

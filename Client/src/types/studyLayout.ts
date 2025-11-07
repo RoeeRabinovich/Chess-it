@@ -31,11 +31,10 @@ export interface StudyLayoutProps {
   // Controls
   onFlipBoard: () => void;
   onUndo: () => void;
-  onRedo: () => void;
+  onReset: () => void;
   onLoadFEN: () => void;
   onLoadPGN: () => void;
   canUndo: boolean;
-  canRedo: boolean;
   canGoToPreviousMove: boolean;
   canGoToNextMove: boolean;
   onPreviousMove: () => void;
