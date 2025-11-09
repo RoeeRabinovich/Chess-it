@@ -56,7 +56,7 @@ apiClient.interceptors.response.use(
         apiError.message = errorMessage || "Invalid request data";
       } else if (status === 401) {
         apiError.type = "AUTHENTICATION";
-        apiError.message = errorMessage || "Invalid email or password";
+        apiError.message = errorMessage || "Authentication required. Please log in.";
       } else if (status === 409) {
         apiError.type = "VALIDATION";
         apiError.message = errorMessage || "User already exists";

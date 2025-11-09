@@ -3,7 +3,7 @@ const { handleError } = require("../utils/errorHandler");
 const config = require("config");
 const tokenGenerator = config.get("TOKEN_GENERATOR");
 
-// Authentication middleware
+// Authentication middleware (required)
 const auth = (req, res, next) => {
   if (tokenGenerator === "jwt") {
     try {
@@ -36,4 +36,30 @@ const auth = (req, res, next) => {
   );
 };
 
-module.exports = { auth };
+// Optional authentication middleware
+// If token is provided and valid, sets req.user
+// If token is missing or invalid, continues without req.user (no error)
+const optionalAuth = (req, res, next) => {
+  if (tokenGenerator === "jwt") {
+    try {
+      let tokenFromClient =
+        req.headers["x-auth-token"] ||
+        req.headers["authorization"]?.replace("Bearer ", "");
+
+      if (tokenFromClient) {
+        const userData = verifyAuthToken(tokenFromClient);
+        if (userData) {
+          req.user = userData;
+        }
+        // If token is invalid, continue without req.user (don't throw error)
+      }
+      return next();
+    } catch (error) {
+      // If token verification fails, continue without req.user
+      return next();
+    }
+  }
+  return next();
+};
+
+module.exports = { auth, optionalAuth };

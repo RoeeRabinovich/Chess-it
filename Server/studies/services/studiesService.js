@@ -1,4 +1,8 @@
-const { createStudy } = require("../models/studiesDataAccessService");
+const {
+  createStudy,
+  findStudyById,
+  findStudiesByUser,
+} = require("../models/studiesDataAccessService");
 const { validateCreateStudy } = require("../validations/studyValidatorService");
 const { handleJoiError } = require("../../utils/errorHandler");
 
@@ -40,4 +44,49 @@ const createStudyService = async (userId, rawStudy) => {
   }
 };
 
-module.exports = { createStudyService };
+// Get study by ID
+// Returns study if it's public or if the user is the creator
+const getStudyByIdService = async (studyId, userId) => {
+  try {
+    const study = await findStudyById(studyId);
+
+    // Check if study exists
+    if (!study) {
+      const error = new Error("Study not found");
+      error.status = 404;
+      return Promise.reject(error);
+    }
+
+    // Check access: user can view if study is public OR if they created it
+    const studyCreatorId = study.createdBy._id
+      ? study.createdBy._id.toString()
+      : study.createdBy.toString();
+    const isOwner = userId && studyCreatorId === userId.toString();
+
+    if (!study.isPublic && !isOwner) {
+      const error = new Error("Access denied. This study is private.");
+      error.status = 403;
+      return Promise.reject(error);
+    }
+
+    return Promise.resolve(study);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+// Get all studies by user
+const getUserStudiesService = async (userId) => {
+  try {
+    const studies = await findStudiesByUser(userId);
+    return Promise.resolve(studies);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+module.exports = {
+  createStudyService,
+  getStudyByIdService,
+  getUserStudiesService,
+};
