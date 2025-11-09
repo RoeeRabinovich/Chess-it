@@ -17,8 +17,13 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     );
   }
 
+  // Check localStorage as fallback if user state hasn't been restored yet
+  const token = localStorage.getItem("authToken");
+  const storedUser = localStorage.getItem("user");
+  const hasStoredAuth = !!(token && storedUser);
+
   // Redirect to login if not authenticated
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !hasStoredAuth) {
     return <Navigate to="/login" replace />;
   }
 

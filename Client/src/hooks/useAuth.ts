@@ -24,47 +24,44 @@ export const useAuth = () => {
   useEffect(() => {
     // Check if user is already authenticated on app load
     // Only run once globally, or if user is not already loaded and token exists
-    const checkAuth = async () => {
+    const checkAuth = () => {
       // If user is already loaded, don't check again
       if (user || hasCheckedAuth.current || authCheckPerformed) {
         return;
       }
 
-      if (apiService.isAuthenticated()) {
+      // Set loading to true while checking
+      dispatch(setLoading(true));
+
+      const token = localStorage.getItem("authToken");
+      const storedUser = localStorage.getItem("user");
+
+      if (token && storedUser) {
+        // Restore user from localStorage synchronously
+        try {
+          const userData = JSON.parse(storedUser);
+          dispatch(loginAction(userData));
+          hasCheckedAuth.current = true;
+          authCheckPerformed = true;
+        } catch {
+          // Invalid user data in localStorage, clear it
+          localStorage.removeItem("user");
+          apiService.clearAuth();
+          hasCheckedAuth.current = true;
+          authCheckPerformed = true;
+        }
+      } else if (token) {
+        // Token exists but no user data - clear token
+        apiService.clearAuth();
         hasCheckedAuth.current = true;
         authCheckPerformed = true;
-        try {
-          dispatch(setLoading(true));
-          const userData = await apiService.getProfile();
-          dispatch(loginAction(userData));
-        } catch (error) {
-          const apiError = error as ApiError;
-          // Only clear token if it's an authentication error (401)
-          // Don't clear on network errors or other issues
-          if (apiError.type === "AUTHENTICATION" || apiError.statusCode === 401) {
-            dispatch(
-              setError({
-                message: apiError?.message || "Authentication failed",
-                type: apiError?.type || "AUTHENTICATION",
-              }),
-            );
-            apiService.clearAuth();
-          } else {
-            // For other errors, just set the error but don't clear token
-            dispatch(
-              setError({
-                message: apiError?.message || "Failed to load user profile",
-                type: apiError?.type || "SERVER",
-              }),
-            );
-          }
-        } finally {
-          dispatch(setLoading(false));
-        }
       } else {
         hasCheckedAuth.current = true;
         authCheckPerformed = true;
       }
+
+      // Set loading to false after check is complete
+      dispatch(setLoading(false));
     };
 
     checkAuth();
@@ -76,12 +73,13 @@ export const useAuth = () => {
       dispatch(clearError());
 
       const response = await apiService.login(data);
-      // Save token to localStorage
-      if (response.token) {
+      // Save token and user to localStorage
+      if (response.token && response.user) {
         localStorage.setItem("authToken", response.token);
+        localStorage.setItem("user", JSON.stringify(response.user));
         dispatch(loginAction(response.user));
       } else {
-        throw new Error("No token received from server");
+        throw new Error("No token or user received from server");
       }
 
       return response;
@@ -105,12 +103,18 @@ export const useAuth = () => {
       dispatch(clearError());
 
       const response = await apiService.register(data);
-      // Save token to localStorage
-      if (response.token) {
+      // Register may return token+user or just user
+      if (response.token && response.user) {
+        // Has token, save both
         localStorage.setItem("authToken", response.token);
+        localStorage.setItem("user", JSON.stringify(response.user));
+        dispatch(loginAction(response.user));
+      } else if (response.user) {
+        // Only user (no token), just save user
+        localStorage.setItem("user", JSON.stringify(response.user));
         dispatch(loginAction(response.user));
       } else {
-        throw new Error("No token received from server");
+        throw new Error("No user received from server");
       }
 
       return response;
@@ -130,6 +134,7 @@ export const useAuth = () => {
 
   const logout = () => {
     localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
     // Reset auth check flags on logout
     hasCheckedAuth.current = false;
     authCheckPerformed = false;

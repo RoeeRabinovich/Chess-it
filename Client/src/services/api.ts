@@ -56,7 +56,8 @@ apiClient.interceptors.response.use(
         apiError.message = errorMessage || "Invalid request data";
       } else if (status === 401) {
         apiError.type = "AUTHENTICATION";
-        apiError.message = errorMessage || "Authentication required. Please log in.";
+        apiError.message =
+          errorMessage || "Authentication required. Please log in.";
       } else if (status === 409) {
         apiError.type = "VALIDATION";
         apiError.message = errorMessage || "User already exists";
@@ -146,6 +147,7 @@ class ApiService {
   // Utility method to clear authentication
   clearAuth(): void {
     localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
   }
 }
 

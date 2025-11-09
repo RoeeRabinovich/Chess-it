@@ -132,9 +132,9 @@ const Login = () => {
             <p className="text-muted-foreground text-xs">
               <strong>Demo credentials:</strong>
               <br />
-              Email: demo@chess-it.com
+              Email: test3@email.com
               <br />
-              Password: demo123
+              Password: Test!123
             </p>
           </div>
         </CardHeader>
