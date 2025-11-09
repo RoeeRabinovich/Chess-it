@@ -8,6 +8,8 @@ import { CreateStudy } from "./pages/CreateStudy/CreateStudy.page";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { Toaster } from "./components/ui/Toaster";
+import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
+import { PublicRoute } from "./components/PublicRoute/PublicRoute";
 
 export default function App() {
   return (
@@ -17,9 +19,30 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/home" />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/create-study" element={<CreateStudy />} />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <Register />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/create-study"
+            element={
+              <ProtectedRoute>
+                <CreateStudy />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
         <Footer />
         <Toaster />
