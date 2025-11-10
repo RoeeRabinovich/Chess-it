@@ -1,11 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { PublicStudy } from "../../../types/study";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../../components/ui/Card";
+import { Card, CardContent, CardTitle } from "../../../components/ui/Card";
 import ChessBoard from "../../../components/ChessBoard/ChessBoard";
 
 interface StudyCardProps {
@@ -65,39 +60,45 @@ export const StudyCard = ({ study }: StudyCardProps) => {
       className="border-border cursor-pointer transition-all hover:shadow-lg"
       onClick={handleClick}
     >
-      <CardHeader className="p-0">
-        {/* Chess Board Preview */}
-        <div className="bg-muted flex items-center justify-center rounded-t-lg p-4">
-          <div className="w-full max-w-[200px]">
-            <ChessBoard
-              position={fenPosition}
-              isInteractive={false}
-              boardScale={0.4}
-            />
+      <CardContent className="flex flex-col gap-3 p-3 sm:flex-row sm:items-start">
+        <div className="flex flex-shrink-0 justify-center sm:w-auto">
+          <div className="border-border bg-muted w-[160px] overflow-hidden rounded-lg border p-2.5">
+            <div className="flex items-center justify-center">
+              <ChessBoard
+                position={fenPosition}
+                isInteractive={false}
+                boardScale={0.28}
+                showNotation={false}
+              />
+            </div>
           </div>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-2 p-4">
-        <CardTitle className="text-foreground font-minecraft text-lg">
-          {study.studyName}
-        </CardTitle>
-        <div className="flex items-center gap-2">
-          <span className="bg-accent text-foreground font-minecraft rounded px-2 py-1 text-xs">
-            {study.category}
-          </span>
-          <span className="text-muted-foreground flex items-center gap-1 text-xs">
-            <span>❤️</span>
-            <span>{study.likes}</span>
-          </span>
-        </div>
-        {truncatedDescription && (
-          <p className="text-muted-foreground line-clamp-2 text-sm">
-            {truncatedDescription}
-          </p>
-        )}
-        <div className="text-muted-foreground flex items-center justify-between text-xs">
-          <span>by {study.createdBy?.username || "Unknown"}</span>
-          <span>{formattedDate}</span>
+        <div className="flex min-w-0 flex-1 flex-col gap-2 sm:pl-3">
+          <div>
+            <CardTitle className="text-foreground font-minecraft text-lg">
+              {study.studyName}
+            </CardTitle>
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+              <span className="bg-accent text-foreground font-minecraft rounded px-2 py-1">
+                {study.category}
+              </span>
+            </div>
+          </div>
+          {truncatedDescription && (
+            <p className="text-muted-foreground line-clamp-2 text-sm">
+              {truncatedDescription}
+            </p>
+          )}
+          <div className="text-muted-foreground mt-auto flex items-center justify-between text-xs">
+            <span>by {study.createdBy?.username || "Unknown"}</span>
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1">
+                <span>❤️</span>
+                <span>{study.likes}</span>
+              </span>
+              <span>{formattedDate}</span>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

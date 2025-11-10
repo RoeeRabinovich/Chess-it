@@ -48,6 +48,8 @@ export interface ChessBoardProps {
   isInteractive?: boolean;
   /** Scale factor for the board (0.5 to 1.5) */
   boardScale?: number;
+  /** Show board notation (rank/file labels) */
+  showNotation?: boolean;
 }
 
 /**

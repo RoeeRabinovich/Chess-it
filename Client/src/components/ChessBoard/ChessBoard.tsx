@@ -17,6 +17,7 @@ const ChessBoard = ({
   isFlipped = false,
   isInteractive = true,
   boardScale = 1.0,
+  showNotation = true,
 }: ChessBoardProps) => {
   const chessGameRef = useRef(new Chess(position));
   const positionRef = useRef(position);
@@ -173,6 +174,7 @@ const ChessBoard = ({
       darkSquareStyle: DARK_SQUARE_STYLE,
       lightSquareStyle: LIGHT_SQUARE_STYLE,
       animationDurationInMs: ANIMATION_DURATION_MS,
+      showNotation: showNotation,
     }),
     [
       onSquareClick,
@@ -183,6 +185,7 @@ const ChessBoard = ({
       isFlipped,
       optionSquares,
       isInteractive,
+      showNotation,
     ],
   );
 
