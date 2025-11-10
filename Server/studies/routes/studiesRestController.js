@@ -36,13 +36,14 @@ router.get("/my-studies", auth, async (req, res) => {
 });
 
 // Get public studies with filters
-// Query params: category (All, Opening, Endgame, Strategy, Tactics), filter (All, New, Popular), limit, skip
+// Query params: category (All, Opening, Endgame, Strategy, Tactics), filter (All, New, Popular), search, limit, skip
 router.get("/public", async (req, res) => {
   try {
-    const { category, filter, limit, skip } = req.query;
+    const { category, filter, search, limit, skip } = req.query;
     const studies = await getPublicStudiesService({
       category: category || "All",
       filter: filter || "All",
+      search: search || "",
       limit,
       skip,
     });

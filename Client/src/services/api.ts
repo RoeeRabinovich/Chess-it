@@ -142,6 +142,7 @@ class ApiService {
     const queryParams = new URLSearchParams();
     if (params.category) queryParams.append("category", params.category);
     if (params.filter) queryParams.append("filter", params.filter);
+    if (params.search) queryParams.append("search", params.search);
     if (params.limit) queryParams.append("limit", params.limit.toString());
     if (params.skip) queryParams.append("skip", params.skip.toString());
 

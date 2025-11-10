@@ -22,6 +22,7 @@ export interface PublicStudy {
 export interface GetPublicStudiesParams {
   category?: GameAspect;
   filter?: StudyFilters;
+  search?: string;
   limit?: number;
   skip?: number;
 }

@@ -1,16 +1,25 @@
 import { GameAspect } from "../../../types/study";
 import { Input } from "../../../components/ui/Input";
+import { useAppSelector, useAppDispatch } from "../../../store/hooks";
+import { setSearchQuery } from "../../../store/searchSlice";
 
 interface HomeExploreHeaderProps {
   gameAspect: GameAspect;
 }
 
 export const HomeExploreHeader = ({ gameAspect }: HomeExploreHeaderProps) => {
+  const dispatch = useAppDispatch();
+  const searchQuery = useAppSelector((state) => state.search.query);
+
   const getHeaderTitle = () => {
     if (gameAspect === "All") {
       return "All Chess Studies";
     }
     return `Chess ${gameAspect}`;
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setSearchQuery(e.target.value));
   };
 
   return (
@@ -23,10 +32,10 @@ export const HomeExploreHeader = ({ gameAspect }: HomeExploreHeaderProps) => {
           type="search"
           placeholder="Search a Study"
           className="w-full"
-          disabled
+          value={searchQuery}
+          onChange={handleSearchChange}
         />
       </div>
     </div>
   );
 };
-

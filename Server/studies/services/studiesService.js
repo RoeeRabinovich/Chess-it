@@ -89,10 +89,11 @@ const getUserStudiesService = async (userId) => {
 // Get public studies with filters
 const getPublicStudiesService = async (queryParams) => {
   try {
-    const { category, filter, limit, skip } = queryParams;
+    const { category, filter, search, limit, skip } = queryParams;
     const studies = await findPublicStudies({
       category,
       filter,
+      search,
       limit: limit ? parseInt(limit) : 20,
       skip: skip ? parseInt(skip) : 0,
     });

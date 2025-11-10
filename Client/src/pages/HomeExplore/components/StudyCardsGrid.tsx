@@ -4,6 +4,7 @@ import { apiService } from "../../../services/api";
 import { ApiError } from "../../../types/auth";
 import { StudyCard } from "./StudyCard";
 import { useToast } from "../../../hooks/useToast";
+import { useAppSelector } from "../../../store/hooks";
 
 interface StudyCardsGridProps {
   category: GameAspect;
@@ -15,6 +16,7 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const searchQuery = useAppSelector((state) => state.search.query);
 
   useEffect(() => {
     const fetchStudies = async () => {
@@ -25,6 +27,7 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
         const data = await apiService.getPublicStudies({
           category,
           filter,
+          search: searchQuery,
           limit: 20,
           skip: 0,
         });
@@ -45,7 +48,7 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
     };
 
     fetchStudies();
-  }, [category, filter, toast]);
+  }, [category, filter, searchQuery, toast]);
 
   if (loading) {
     return (

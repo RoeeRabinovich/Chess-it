@@ -74,6 +74,7 @@ const findStudiesByUser = async (userId) => {
 const findPublicStudies = async ({
   category,
   filter,
+  search,
   limit = 20,
   skip = 0,
 } = {}) => {
@@ -83,6 +84,14 @@ const findPublicStudies = async ({
       const query = { isPublic: true };
       if (category && category !== "All") {
         query.category = category;
+      }
+
+      // Add search query - search in studyName and description
+      if (search && search.trim()) {
+        query.$or = [
+          { studyName: { $regex: search.trim(), $options: "i" } },
+          { description: { $regex: search.trim(), $options: "i" } },
+        ];
       }
 
       // Build sort
