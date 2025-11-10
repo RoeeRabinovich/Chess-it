@@ -2,6 +2,7 @@ const {
   createStudy,
   findStudyById,
   findStudiesByUser,
+  findPublicStudies,
 } = require("../models/studiesDataAccessService");
 const { validateCreateStudy } = require("../validations/studyValidatorService");
 const { handleJoiError } = require("../../utils/errorHandler");
@@ -85,8 +86,25 @@ const getUserStudiesService = async (userId) => {
   }
 };
 
+// Get public studies with filters
+const getPublicStudiesService = async (queryParams) => {
+  try {
+    const { category, filter, limit, skip } = queryParams;
+    const studies = await findPublicStudies({
+      category,
+      filter,
+      limit: limit ? parseInt(limit) : 20,
+      skip: skip ? parseInt(skip) : 0,
+    });
+    return Promise.resolve(studies);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
 module.exports = {
   createStudyService,
   getStudyByIdService,
   getUserStudiesService,
+  getPublicStudiesService,
 };

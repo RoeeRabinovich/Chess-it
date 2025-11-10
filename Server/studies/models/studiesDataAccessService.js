@@ -70,14 +70,36 @@ const findStudiesByUser = async (userId) => {
   );
 };
 
-// Find public studies
-const findPublicStudies = async (limit = 20, skip = 0) => {
+// Find public studies with filters
+const findPublicStudies = async ({
+  category,
+  filter,
+  limit = 20,
+  skip = 0,
+} = {}) => {
   if (DB === "MONGODB") {
     try {
-      const studies = await Study.find({ isPublic: true })
+      // Build query
+      const query = { isPublic: true };
+      if (category && category !== "All") {
+        query.category = category;
+      }
+
+      // Build sort
+      let sort = {};
+      if (filter === "Popular") {
+        sort = { likes: -1, createdAt: -1 }; // Sort by likes desc, then by date
+      } else {
+        // "New" or default: sort by date
+        sort = { createdAt: -1 };
+      }
+
+      const studies = await Study.find(query)
         .populate("createdBy", "username")
-        .select("studyName category description createdAt createdBy")
-        .sort({ createdAt: -1 })
+        .select(
+          "studyName category description createdAt createdBy likes gameState.position"
+        )
+        .sort(sort)
         .limit(limit)
         .skip(skip);
 

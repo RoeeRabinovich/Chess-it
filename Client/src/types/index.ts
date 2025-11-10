@@ -4,3 +4,4 @@ export * from "./auth";
 export * from "./chess";
 export * from "./featureItem";
 export * from "./iconClasses";
+export * from "./study";

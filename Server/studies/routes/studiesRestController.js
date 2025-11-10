@@ -6,6 +6,7 @@ const {
   createStudyService,
   getStudyByIdService,
   getUserStudiesService,
+  getPublicStudiesService,
 } = require("../services/studiesService");
 const { auth, optionalAuth } = require("../../auth/authService");
 
@@ -28,6 +29,23 @@ router.get("/my-studies", auth, async (req, res) => {
   try {
     const userId = req.user._id;
     const studies = await getUserStudiesService(userId);
+    res.status(200).json(studies);
+  } catch (error) {
+    return handleError(res, error.status || 500, error.message);
+  }
+});
+
+// Get public studies with filters
+// Query params: category (All, Opening, Endgame, Strategy, Tactics), filter (All, New, Popular), limit, skip
+router.get("/public", async (req, res) => {
+  try {
+    const { category, filter, limit, skip } = req.query;
+    const studies = await getPublicStudiesService({
+      category: category || "All",
+      filter: filter || "All",
+      limit,
+      skip,
+    });
     res.status(200).json(studies);
   } catch (error) {
     return handleError(res, error.status || 500, error.message);

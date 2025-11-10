@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { AuthResponse, LoginData, RegisterData, ApiError } from "../types/auth";
 import { User } from "../types/user";
 import { ChessGameState } from "../types/chess";
+import { PublicStudy, GetPublicStudiesParams } from "../types/study";
 
 // Create axios instance with base configuration
 const apiClient = axios.create({
@@ -130,6 +131,22 @@ class ApiService {
     const response = await apiClient.post<{ id: string; studyName: string }>(
       "/studies/create",
       payload,
+    );
+    return response.data;
+  }
+
+  // Get public studies with filters
+  async getPublicStudies(
+    params: GetPublicStudiesParams = {},
+  ): Promise<PublicStudy[]> {
+    const queryParams = new URLSearchParams();
+    if (params.category) queryParams.append("category", params.category);
+    if (params.filter) queryParams.append("filter", params.filter);
+    if (params.limit) queryParams.append("limit", params.limit.toString());
+    if (params.skip) queryParams.append("skip", params.skip.toString());
+
+    const response = await apiClient.get<PublicStudy[]>(
+      `/studies/public?${queryParams.toString()}`,
     );
     return response.data;
   }

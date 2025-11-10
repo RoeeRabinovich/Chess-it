@@ -63,6 +63,11 @@ const studySchema = new mongoose.Schema(
       required: true,
       default: false,
     },
+    likes: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
     gameState: {
       position: {
         type: String,
@@ -108,6 +113,7 @@ studySchema.index({ createdBy: 1 });
 studySchema.index({ category: 1 });
 studySchema.index({ isPublic: 1 });
 studySchema.index({ createdAt: -1 });
+studySchema.index({ likes: -1 });
 
 const Study = mongoose.model("Study", studySchema);
 

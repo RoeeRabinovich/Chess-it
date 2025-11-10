@@ -2,6 +2,7 @@ import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import Footer from "./components/Footer/Footer";
 import Navbar from "./components/Navbar/Navbar";
 import Home from "./pages/Home/Home.page";
+import { HomeExplore } from "./pages/HomeExplore/HomeExplore.page";
 import Register from "./pages/Register/Register.page";
 import Login from "./pages/Login/Login.page";
 import { CreateStudy } from "./pages/CreateStudy/CreateStudy.page";
@@ -10,6 +11,13 @@ import { store } from "./store/store";
 import { Toaster } from "./components/ui/Toaster";
 import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
 import { PublicRoute } from "./components/PublicRoute/PublicRoute";
+import { useAuth } from "./hooks/useAuth";
+
+// Component to conditionally render Home or HomeExplore
+const HomeRoute = () => {
+  const { user } = useAuth();
+  return user ? <HomeExplore /> : <Home />;
+};
 
 export default function App() {
   return (
@@ -18,7 +26,7 @@ export default function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Navigate to="/home" />} />
-          <Route path="/home" element={<Home />} />
+          <Route path="/home" element={<HomeRoute />} />
           <Route
             path="/register"
             element={
