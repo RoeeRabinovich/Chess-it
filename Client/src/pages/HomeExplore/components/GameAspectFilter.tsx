@@ -23,9 +23,9 @@ export const GameAspectFilter = ({
             key={aspect}
             onClick={() => onAspectChange(aspect)}
             className={cn(
-              "border-border text-foreground hover:bg-accent w-full rounded-lg border-2 px-4 py-2 text-left font-minecraft shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transition-all hover:shadow-[3px_3px_0px_0px_hsl(var(--foreground))]",
+              "border-border text-foreground hover:bg-accent w-full rounded-lg border px-3 py-1.5 text-left font-minecraft text-sm transition-colors",
               selectedAspect === aspect &&
-                "bg-accent border-primary shadow-[3px_3px_0px_0px_hsl(var(--primary))]",
+                "bg-accent border-primary",
             )}
           >
             {aspect}

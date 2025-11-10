@@ -32,7 +32,7 @@ export const HomeExplore = () => {
           <aside
             className={`lg:block ${
               showFilters ? "block" : "hidden"
-            } w-full flex-shrink-0 lg:w-64`}
+            } w-full flex-shrink-0 lg:w-40`}
           >
             <div className="space-y-6">
               <GameAspectFilter

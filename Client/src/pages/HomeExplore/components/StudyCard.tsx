@@ -62,7 +62,7 @@ export const StudyCard = ({ study }: StudyCardProps) => {
 
   return (
     <Card
-      className="border-border hover:bg-accent cursor-pointer transition-all hover:shadow-lg"
+      className="border-border cursor-pointer transition-all hover:shadow-lg"
       onClick={handleClick}
     >
       <CardHeader className="p-0">
