@@ -17,7 +17,7 @@ class StockfishService {
       // Load the Stockfish engine using the provided helper
       const stockfishPath = path.join(
         __dirname,
-        "../../node_modules/stockfish/src/stockfish.js"
+        "../../node_modules/stockfish/src/stockfish-17.1-8e4d048.js"
       );
       this.engine = loadEngine(stockfishPath);
 
