@@ -3,6 +3,9 @@ import { AuthResponse, LoginData, RegisterData, ApiError } from "../types/auth";
 import { User } from "../types/user";
 import { ChessGameState } from "../types/chess";
 import { PublicStudy, GetPublicStudiesParams } from "../types/study";
+import { store } from "../store/store";
+import { logout } from "../store/authSlice";
+import { resetAuthCheck } from "../hooks/useAuth";
 
 // Create axios instance with base configuration
 const apiClient = axios.create({
@@ -59,6 +62,18 @@ apiClient.interceptors.response.use(
         apiError.type = "AUTHENTICATION";
         apiError.message =
           errorMessage || "Authentication required. Please log in.";
+        // Clear invalid/expired token and log out user
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("user");
+        store.dispatch(logout());
+        resetAuthCheck();
+        // Redirect to login if not already there
+        if (
+          typeof window !== "undefined" &&
+          !window.location.pathname.includes("/login")
+        ) {
+          window.location.href = "/login";
+        }
       } else if (status === 409) {
         apiError.type = "VALIDATION";
         apiError.message = errorMessage || "User already exists";
