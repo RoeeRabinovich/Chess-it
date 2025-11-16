@@ -1,4 +1,5 @@
 import { useEffect, useCallback, useState, useMemo, useRef } from "react";
+import { Chess } from "chess.js";
 import { MobileStudyLayout } from "./layouts/MobileStudyLayout";
 import { DesktopStudyLayout } from "./layouts/DesktopStudyLayout";
 import { CreateStudyModal } from "./components/CreateStudyModal";
@@ -56,68 +57,68 @@ export const CreateStudy = () => {
     analysisMode,
   );
 
-  const stableEvalRef = useRef({
-    position: "",
-    evaluation: 0,
-    possibleMate: null as string | null,
-  });
-
-  // Update stable eval when we have a valid evaluation for the current position
-  useEffect(() => {
-    if (depth > 0 && isEngineEnabled) {
-      stableEvalRef.current = {
-        position: gameState.position,
-        evaluation: positionEvaluation,
-        possibleMate: possibleMate || null,
-      };
-    }
-  }, [
-    depth,
-    positionEvaluation,
-    possibleMate,
-    isEngineEnabled,
-    gameState.position,
-  ]);
-
-  // Clear stable eval when position changes and we don't have a valid eval yet
-  useEffect(() => {
-    if (
-      stableEvalRef.current.position !== gameState.position &&
-      (depth === 0 || !isEngineEnabled)
-    ) {
-      stableEvalRef.current = {
-        position: gameState.position,
-        evaluation: 0,
-        possibleMate: null,
-      };
-    }
-  }, [gameState.position, depth, isEngineEnabled]);
+  // Store the current position's evaluation (already normalized) to keep it stable during analysis
+  // Key: position FEN, Value: normalized evaluation
+  const positionEvalCache = useRef<Map<string, { evaluation: number; possibleMate: string | null }>>(new Map());
 
   const displayEvaluation = useMemo(() => {
-    // Priority 1: If we have a valid evaluation from the engine for the current position, use it
+    // Determine whose turn it is to negate evaluation if needed
+    const chess = new Chess();
+    try {
+      chess.load(gameState.position);
+    } catch {
+      // Invalid position, return cached eval for this position if available
+      const cached = positionEvalCache.current.get(gameState.position);
+      return cached || { evaluation: 0, possibleMate: null };
+    }
+    const isBlackToMove = chess.turn() === "b";
+
+    // Stockfish evaluates from White's perspective
+    // When it's Black's turn, negate the evaluation to show it from Black's perspective
+    const normalizeEval = (evaluation: number) => (isBlackToMove ? -evaluation : evaluation);
+    const normalizeMate = (mate: string | null) => {
+      if (!mate) return null;
+      const mateNum = parseInt(mate);
+      return isBlackToMove ? (-mateNum).toString() : mate;
+    };
+
+    // Priority 1: If we have a valid evaluation from the engine for the current position, use it and cache it
     if (depth > 0 && isEngineEnabled) {
+      const normalizedEval = normalizeEval(positionEvaluation);
+      const normalizedMate = normalizeMate(possibleMate || null);
+      
+      // Cache the normalized evaluation for this position
+      positionEvalCache.current.set(gameState.position, {
+        evaluation: normalizedEval,
+        possibleMate: normalizedMate,
+      });
+      
       return {
-        evaluation: positionEvaluation,
-        possibleMate: possibleMate || null,
+        evaluation: normalizedEval,
+        possibleMate: normalizedMate,
       };
     }
-    // Priority 2: Fall back to stable eval only if it matches the current position
-    if (
-      stableEvalRef.current.position === gameState.position &&
-      stableEvalRef.current.evaluation !== 0
-    ) {
-      return {
-        evaluation: stableEvalRef.current.evaluation,
-        possibleMate: stableEvalRef.current.possibleMate,
-      };
+    
+    // Priority 2: If analyzing or waiting, use cached evaluation for this position if available
+    // This keeps the current position's evaluation stable until new analysis arrives
+    if (isEngineEnabled) {
+      const cached = positionEvalCache.current.get(gameState.position);
+      if (cached && (cached.evaluation !== 0 || cached.possibleMate)) {
+        return {
+          evaluation: cached.evaluation,
+          possibleMate: cached.possibleMate,
+        };
+      }
     }
-    // Priority 3: No evaluation available yet (show neutral/0)
+    
+    // Priority 3: Engine disabled or no cached evaluation for this position (show neutral/0)
     return { evaluation: 0, possibleMate: null };
   }, [
     depth,
     positionEvaluation,
     possibleMate,
     isEngineEnabled,
+    isAnalyzing,
     gameState.position,
   ]);
 
@@ -128,16 +129,40 @@ export const CreateStudy = () => {
     detectOpening(gameState.moves);
   }, [gameState.moves, detectOpening]);
 
-  const formattedEngineLines = useMemo(
-    () =>
-      engineLines.map((line) => ({
+  const formattedEngineLines = useMemo(() => {
+    // Determine whose turn it is to negate evaluations if needed
+    const chess = new Chess();
+    try {
+      chess.load(gameState.position);
+    } catch {
+      // Invalid position, return lines as-is
+      return engineLines.map((line) => ({
         sanNotation: convertUCIToSAN(line.moves, gameState.position),
         evaluation: line.evaluation,
         depth: line.depth,
         possibleMate: line.possibleMate,
-      })),
-    [engineLines, gameState.position],
-  );
+      }));
+    }
+    const isBlackToMove = chess.turn() === "b";
+
+    // Stockfish evaluates from White's perspective
+    // When it's Black's turn, negate the evaluation to show it from Black's perspective
+    return engineLines.map((line) => {
+      const normalizedEval = isBlackToMove ? -line.evaluation : line.evaluation;
+      const normalizedMate = line.possibleMate
+        ? isBlackToMove
+          ? (-parseInt(line.possibleMate)).toString()
+          : line.possibleMate
+        : null;
+
+      return {
+        sanNotation: convertUCIToSAN(line.moves, gameState.position),
+        evaluation: normalizedEval,
+        depth: line.depth,
+        possibleMate: normalizedMate,
+      };
+    });
+  }, [engineLines, gameState.position]);
 
   const handleMoveClick = useCallback(
     (moveIndex: number) => navigateToMove(moveIndex),
