@@ -21,18 +21,24 @@ export const ReviewStudy = () => {
   const [error, setError] = useState<ApiError | null>(null);
   const [retryCount, setRetryCount] = useState(0);
 
+  // Memoize studyGameState to prevent unnecessary re-renders
+  const studyGameState = useMemo(() => {
+    if (!study?.gameState) {
+      return {
+        position: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        moves: [],
+        branches: [],
+        currentMoveIndex: -1,
+        isFlipped: false,
+      };
+    }
+    return study.gameState;
+  }, [study?.gameState]);
+
   // Chess game state for review (only initialized when study is loaded)
   // Don't initialize until we have study data to avoid errors
   const chessGameReview = useChessGameReview({
-    studyGameState: study?.gameState
-      ? study.gameState
-      : {
-          position: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-          moves: [],
-          branches: [],
-          currentMoveIndex: -1,
-          isFlipped: false,
-        },
+    studyGameState,
     onInvalidMove: (message) => {
       toast({
         title: "Invalid Move",
@@ -68,6 +74,11 @@ export const ReviewStudy = () => {
     // Comments are read-only in review mode - do nothing
   }, []);
 
+  // Get current move comment reactively (updates when navigating between moves)
+  const currentMoveComment = useMemo(() => {
+    return chessGameReview.getComment() || "";
+  }, [chessGameReview]);
+
   // Prepare layout props for review mode
   const layoutProps = useMemo(
     () => ({
@@ -102,7 +113,7 @@ export const ReviewStudy = () => {
       onBoardScaleChange: () => {}, // Optional: could allow board scaling
       // Other
       opening: opening || study?.gameState?.opening,
-      currentMoveComment: chessGameReview.getComment() || "",
+      currentMoveComment,
       onSaveComment: handleSaveComment,
       readOnlyComments: true, // Comments are read-only in review mode
       // Create Study button hidden
@@ -115,6 +126,7 @@ export const ReviewStudy = () => {
       handleSaveComment,
       opening,
       study?.gameState?.opening,
+      currentMoveComment,
     ],
   );
 

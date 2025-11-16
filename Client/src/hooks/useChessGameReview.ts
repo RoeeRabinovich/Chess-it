@@ -4,7 +4,6 @@ import { ChessGameState, ChessMove, MoveData } from "../types/chess";
 import { useChessComments } from "./useChessGame/useChessComments";
 import { useChessNavigation } from "./useChessGame/useChessNavigation";
 import { useChessTools } from "./useChessGame/useChessTools";
-import { replayMoves } from "../utils/chessMoveUtils";
 import { toMoveData } from "../utils/chessMoveUtils";
 
 interface UseChessGameReviewParams {
@@ -50,8 +49,27 @@ export const useChessGameReview = ({
     };
   });
 
+  // Use ref to track if we've already initialized to prevent infinite loops
+  const initializedRef = useRef<string | null>(null);
+
+  // Create a stable key from studyGameState to detect actual changes
+  const movesKey = studyGameState.moves
+    ? studyGameState.moves.map((m) => `${m.from}${m.to}`).join(",")
+    : "";
+  const studyKey = useMemo(() => {
+    if (!studyGameState.moves || studyGameState.moves.length === 0) {
+      return "empty";
+    }
+    return `${studyGameState.moves.length}-${studyGameState.currentMoveIndex}-${movesKey}`;
+  }, [studyGameState.moves, studyGameState.currentMoveIndex, movesKey]);
+
   // Initialize chess instance with study's position and moves
   useEffect(() => {
+    // Skip if we've already initialized with this study data
+    if (initializedRef.current === studyKey) {
+      return;
+    }
+
     // Only initialize if we have valid study data (not the default empty state)
     if (!studyGameState.moves || studyGameState.moves.length === 0) {
       // Empty study - just reset to starting position
@@ -60,51 +78,50 @@ export const useChessGameReview = ({
         ...prev,
         position: chessRef.current.fen(),
         currentMoveIndex: -1,
+        moves: [],
       }));
+      initializedRef.current = studyKey;
       return;
     }
 
     try {
-      // Always start from the beginning and replay moves
+      // Always start from the beginning (initial position) for review
       chessRef.current.reset();
 
-      // Replay moves up to currentMoveIndex
-      const targetIndex = Math.max(
-        -1,
-        Math.min(
-          studyGameState.currentMoveIndex,
-          studyGameState.moves.length - 1,
-        ),
-      );
+      // Start at the initial position (index -1) so user can navigate forward
+      // Don't replay any moves - start at the beginning
+      const targetIndex = -1;
 
-      if (targetIndex >= 0 && studyGameState.moves.length > 0) {
-        const success = replayMoves(
-          chessRef.current,
-          studyGameState.moves,
-          targetIndex + 1,
-        );
-        if (!success) {
-          console.error("Failed to replay moves from study");
-          // Reset to starting position if replay fails
-          chessRef.current.reset();
-          setGameState((prev) => ({
-            ...prev,
-            position: chessRef.current.fen(),
-            currentMoveIndex: -1,
-          }));
-          return;
-        }
+      // Update position and state to match starting position
+      const currentFen = chessRef.current.fen();
+
+      // Ensure comments Map is up to date from study data
+      const commentsMap = new Map<string, string>();
+      if (studyGameState.comments) {
+        Object.entries(studyGameState.comments).forEach(([key, value]) => {
+          commentsMap.set(key, value);
+        });
       }
 
-      // Update position and state to match current position after replaying
-      const currentFen = chessRef.current.fen();
-      setGameState((prev) => ({
-        ...prev,
-        position: currentFen,
-        moves: studyGameState.moves,
-        branches: studyGameState.branches || [],
-        currentMoveIndex: targetIndex,
-      }));
+      setGameState((prev) => {
+        // Only update if something actually changed to prevent loops
+        if (
+          prev.position === currentFen &&
+          prev.currentMoveIndex === targetIndex &&
+          prev.moves.length === studyGameState.moves.length
+        ) {
+          return prev;
+        }
+        return {
+          ...prev,
+          position: currentFen,
+          moves: studyGameState.moves,
+          branches: studyGameState.branches || [],
+          currentMoveIndex: targetIndex, // Start at beginning
+          comments: commentsMap, // Use comments from study data
+        };
+      });
+      initializedRef.current = studyKey;
     } catch (error) {
       console.error("Error initializing chess game from study:", error);
       // On error, reset to starting position
@@ -113,9 +130,11 @@ export const useChessGameReview = ({
         ...prev,
         position: chessRef.current.fen(),
         currentMoveIndex: -1,
+        moves: studyGameState.moves || [],
       }));
+      initializedRef.current = studyKey;
     }
-  }, [studyGameState]);
+  }, [studyKey, studyGameState]);
 
   const { currentBranchContext, setCurrentBranchContext, getComment } =
     useChessComments({ gameState, setGameState });
