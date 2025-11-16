@@ -13,11 +13,6 @@ import { LoginData, RegisterData, ApiError } from "../types";
 // Track if auth check has been performed globally
 let authCheckPerformed = false;
 
-// Export function to reset auth check (for logout scenarios)
-export const resetAuthCheck = () => {
-  authCheckPerformed = false;
-};
-
 // Custom hook to handle authentication
 export const useAuth = () => {
   const dispatch = useAppDispatch();
