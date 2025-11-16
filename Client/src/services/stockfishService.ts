@@ -20,13 +20,15 @@ export async function analyzePosition(
   fen: string,
   depth: number = 15,
   multipv: number = 1,
+  analysisMode: "quick" | "deep" = "quick",
   signal?: AbortSignal,
 ): Promise<AnalysisResult> {
   try {
+    const timeout = analysisMode === "deep" ? 15000 : 10000; // Longer timeout for deep mode
     const response = await axios.post(
       `${PORT}/stockfish/analyze`,
-      { fen, depth, multipv },
-      { signal, timeout: 15000 },
+      { fen, depth, multipv, analysisMode },
+      { signal, timeout },
     );
     const data = response.data;
 

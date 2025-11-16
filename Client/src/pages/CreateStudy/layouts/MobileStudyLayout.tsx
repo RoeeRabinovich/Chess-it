@@ -34,6 +34,8 @@ export const MobileStudyLayout = ({
   onEngineLinesCountChange,
   engineDepth,
   onEngineDepthChange,
+  analysisMode,
+  onAnalysisModeChange,
   boardScale,
   onBoardScaleChange,
   opening,
@@ -192,6 +194,8 @@ export const MobileStudyLayout = ({
           onEngineLinesCountChange={onEngineLinesCountChange}
           engineDepth={engineDepth}
           onEngineDepthChange={onEngineDepthChange}
+          analysisMode={analysisMode}
+          onAnalysisModeChange={onAnalysisModeChange}
           boardScale={boardScale}
           onBoardScaleChange={onBoardScaleChange}
           onCreateStudy={onCreateStudy}

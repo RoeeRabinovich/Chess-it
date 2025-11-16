@@ -13,8 +13,10 @@ export const EvaluationBar = ({
   height = "100%",
   width,
 }: EvaluationBarProps) => {
-  // Normalize evaluation: positive is good for white, negative is good for black
-  const normalizedEval = isFlipped ? -evaluation : evaluation;
+  // Use raw evaluation from Stockfish (always from White's perspective)
+  // Stockfish: positive = good for White, negative = good for Black
+  // Don't flip based on board orientation - show raw Stockfish evaluation
+  const normalizedEval = evaluation;
 
   // Determine if horizontal (width > height) or vertical
   const heightNum =

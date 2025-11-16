@@ -17,6 +17,7 @@ const analyzeSchema = Joi.object({
   fen: Joi.string().custom(fenValidator).required(),
   depth: Joi.number().integer().min(1).max(24).default(15),
   multipv: Joi.number().integer().min(1).max(5).default(1),
+  analysisMode: Joi.string().valid("quick", "deep").default("quick"),
 });
 
 module.exports = { analyzeSchema };

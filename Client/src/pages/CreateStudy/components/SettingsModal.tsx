@@ -12,6 +12,8 @@ interface SettingsModalProps {
   onEngineLinesCountChange: (count: number) => void;
   engineDepth: number;
   onEngineDepthChange: (depth: number) => void;
+  analysisMode: "quick" | "deep";
+  onAnalysisModeChange: (mode: "quick" | "deep") => void;
   boardScale: number;
   onBoardScaleChange: (scale: number) => void;
 }
@@ -27,6 +29,8 @@ export const SettingsModal = ({
   onEngineLinesCountChange,
   engineDepth,
   onEngineDepthChange,
+  analysisMode,
+  onAnalysisModeChange,
   boardScale,
   onBoardScaleChange,
 }: SettingsModalProps) => {
@@ -118,32 +122,61 @@ export const SettingsModal = ({
                 </select>
               </div>
 
-              {/* Engine Depth */}
+              {/* Analysis Mode */}
               <div>
                 <label
-                  htmlFor="engine-depth"
+                  htmlFor="analysis-mode"
                   className="text-muted-foreground mb-2 block text-sm font-medium"
                 >
-                  Engine Depth: {engineDepth}
+                  Analysis Mode
                 </label>
-                <input
-                  id="engine-depth"
-                  type="range"
-                  min="8"
-                  max="20"
-                  step="1"
-                  value={engineDepth}
+                <select
+                  id="analysis-mode"
+                  value={analysisMode}
                   onChange={(e) =>
-                    onEngineDepthChange(parseInt(e.target.value))
+                    onAnalysisModeChange(e.target.value as "quick" | "deep")
                   }
                   disabled={!isEngineEnabled}
-                  className="w-full cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-                />
-                <div className="text-muted-foreground mt-1 flex justify-between text-xs">
-                  <span>8</span>
-                  <span>20</span>
-                </div>
+                  className="border-border bg-background focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-sm focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="quick">Quick (Depth-based)</option>
+                  <option value="deep">Deep (Time-based, ~8s)</option>
+                </select>
+                <p className="text-muted-foreground mt-1 text-xs">
+                  {analysisMode === "quick"
+                    ? "Fast analysis to fixed depth"
+                    : "Deeper analysis for better accuracy"}
+                </p>
               </div>
+
+              {/* Engine Depth - Only show in quick mode */}
+              {analysisMode === "quick" && (
+                <div>
+                  <label
+                    htmlFor="engine-depth"
+                    className="text-muted-foreground mb-2 block text-sm font-medium"
+                  >
+                    Engine Depth: {engineDepth}
+                  </label>
+                  <input
+                    id="engine-depth"
+                    type="range"
+                    min="8"
+                    max="20"
+                    step="1"
+                    value={engineDepth}
+                    onChange={(e) =>
+                      onEngineDepthChange(parseInt(e.target.value))
+                    }
+                    disabled={!isEngineEnabled}
+                    className="w-full cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                  />
+                  <div className="text-muted-foreground mt-1 flex justify-between text-xs">
+                    <span>8</span>
+                    <span>20</span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Board Size Control - Hidden on mobile */}

@@ -30,6 +30,8 @@ export const DesktopStudyLayout = ({
   onEngineLinesCountChange,
   engineDepth,
   onEngineDepthChange,
+  analysisMode,
+  onAnalysisModeChange,
   boardScale,
   onBoardScaleChange,
   opening,
@@ -150,6 +152,8 @@ export const DesktopStudyLayout = ({
             onEngineLinesCountChange={onEngineLinesCountChange}
             engineDepth={engineDepth}
             onEngineDepthChange={onEngineDepthChange}
+            analysisMode={analysisMode}
+            onAnalysisModeChange={onAnalysisModeChange}
             boardScale={boardScale}
             onBoardScaleChange={onBoardScaleChange}
             currentMoveComment={currentMoveComment}

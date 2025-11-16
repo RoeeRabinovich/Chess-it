@@ -47,6 +47,8 @@ export interface StudyLayoutProps {
   onEngineLinesCountChange: (count: number) => void;
   engineDepth: number;
   onEngineDepthChange: (depth: number) => void;
+  analysisMode: "quick" | "deep";
+  onAnalysisModeChange: (mode: "quick" | "deep") => void;
   boardScale: number;
   onBoardScaleChange: (scale: number) => void;
 

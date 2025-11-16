@@ -16,6 +16,7 @@ export const useStockfish = (
   debounceTime: number = 400,
   multipv: number = 3, // Number of engine lines to return
   initialEngineEnabled?: boolean, // Allow external control of engine state
+  analysisMode: "quick" | "deep" = "quick", // Analysis mode: quick (depth-based) or deep (time-based)
 ): UseStockfishReturn => {
   // Auto-enable after first move, or use initialEngineEnabled if provided
   const [isEngineEnabled, setIsEngineEnabled] = useState(
@@ -40,7 +41,7 @@ export const useStockfish = (
   const chessGameRef = useRef(new Chess());
   const chessGame = chessGameRef.current;
 
-  const cacheKey = `${position}|d=${maxDepth}|m=${multipv}`;
+  const cacheKey = `${position}|d=${maxDepth}|m=${multipv}|mode=${analysisMode}`;
 
   // Sync internal state with external initialEngineEnabled prop when it changes
   useEffect(() => {
@@ -108,33 +109,39 @@ export const useStockfish = (
     // Check if the position is in the cache and update UI
     if (evalCache.has(cacheKey)) {
       const cached = evalCache.get(cacheKey)!;
-      const whiteToMove = chessGame.turn() === "w";
-      const normalizeEval = whiteToMove
-        ? cached.evaluation
-        : -cached.evaluation;
+      // Ensure chessGame has the correct position before checking turn
+      try {
+        if (chessGame.fen() !== fen) {
+          chessGame.load(fen);
+        }
+      } catch (error) {
+        console.error("Error loading position for cache retrieval:", error);
+      }
+      // Use raw evaluation from Stockfish (no normalization)
+      const normalizeEval = cached.evaluation;
 
       // Reconstruct engine lines from cache if available
       const processedLines: ProcessedEngineLine[] = cached.lines
         ? cached.lines
-            .map((line: AnalysisLines) => {
+            .map((line: AnalysisLines, index: number) => {
               const moves = line.pv ? line.pv.trim().split(/\s+/) : [];
-              const lineEval = whiteToMove ? line.evaluation : -line.evaluation;
+              // Use raw evaluation from Stockfish (always from White's perspective)
+              // Preserve MultiPV order
               return {
                 moves,
-                evaluation: lineEval,
+                evaluation: line.evaluation ?? 0,
                 depth: line.depth,
                 possibleMate: line.possibleMate,
+                multipvOrder: line.multipv || index + 1, // Preserve MultiPV order
               };
             })
             .sort((a: ProcessedEngineLine, b: ProcessedEngineLine) => {
-              if (a.possibleMate && b.possibleMate) {
-                return parseInt(a.possibleMate) - parseInt(b.possibleMate);
-              }
-              if (a.possibleMate) return -1;
-              if (b.possibleMate) return 1;
-              return b.evaluation - a.evaluation;
+              // Preserve Stockfish's MultiPV order (1, 2, 3...)
+              // Stockfish already provides lines in best-to-worst order
+              return (a.multipvOrder || 999) - (b.multipvOrder || 999);
             })
         : [];
+
 
       setPositionEvaluation(normalizeEval);
       setDepth(cached.depth);
@@ -162,37 +169,50 @@ export const useStockfish = (
           fen,
           maxDepth,
           multipv,
+          analysisMode,
           abortController.signal,
         );
-        const whiteToMove = chessGame.turn() === "w";
-        const normalizeEval = whiteToMove
-          ? result.evaluation
-          : -result.evaluation;
+        // Ensure chessGame has the correct position before checking turn
+        try {
+          if (chessGame.fen() !== fen) {
+            chessGame.load(fen);
+          }
+        } catch (error) {
+          console.error("Error loading position for analysis:", error);
+        }
+        // Use raw evaluation from Stockfish - this is the current position evaluation
+        const normalizeEval = result.evaluation;
 
-        // Process engine lines: convert UCI moves to arrays and normalize evals
+        // Process engine lines: convert UCI moves to arrays, use raw evaluations
+        // IMPORTANT: Stockfish already returns MultiPV lines in the correct order (best to worst)
+        // We should preserve this order, not re-sort. The evaluations are:
+        // - MultiPV 1: Position evaluation (before any move)
+        // - MultiPV 2+: Position evaluation AFTER their first move (from White's perspective)
         const processedLines = result.lines
-          .map((line) => {
+          .map((line, index) => {
             const moves = line.pv ? line.pv.trim().split(/\s+/) : [];
-            const lineEval = whiteToMove ? line.evaluation : -line.evaluation;
+            // Use raw evaluation from Stockfish (always from White's perspective)
+            // Preserve the original MultiPV order (index) to maintain Stockfish's ranking
             return {
               moves,
-              evaluation: lineEval,
+              evaluation: line.evaluation ?? 0,
               depth: line.depth,
               possibleMate: line.possibleMate,
+              multipvOrder: line.multipv || index + 1, // Preserve MultiPV order
             };
           })
+          // DO NOT re-sort - Stockfish already provides lines in best-to-worst order
+          // The evaluations are correct as-is from Stockfish's perspective
           .sort((a, b) => {
-            // Sort by evaluation (best first)
-            if (a.possibleMate && b.possibleMate) {
-              return parseInt(a.possibleMate) - parseInt(b.possibleMate);
-            }
-            if (a.possibleMate) return -1;
-            if (b.possibleMate) return 1;
-            return b.evaluation - a.evaluation;
+            // Only sort to preserve MultiPV order (1, 2, 3...)
+            // This ensures we show lines in Stockfish's intended order
+            return (a.multipvOrder || 999) - (b.multipvOrder || 999);
           });
 
+
         // cache and update UI
-        evalCache.set(cacheKey, { ...result, evaluation: normalizeEval });
+        // Store RAW evaluation in cache (from White's perspective), normalize on retrieval
+        evalCache.set(cacheKey, { ...result, evaluation: result.evaluation });
 
         setPositionEvaluation(normalizeEval);
         setDepth(result.depth);
@@ -216,7 +236,15 @@ export const useStockfish = (
         analysisAbortController.current = null;
       }
     };
-  }, [cacheKey, isEngineEnabled, chessGame, maxDepth, multipv, debounceTime]);
+  }, [
+    cacheKey,
+    isEngineEnabled,
+    chessGame,
+    maxDepth,
+    multipv,
+    debounceTime,
+    analysisMode,
+  ]);
 
   return {
     isEngineEnabled,

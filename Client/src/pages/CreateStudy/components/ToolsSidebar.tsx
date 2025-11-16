@@ -48,6 +48,8 @@ interface ToolsSidebarProps {
   onEngineLinesCountChange: (count: number) => void;
   engineDepth: number;
   onEngineDepthChange: (depth: number) => void;
+  analysisMode: "quick" | "deep";
+  onAnalysisModeChange: (mode: "quick" | "deep") => void;
   boardScale: number;
   onBoardScaleChange: (scale: number) => void;
 
@@ -93,6 +95,8 @@ export const ToolsSidebar = ({
   onEngineLinesCountChange,
   engineDepth,
   onEngineDepthChange,
+  analysisMode,
+  onAnalysisModeChange,
   boardScale,
   onBoardScaleChange,
   currentMoveComment,
@@ -217,6 +221,8 @@ export const ToolsSidebar = ({
           onEngineLinesCountChange={onEngineLinesCountChange}
           engineDepth={engineDepth}
           onEngineDepthChange={onEngineDepthChange}
+          analysisMode={analysisMode}
+          onAnalysisModeChange={onAnalysisModeChange}
           boardScale={boardScale}
           onBoardScaleChange={onBoardScaleChange}
           onCreateStudy={onCreateStudy}

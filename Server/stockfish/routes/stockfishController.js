@@ -15,7 +15,8 @@ router.post("/analyze", async (req, res) => {
     const result = await stockfishService.analyzePosition(
       validatedData.fen,
       validatedData.depth,
-      validatedData.multipv
+      validatedData.multipv,
+      validatedData.analysisMode
     );
 
     res.json(result);

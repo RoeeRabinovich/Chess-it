@@ -110,6 +110,8 @@ export const ReviewStudy = () => {
       onEngineLinesCountChange: () => {}, // No-op
       engineDepth: 12,
       onEngineDepthChange: () => {}, // No-op
+      analysisMode: "quick" as const,
+      onAnalysisModeChange: () => {}, // No-op (engine disabled in review mode)
       boardScale: 1.0,
       onBoardScaleChange: () => {}, // Optional: could allow board scaling
       // Other

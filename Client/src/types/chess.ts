@@ -141,6 +141,7 @@ export interface ProcessedEngineLine {
   evaluation: number;
   depth: number;
   possibleMate?: string | null;
+  multipvOrder?: number; // Preserve Stockfish's MultiPV order (1, 2, 3...)
 }
 
 /**

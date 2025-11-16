@@ -12,6 +12,7 @@ export const CreateStudy = () => {
   const [engineEnabled, setEngineEnabled] = useState(true);
   const [engineLinesCount, setEngineLinesCount] = useState(3);
   const [engineDepth, setEngineDepth] = useState(12);
+  const [analysisMode, setAnalysisMode] = useState<"quick" | "deep">("quick");
   const [boardScale, setBoardScale] = useState(1.0);
 
   // Create Study Modal state
@@ -52,6 +53,7 @@ export const CreateStudy = () => {
     400,
     engineLinesCount,
     engineEnabled,
+    analysisMode,
   );
 
   const stableEvalRef = useRef({
@@ -60,6 +62,7 @@ export const CreateStudy = () => {
     possibleMate: null as string | null,
   });
 
+  // Update stable eval when we have a valid evaluation for the current position
   useEffect(() => {
     if (depth > 0 && isEngineEnabled) {
       stableEvalRef.current = {
@@ -76,13 +79,29 @@ export const CreateStudy = () => {
     gameState.position,
   ]);
 
+  // Clear stable eval when position changes and we don't have a valid eval yet
+  useEffect(() => {
+    if (
+      stableEvalRef.current.position !== gameState.position &&
+      (depth === 0 || !isEngineEnabled)
+    ) {
+      stableEvalRef.current = {
+        position: gameState.position,
+        evaluation: 0,
+        possibleMate: null,
+      };
+    }
+  }, [gameState.position, depth, isEngineEnabled]);
+
   const displayEvaluation = useMemo(() => {
+    // Priority 1: If we have a valid evaluation from the engine for the current position, use it
     if (depth > 0 && isEngineEnabled) {
       return {
         evaluation: positionEvaluation,
         possibleMate: possibleMate || null,
       };
     }
+    // Priority 2: Fall back to stable eval only if it matches the current position
     if (
       stableEvalRef.current.position === gameState.position &&
       stableEvalRef.current.evaluation !== 0
@@ -92,6 +111,7 @@ export const CreateStudy = () => {
         possibleMate: stableEvalRef.current.possibleMate,
       };
     }
+    // Priority 3: No evaluation available yet (show neutral/0)
     return { evaluation: 0, possibleMate: null };
   }, [
     depth,
@@ -183,6 +203,8 @@ export const CreateStudy = () => {
     onEngineLinesCountChange: setEngineLinesCount,
     engineDepth,
     onEngineDepthChange: setEngineDepth,
+    analysisMode,
+    onAnalysisModeChange: setAnalysisMode,
     boardScale,
     onBoardScaleChange: setBoardScale,
     opening: opening || undefined,

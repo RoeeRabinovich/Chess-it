@@ -27,6 +27,8 @@ interface ChessControlsProps {
   onEngineLinesCountChange: (count: number) => void;
   engineDepth: number;
   onEngineDepthChange: (depth: number) => void;
+  analysisMode: "quick" | "deep";
+  onAnalysisModeChange: (mode: "quick" | "deep") => void;
   // Board scale props
   boardScale: number;
   onBoardScaleChange: (scale: number) => void;
@@ -51,6 +53,8 @@ export const ChessControls = ({
   onEngineLinesCountChange,
   engineDepth,
   onEngineDepthChange,
+  analysisMode,
+  onAnalysisModeChange,
   boardScale,
   onBoardScaleChange,
   onCreateStudy,
@@ -153,6 +157,8 @@ export const ChessControls = ({
         onEngineLinesCountChange={onEngineLinesCountChange}
         engineDepth={engineDepth}
         onEngineDepthChange={onEngineDepthChange}
+        analysisMode={analysisMode}
+        onAnalysisModeChange={onAnalysisModeChange}
         boardScale={boardScale}
         onBoardScaleChange={onBoardScaleChange}
       />
