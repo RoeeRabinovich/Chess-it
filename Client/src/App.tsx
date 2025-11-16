@@ -6,6 +6,7 @@ import { HomeExplore } from "./pages/HomeExplore/HomeExplore.page";
 import Register from "./pages/Register/Register.page";
 import Login from "./pages/Login/Login.page";
 import { CreateStudy } from "./pages/CreateStudy/CreateStudy.page";
+import { ReviewStudy } from "./pages/ReviewStudy/ReviewStudy.page";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { Toaster } from "./components/ui/Toaster";
@@ -51,6 +52,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/studies/:id" element={<ReviewStudy />} />
         </Routes>
         <Footer />
         <Toaster />
