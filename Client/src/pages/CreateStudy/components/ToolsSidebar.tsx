@@ -55,6 +55,7 @@ interface ToolsSidebarProps {
   onSaveComment: (comment: string) => void;
   canComment: boolean;
   comments?: Map<string, string>;
+  readOnlyComments?: boolean;
 
   // Create Study
   onCreateStudy?: () => void;
@@ -92,6 +93,7 @@ export const ToolsSidebar = ({
   onSaveComment,
   canComment,
   comments,
+  readOnlyComments = false,
   onCreateStudy,
 }: ToolsSidebarProps) => {
   return (
@@ -161,6 +163,7 @@ export const ToolsSidebar = ({
           currentMoveComment={currentMoveComment}
           onSaveComment={onSaveComment}
           canComment={canComment}
+          readOnly={readOnlyComments}
         />
       </div>
       <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />

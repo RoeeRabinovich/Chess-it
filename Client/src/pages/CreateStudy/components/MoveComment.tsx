@@ -5,12 +5,14 @@ interface MoveCommentProps {
   currentMoveComment: string;
   onSaveComment: (comment: string) => void;
   canComment: boolean; // Whether we're on a valid move (currentMoveIndex >= 0)
+  readOnly?: boolean; // If true, display comment as read-only text
 }
 
 export const MoveComment = ({
   currentMoveComment,
   onSaveComment,
   canComment,
+  readOnly = false,
 }: MoveCommentProps) => {
   const [commentText, setCommentText] = useState(currentMoveComment);
 
@@ -27,6 +29,28 @@ export const MoveComment = ({
     return null; // Don't show comment section for initial position
   }
 
+  // Read-only mode: just display the comment
+  if (readOnly) {
+    if (!currentMoveComment || currentMoveComment.trim() === "") {
+      return null; // Don't show empty comment section in read-only mode
+    }
+
+    return (
+      <div className="border-border bg-card w-full flex-shrink-0 border-t px-2 py-1.5 sm:px-3 sm:py-2">
+        <div className="mb-1.5 flex items-center gap-1.5">
+          <Comment className="h-3 w-3 text-purple-500 sm:h-3.5 sm:w-3.5" />
+          <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
+            Move Comment
+          </span>
+        </div>
+        <div className="text-foreground rounded-md bg-muted/50 px-2 py-1.5 text-[11px] sm:text-xs">
+          {currentMoveComment}
+        </div>
+      </div>
+    );
+  }
+
+  // Editable mode: show textarea and save button
   return (
     <div className="border-border bg-card w-full flex-shrink-0 border-t px-2 py-1.5 sm:px-3 sm:py-2">
       <div className="mb-1.5 flex items-center gap-1.5">

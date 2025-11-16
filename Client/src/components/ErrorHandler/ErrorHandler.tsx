@@ -110,10 +110,12 @@ export const ErrorHandler = ({
     <div
       className={`bg-background flex h-screen items-center justify-center pt-16 sm:pt-20 md:pt-24 ${className}`}
     >
-      <div className="text-center max-w-md px-4">
+      <div className="max-w-md px-4 text-center">
         <div className="mb-6">
           <div className="text-destructive mb-4 text-6xl">⚠️</div>
-          <h1 className="text-foreground mb-2 text-2xl font-bold">{errorTitle}</h1>
+          <h1 className="text-foreground mb-2 text-2xl font-bold">
+            {errorTitle}
+          </h1>
           <p className="text-muted-foreground text-base">{errorMessage}</p>
         </div>
 
@@ -141,4 +143,3 @@ export const ErrorHandler = ({
     </div>
   );
 };
-

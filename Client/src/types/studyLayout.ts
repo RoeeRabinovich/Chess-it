@@ -56,6 +56,7 @@ export interface StudyLayoutProps {
   // Comments
   currentMoveComment: string;
   onSaveComment: (comment: string) => void;
+  readOnlyComments?: boolean; // If true, comments are read-only
 
   // Create Study
   onCreateStudy?: () => void;

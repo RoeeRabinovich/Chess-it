@@ -38,6 +38,7 @@ export const MobileStudyLayout = ({
   opening,
   currentMoveComment,
   onSaveComment,
+  readOnlyComments = false,
   onCreateStudy,
 }: StudyLayoutProps) => {
   const [evalBarWidth, setEvalBarWidth] = useState(280);
@@ -147,6 +148,7 @@ export const MobileStudyLayout = ({
         currentMoveComment={currentMoveComment}
         onSaveComment={onSaveComment}
         canComment={gameState.currentMoveIndex >= 0}
+        readOnly={readOnlyComments}
       />
 
       {/* Game Controls */}
