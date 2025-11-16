@@ -1,25 +1,29 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { apiService } from "../../services/api";
 import { Study } from "../../types/study";
 import { ApiError } from "../../types/auth";
 import { useToast } from "../../hooks/useToast";
+import { ErrorHandler } from "../../components/ErrorHandler/ErrorHandler";
 
 export const ReviewStudy = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const { toast } = useToast();
 
   // Study data state
   const [study, setStudy] = useState<Study | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ApiError | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   // Load study data
   useEffect(() => {
     const fetchStudy = async () => {
       if (!id) {
-        setError("Study ID is missing");
+        setError({
+          type: "VALIDATION",
+          message: "Study ID is missing",
+        });
         setLoading(false);
         return;
       }
@@ -30,27 +34,31 @@ export const ReviewStudy = () => {
       try {
         const studyData = await apiService.getStudyById(id);
         setStudy(studyData);
+        setError(null);
         // Game state initialization will be handled in Step 4
       } catch (err) {
         const apiError = err as ApiError;
-        let errorMessage = "Failed to load study. Please try again.";
+
+        // Enhance error message for study-specific context
+        const enhancedError: ApiError = { ...apiError };
 
         if (apiError.statusCode === 404) {
-          errorMessage = "Study not found.";
+          enhancedError.message = "Study not found.";
         } else if (apiError.statusCode === 403) {
-          errorMessage = "Access denied. This study is private.";
+          enhancedError.message = "Access denied. This study is private.";
         } else if (apiError.statusCode === 401) {
-          errorMessage = "Authentication required to view this study.";
+          enhancedError.message = "Authentication required to view this study.";
         } else if (apiError.type === "NETWORK") {
-          errorMessage = "Network error. Please check your connection.";
-        } else if (apiError.message) {
-          errorMessage = apiError.message;
+          enhancedError.message =
+            "Network error. Please check your connection.";
+        } else if (!apiError.message) {
+          enhancedError.message = "Failed to load study. Please try again.";
         }
 
-        setError(errorMessage);
+        setError(enhancedError);
         toast({
           title: "Error",
-          description: errorMessage,
+          description: enhancedError.message,
           variant: "destructive",
         });
       } finally {
@@ -59,7 +67,7 @@ export const ReviewStudy = () => {
     };
 
     fetchStudy();
-  }, [id, toast]);
+  }, [id, toast, retryCount]);
 
   // Loading state
   if (loading) {
@@ -74,26 +82,29 @@ export const ReviewStudy = () => {
   }
 
   // Error state
-  if (error || !study) {
+  if (error || (!loading && !study)) {
     return (
-      <div className="bg-background flex h-screen items-center justify-center pt-16 sm:pt-20 md:pt-24">
-        <div className="text-center">
-          <h1 className="text-foreground mb-4 text-2xl font-bold">Error</h1>
-          <p className="text-muted-foreground mb-6">
-            {error || "Study not found"}
-          </p>
-          <button
-            onClick={() => navigate("/home")}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 font-medium transition-colors"
-          >
-            Go Back Home
-          </button>
-        </div>
-      </div>
+      <ErrorHandler
+        error={
+          error || {
+            type: "SERVER",
+            message: "Study not found",
+            statusCode: 404,
+          }
+        }
+        onRetry={() => {
+          setError(null);
+          setRetryCount((prev) => prev + 1);
+        }}
+      />
     );
   }
 
   // Success state - will be fully implemented in next steps
+  if (!study) {
+    return null; // This should never happen due to the error check above
+  }
+
   return (
     <div className="bg-background flex h-screen overflow-hidden pt-16 sm:pt-20 md:pt-24">
       <div className="flex flex-1 items-center justify-center">
