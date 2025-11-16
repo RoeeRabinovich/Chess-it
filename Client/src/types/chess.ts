@@ -111,6 +111,7 @@ export interface UseStockfishReturn {
   depth: number;
   bestLine: string;
   possibleMate: string;
+  evaluationPosition: string; // Track which position the evaluation belongs to
   engineLines: Array<{
     moves: string[];
     evaluation: number;

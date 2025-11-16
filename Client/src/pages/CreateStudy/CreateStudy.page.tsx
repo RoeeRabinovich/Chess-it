@@ -47,6 +47,7 @@ export const CreateStudy = () => {
     positionEvaluation,
     depth,
     possibleMate,
+    evaluationPosition,
   } = useStockfish(
     gameState.position,
     gameState.moves.length,
@@ -57,9 +58,13 @@ export const CreateStudy = () => {
     analysisMode,
   );
 
-  // Store the current position's evaluation (already normalized) to keep it stable during analysis
-  // Key: position FEN, Value: normalized evaluation
+  // Store the current position's RAW evaluation (from Stockfish, not normalized) to keep it stable during analysis
+  // Key: position FEN, Value: raw Stockfish evaluation
   const positionEvalCache = useRef<Map<string, { evaluation: number; possibleMate: string | null }>>(new Map());
+  
+  // Store the last DISPLAYED evaluation (already normalized) to keep it visible during transitions
+  // Show it as-is without re-normalizing to prevent sign flips
+  const lastDisplayedEvalRef = useRef<{ evaluation: number; possibleMate: string | null } | null>(null);
 
   const displayEvaluation = useMemo(() => {
     // Determine whose turn it is to negate evaluation if needed
@@ -67,9 +72,8 @@ export const CreateStudy = () => {
     try {
       chess.load(gameState.position);
     } catch {
-      // Invalid position, return cached eval for this position if available
-      const cached = positionEvalCache.current.get(gameState.position);
-      return cached || { evaluation: 0, possibleMate: null };
+      // Invalid position, return last displayed eval if available (show as-is)
+      return lastDisplayedEvalRef.current || { evaluation: 0, possibleMate: null };
     }
     const isBlackToMove = chess.turn() === "b";
 
@@ -82,16 +86,23 @@ export const CreateStudy = () => {
       return isBlackToMove ? (-mateNum).toString() : mate;
     };
 
-    // Priority 1: If we have a valid evaluation from the engine for the current position, use it and cache it
-    if (depth > 0 && isEngineEnabled) {
+    // Priority 1: If we have a valid evaluation from the engine for the CURRENT position, use it
+    // CRITICAL: Only use positionEvaluation if it belongs to the current position
+    // This prevents sign flips when position changes but evaluation hasn't updated yet
+    if (depth > 0 && isEngineEnabled && evaluationPosition === gameState.position) {
+      // Cache the RAW evaluation (not normalized) so we can normalize it correctly each time
+      positionEvalCache.current.set(gameState.position, {
+        evaluation: positionEvaluation, // Store raw Stockfish evaluation
+        possibleMate: possibleMate || null,
+      });
+      
+      // Normalize and store as last displayed (for fallback during transitions)
       const normalizedEval = normalizeEval(positionEvaluation);
       const normalizedMate = normalizeMate(possibleMate || null);
-      
-      // Cache the normalized evaluation for this position
-      positionEvalCache.current.set(gameState.position, {
+      lastDisplayedEvalRef.current = {
         evaluation: normalizedEval,
         possibleMate: normalizedMate,
-      });
+      };
       
       return {
         evaluation: normalizedEval,
@@ -99,19 +110,32 @@ export const CreateStudy = () => {
       };
     }
     
-    // Priority 2: If analyzing or waiting, use cached evaluation for this position if available
-    // This keeps the current position's evaluation stable until new analysis arrives
+    // Priority 2: If we have a cached evaluation for this exact position, use it
     if (isEngineEnabled) {
       const cached = positionEvalCache.current.get(gameState.position);
       if (cached && (cached.evaluation !== 0 || cached.possibleMate)) {
+        // Normalize the cached raw evaluation based on current turn
+        const normalizedEval = normalizeEval(cached.evaluation);
+        const normalizedMate = normalizeMate(cached.possibleMate);
+        // Update last displayed
+        lastDisplayedEvalRef.current = {
+          evaluation: normalizedEval,
+          possibleMate: normalizedMate,
+        };
         return {
-          evaluation: cached.evaluation,
-          possibleMate: cached.possibleMate,
+          evaluation: normalizedEval,
+          possibleMate: normalizedMate,
         };
       }
     }
     
-    // Priority 3: Engine disabled or no cached evaluation for this position (show neutral/0)
+    // Priority 3: Keep showing last displayed evaluation as-is (don't re-normalize)
+    // This prevents sign flips and keeps the number stable during transitions
+    if (lastDisplayedEvalRef.current) {
+      return lastDisplayedEvalRef.current;
+    }
+    
+    // Priority 4: Engine disabled or no previous evaluation (show neutral/0)
     return { evaluation: 0, possibleMate: null };
   }, [
     depth,
@@ -120,6 +144,7 @@ export const CreateStudy = () => {
     isEngineEnabled,
     isAnalyzing,
     gameState.position,
+    evaluationPosition, // Include evaluationPosition to detect when evaluation becomes stale
   ]);
 
   const { opening, detectOpening } = useOpeningDetection();
@@ -260,3 +285,4 @@ export const CreateStudy = () => {
     </>
   );
 };
+

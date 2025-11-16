@@ -27,6 +27,7 @@ export const useStockfish = (
   const [depth, setDepth] = useState(0);
   const [bestLine, setBestLine] = useState("");
   const [possibleMate, setPossibleMate] = useState("");
+  const [evaluationPosition, setEvaluationPosition] = useState<string>(""); // Track which position the evaluation belongs to
   const [engineLines, setEngineLines] = useState<
     Array<{
       moves: string[];
@@ -142,11 +143,11 @@ export const useStockfish = (
             })
         : [];
 
-
       setPositionEvaluation(normalizeEval);
       setDepth(cached.depth);
       setBestLine(cached.bestLine);
       setPossibleMate(cached.possibleMate ?? "");
+      setEvaluationPosition(fen); // Track which position this evaluation belongs to
       setEngineLines(processedLines);
       return;
     }
@@ -162,6 +163,7 @@ export const useStockfish = (
         setBestLine("");
         setPositionEvaluation(0);
         setPossibleMate("");
+        setEvaluationPosition(""); // Clear position tracking when starting new analysis
         setEngineLines([]);
 
         // Call the server API for analysis (request 3 lines)
@@ -209,7 +211,6 @@ export const useStockfish = (
             return (a.multipvOrder || 999) - (b.multipvOrder || 999);
           });
 
-
         // cache and update UI
         // Store RAW evaluation in cache (from White's perspective), normalize on retrieval
         evalCache.set(cacheKey, { ...result, evaluation: result.evaluation });
@@ -218,6 +219,7 @@ export const useStockfish = (
         setDepth(result.depth);
         setBestLine(result.bestLine);
         setPossibleMate(result.possibleMate ?? "");
+        setEvaluationPosition(fen); // Track which position this evaluation belongs to
         setEngineLines(processedLines);
       } catch (error) {
         if (error instanceof Error && error.name !== "AbortError") {
@@ -253,6 +255,7 @@ export const useStockfish = (
     depth,
     bestLine,
     possibleMate,
+    evaluationPosition,
     engineLines,
     enableEngine: handleEnableEngine,
     disableEngine: handleDisableEngine,

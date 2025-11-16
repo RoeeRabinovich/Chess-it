@@ -17,8 +17,7 @@ interface EngineLinesProps {
 
 export const EngineLines = ({
   lines,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  isAnalyzing, // Reserved for future use
+
   onMoveClick,
   maxLines = 3,
 }: EngineLinesProps) => {
