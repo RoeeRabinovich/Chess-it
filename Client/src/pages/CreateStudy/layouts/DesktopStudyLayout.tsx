@@ -37,6 +37,9 @@ export const DesktopStudyLayout = ({
   onSaveComment,
   readOnlyComments = false,
   onCreateStudy,
+  studyName,
+  studyCategory,
+  studyDescription,
 }: StudyLayoutProps) => {
   // Calculate board size to match ChessBoard component logic
   const [boardSize, setBoardSize] = useState(() => {
@@ -155,6 +158,9 @@ export const DesktopStudyLayout = ({
             comments={gameState.comments}
             readOnlyComments={readOnlyComments}
             onCreateStudy={onCreateStudy}
+            studyName={studyName}
+            studyCategory={studyCategory}
+            studyDescription={studyDescription}
           />
         </div>
       </div>

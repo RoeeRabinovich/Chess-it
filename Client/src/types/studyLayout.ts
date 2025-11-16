@@ -60,4 +60,9 @@ export interface StudyLayoutProps {
 
   // Create Study
   onCreateStudy?: () => void;
+
+  // Study metadata (for review mode)
+  studyName?: string;
+  studyCategory?: string;
+  studyDescription?: string;
 }

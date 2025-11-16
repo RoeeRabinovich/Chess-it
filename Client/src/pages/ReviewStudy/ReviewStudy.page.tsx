@@ -118,6 +118,10 @@ export const ReviewStudy = () => {
       readOnlyComments: true, // Comments are read-only in review mode
       // Create Study button hidden
       onCreateStudy: undefined,
+      // Study metadata (replaces engine lines in review mode)
+      studyName: study?.studyName,
+      studyCategory: study?.category,
+      studyDescription: study?.description,
     }),
     [
       chessGameReview,
@@ -127,6 +131,9 @@ export const ReviewStudy = () => {
       opening,
       study?.gameState?.opening,
       currentMoveComment,
+      study?.studyName,
+      study?.category,
+      study?.description,
     ],
   );
 

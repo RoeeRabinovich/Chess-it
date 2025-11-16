@@ -4,6 +4,7 @@ import { EngineLines } from "../../../components/EngineLines/EngineLines";
 import { MoveNotation } from "../../../components/MoveNotation/MoveNotation";
 import { ChessControls } from "../../../components/ChessControls/ChessControls";
 import { MoveComment } from "../components/MoveComment";
+import { StudyMetadata } from "../components/StudyMetadata";
 import ChessBoard from "../../../components/ChessBoard/ChessBoard";
 import { StudyLayoutProps } from "../../../types/studyLayout";
 import { ChessMove } from "../../../types/chess";
@@ -40,6 +41,9 @@ export const MobileStudyLayout = ({
   onSaveComment,
   readOnlyComments = false,
   onCreateStudy,
+  studyName,
+  studyCategory,
+  studyDescription,
 }: StudyLayoutProps) => {
   const [evalBarWidth, setEvalBarWidth] = useState(280);
 
@@ -56,33 +60,51 @@ export const MobileStudyLayout = ({
 
   return (
     <div className="flex h-full flex-col overflow-y-auto">
-      {/* Top: Engine Lines (2 lines default) */}
-      {gameState.moves.length > 0 && (
-        <div className="border-border bg-card w-full max-w-screen border-b py-1.5 sm:py-2">
+      {/* Top: Study Metadata (review mode) or Engine Lines (create mode) */}
+      {studyName || studyCategory || studyDescription ? (
+        // Review mode: Show study metadata
+        <div className="border-border bg-card w-full max-w-screen border-b py-2 sm:py-3">
           <div className="mb-1.5 flex items-center gap-1.5 px-2 sm:px-3">
-            {isEngineEnabled && (
-              <div
-                className={`h-1.5 w-1.5 shrink-0 rounded-full ${isAnalyzing ? "animate-pulse bg-yellow-500" : "bg-green-500"}`}
-              ></div>
-            )}
+            <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500"></div>
             <span className="text-muted-foreground shrink-0 text-[10px] font-medium tracking-wide uppercase sm:text-xs">
-              Engine Lines
+              Study Info
             </span>
           </div>
-          <div className="min-h-[50px] w-full max-w-screen overflow-hidden px-2 sm:min-h-[70px] sm:px-3">
-            <EngineLines
-              lines={formattedEngineLines.slice(0, 2).map((line) => ({
-                moves: line.sanNotation.split(" "),
-                evaluation: line.evaluation,
-                depth: line.depth,
-                mate: line.possibleMate
-                  ? parseInt(line.possibleMate)
-                  : undefined,
-              }))}
-              isAnalyzing={isAnalyzing}
-            />
-          </div>
+          <StudyMetadata
+            studyName={studyName}
+            studyCategory={studyCategory}
+            studyDescription={studyDescription}
+          />
         </div>
+      ) : (
+        // Create mode: Show engine lines
+        gameState.moves.length > 0 && (
+          <div className="border-border bg-card w-full max-w-screen border-b py-1.5 sm:py-2">
+            <div className="mb-1.5 flex items-center gap-1.5 px-2 sm:px-3">
+              {isEngineEnabled && (
+                <div
+                  className={`h-1.5 w-1.5 shrink-0 rounded-full ${isAnalyzing ? "animate-pulse bg-yellow-500" : "bg-green-500"}`}
+                ></div>
+              )}
+              <span className="text-muted-foreground shrink-0 text-[10px] font-medium tracking-wide uppercase sm:text-xs">
+                Engine Lines
+              </span>
+            </div>
+            <div className="min-h-[50px] w-full max-w-screen overflow-hidden px-2 sm:min-h-[70px] sm:px-3">
+              <EngineLines
+                lines={formattedEngineLines.slice(0, 2).map((line) => ({
+                  moves: line.sanNotation.split(" "),
+                  evaluation: line.evaluation,
+                  depth: line.depth,
+                  mate: line.possibleMate
+                    ? parseInt(line.possibleMate)
+                    : undefined,
+                }))}
+                isAnalyzing={isAnalyzing}
+              />
+            </div>
+          </div>
+        )
       )}
 
       {/* Eval Bar */}

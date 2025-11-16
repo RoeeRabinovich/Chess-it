@@ -2,6 +2,7 @@ import { MoveNotation } from "../../../components/MoveNotation/MoveNotation";
 import { ChessControls } from "../../../components/ChessControls/ChessControls";
 import { EngineLines } from "../../../components/EngineLines/EngineLines";
 import { MoveComment } from "./MoveComment";
+import { StudyMetadata } from "./StudyMetadata";
 import { ChessMove, MoveBranch } from "../../../types/chess";
 
 interface ToolsSidebarProps {
@@ -59,6 +60,11 @@ interface ToolsSidebarProps {
 
   // Create Study
   onCreateStudy?: () => void;
+
+  // Study metadata (for review mode)
+  studyName?: string;
+  studyCategory?: string;
+  studyDescription?: string;
 }
 
 export const ToolsSidebar = ({
@@ -95,47 +101,71 @@ export const ToolsSidebar = ({
   comments,
   readOnlyComments = false,
   onCreateStudy,
+  studyName,
+  studyCategory,
+  studyDescription,
 }: ToolsSidebarProps) => {
   return (
     <div className="bg-card flex h-full max-h-full flex-col overflow-hidden p-1.5 sm:p-2 lg:p-4">
-      {/* Engine Lines Section - Always show, but conditionally show content */}
-      <>
-        <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
-          {isEngineEnabled && (
-            <div
-              className={`h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2 ${isAnalyzing ? "animate-pulse bg-yellow-500" : "bg-green-500"}`}
-            ></div>
-          )}
-          <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
-            Engine Lines
-          </span>
-        </div>
-        <div className="mb-2 flex min-h-[60px] flex-col sm:mb-3 sm:min-h-[80px] lg:mb-4 lg:min-h-[120px]">
-          {moves.length === 0 ? (
-            // Show placeholder only if no moves have been made
-            <div className="flex flex-1 items-center justify-center">
-              <span className="text-muted-foreground text-[10px] sm:text-xs">
-                Make a move to see engine analysis
-              </span>
-            </div>
-          ) : (
-            // Always show EngineLines container when moves exist (even if empty during analysis)
-            <EngineLines
-              lines={formattedEngineLines.map((line) => ({
-                moves: line.sanNotation.split(" "),
-                evaluation: line.evaluation,
-                depth: line.depth,
-                mate: line.possibleMate
-                  ? parseInt(line.possibleMate)
-                  : undefined,
-              }))}
-              isAnalyzing={isAnalyzing}
-              maxLines={engineLinesCount}
+      {/* Study Metadata (review mode) or Engine Lines (create mode) */}
+      {studyName || studyCategory || studyDescription ? (
+        // Review mode: Show study metadata
+        <>
+          <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
+            <div className="h-1.5 w-1.5 rounded-full bg-blue-500 sm:h-2 sm:w-2"></div>
+            <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
+              Study Info
+            </span>
+          </div>
+          <div className="mb-2 sm:mb-3 lg:mb-4">
+            <StudyMetadata
+              studyName={studyName}
+              studyCategory={studyCategory}
+              studyDescription={studyDescription}
             />
-          )}
-        </div>
-        <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />
-      </>
+          </div>
+          <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />
+        </>
+      ) : (
+        // Create mode: Show engine lines
+        <>
+          <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
+            {isEngineEnabled && (
+              <div
+                className={`h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2 ${isAnalyzing ? "animate-pulse bg-yellow-500" : "bg-green-500"}`}
+              ></div>
+            )}
+            <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
+              Engine Lines
+            </span>
+          </div>
+          <div className="mb-2 flex min-h-[60px] flex-col sm:mb-3 sm:min-h-[80px] lg:mb-4 lg:min-h-[120px]">
+            {moves.length === 0 ? (
+              // Show placeholder only if no moves have been made
+              <div className="flex flex-1 items-center justify-center">
+                <span className="text-muted-foreground text-[10px] sm:text-xs">
+                  Make a move to see engine analysis
+                </span>
+              </div>
+            ) : (
+              // Always show EngineLines container when moves exist (even if empty during analysis)
+              <EngineLines
+                lines={formattedEngineLines.map((line) => ({
+                  moves: line.sanNotation.split(" "),
+                  evaluation: line.evaluation,
+                  depth: line.depth,
+                  mate: line.possibleMate
+                    ? parseInt(line.possibleMate)
+                    : undefined,
+                }))}
+                isAnalyzing={isAnalyzing}
+                maxLines={engineLinesCount}
+              />
+            )}
+          </div>
+          <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />
+        </>
+      )}
 
       {/* Move History Section */}
       <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
