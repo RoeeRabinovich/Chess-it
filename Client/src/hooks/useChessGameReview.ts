@@ -17,6 +17,7 @@ interface UseChessGameReviewParams {
     comments?: Record<string, string>;
   };
   onInvalidMove?: (message: string) => void;
+  onNavigationError?: (message: string) => void;
 }
 
 /**
@@ -26,6 +27,7 @@ interface UseChessGameReviewParams {
 export const useChessGameReview = ({
   studyGameState,
   onInvalidMove,
+  onNavigationError,
 }: UseChessGameReviewParams) => {
   const chessRef = useRef(new Chess());
   const [gameState, setGameState] = useState<ChessGameState>(() => {
@@ -242,33 +244,116 @@ export const useChessGameReview = ({
     [gameState.currentMoveIndex, gameState.moves.length],
   );
 
+  // Wrapper functions with error handling
+  const navigateToMove = useCallback(
+    (moveIndex: number) => {
+      // Validate move index
+      if (moveIndex < -1 || moveIndex >= gameState.moves.length) {
+        onNavigationError?.(
+          `Invalid move index. Please select a valid move from the move history.`,
+        );
+        return;
+      }
+
+      try {
+        navigation.navigateToMove(moveIndex);
+      } catch (error) {
+        console.error("Error navigating to move:", error);
+        onNavigationError?.(
+          "Failed to navigate to this move. The study data may be corrupted.",
+        );
+      }
+    },
+    [navigation, gameState.moves.length, onNavigationError],
+  );
+
+  const navigateToBranchMove = useCallback(
+    (branchId: string, moveIndexInBranch: number) => {
+      const branch = gameState.branches.find((b) => b.id === branchId);
+      if (!branch) {
+        onNavigationError?.(
+          "Branch not found. This branch may have been removed.",
+        );
+        return;
+      }
+
+      if (moveIndexInBranch < 0 || moveIndexInBranch >= branch.moves.length) {
+        onNavigationError?.(
+          "Invalid branch move index. Please select a valid move from the branch.",
+        );
+        return;
+      }
+
+      try {
+        navigation.navigateToBranchMove(branchId, moveIndexInBranch);
+      } catch (error) {
+        console.error("Error navigating to branch move:", error);
+        onNavigationError?.(
+          "Failed to navigate to this branch move. The study data may be corrupted.",
+        );
+      }
+    },
+    [navigation, gameState.branches, onNavigationError],
+  );
+
+  const goToPreviousMove = useCallback(() => {
+    if (!helpers.canGoToPreviousMove) {
+      return;
+    }
+    try {
+      navigation.goToPreviousMove();
+    } catch (error) {
+      console.error("Error going to previous move:", error);
+      onNavigationError?.("Failed to navigate to the previous move.");
+    }
+  }, [navigation, helpers.canGoToPreviousMove, onNavigationError]);
+
+  const goToNextMove = useCallback(() => {
+    if (!helpers.canGoToNextMove) {
+      return;
+    }
+    try {
+      navigation.goToNextMove();
+    } catch (error) {
+      console.error("Error going to next move:", error);
+      onNavigationError?.("Failed to navigate to the next move.");
+    }
+  }, [navigation, helpers.canGoToNextMove, onNavigationError]);
+
   return {
     gameState,
     makeMove,
     undoMove,
     resetGame: () => {
       // Reset to initial study position
-      chessRef.current.reset();
-      if (
-        studyGameState.position !==
-        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-      ) {
-        chessRef.current.load(studyGameState.position);
+      try {
+        chessRef.current.reset();
+        if (
+          studyGameState.position !==
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+        ) {
+          chessRef.current.load(studyGameState.position);
+        }
+        setGameState((prev) => ({
+          ...prev,
+          position: chessRef.current.fen(),
+          currentMoveIndex: -1,
+        }));
+        setCurrentBranchContext(null);
+      } catch (error) {
+        console.error("Error resetting game:", error);
+        onNavigationError?.(
+          "Failed to reset the game to the starting position.",
+        );
       }
-      setGameState((prev) => ({
-        ...prev,
-        position: chessRef.current.fen(),
-        currentMoveIndex: -1,
-      }));
-      setCurrentBranchContext(null);
     },
     flipBoard: tools.flipBoard,
     loadFEN: () => false, // Disabled in review mode
     loadPGN: () => false, // Disabled in review mode
-    navigateToMove: navigation.navigateToMove,
-    navigateToBranchMove: navigation.navigateToBranchMove,
-    goToPreviousMove: navigation.goToPreviousMove,
-    goToNextMove: navigation.goToNextMove,
+    navigateToMove,
+    navigateToBranchMove,
+    goToPreviousMove,
+    goToNextMove,
     getComment,
     canUndo: helpers.canUndo,
     canGoToPreviousMove: helpers.canGoToPreviousMove,
