@@ -151,6 +151,7 @@ class ApiService {
     if (params.search) queryParams.append("search", params.search);
     if (params.limit) queryParams.append("limit", params.limit.toString());
     if (params.skip) queryParams.append("skip", params.skip.toString());
+    if (params.likedOnly) queryParams.append("likedOnly", "true");
 
     const response = await apiClient.get<PublicStudy[]>(
       `/studies/public?${queryParams.toString()}`,
@@ -162,6 +163,28 @@ class ApiService {
   // Returns full study with complete gameState including moves, branches, comments
   async getStudyById(studyId: string): Promise<Study> {
     const response = await apiClient.get<Study>(`/studies/${studyId}`);
+    return response.data;
+  }
+
+  // Like a study
+  async likeStudy(studyId: string): Promise<{ success: boolean }> {
+    const response = await apiClient.post<{ success: boolean }>(
+      `/studies/${studyId}/like`,
+    );
+    return response.data;
+  }
+
+  // Unlike a study
+  async unlikeStudy(studyId: string): Promise<{ success: boolean }> {
+    const response = await apiClient.delete<{ success: boolean }>(
+      `/studies/${studyId}/like`,
+    );
+    return response.data;
+  }
+
+  // Get user's liked study IDs
+  async getLikedStudyIds(): Promise<string[]> {
+    const response = await apiClient.get<string[]>("/studies/liked/ids");
     return response.data;
   }
 

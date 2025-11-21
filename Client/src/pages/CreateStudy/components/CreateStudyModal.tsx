@@ -156,7 +156,7 @@ export const CreateStudyModal = ({
           onChange={handleChange}
           error={errors.studyName}
           required
-          placeholder="Enter study name (8-24 characters)"
+          placeholder="Enter study name"
           disabled={isSubmitting}
         />
 

@@ -27,6 +27,7 @@ export interface GetPublicStudiesParams {
   search?: string;
   limit?: number;
   skip?: number;
+  likedOnly?: boolean;
 }
 
 /**

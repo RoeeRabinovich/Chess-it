@@ -17,6 +17,8 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const searchQuery = useAppSelector((state) => state.search.query);
+  const isArchiveActive = useAppSelector((state) => state.archive.isActive);
+  const isAuthenticated = apiService.isAuthenticated();
 
   useEffect(() => {
     const fetchStudies = async () => {
@@ -24,12 +26,20 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
       setError(null);
 
       try {
+        // If archive is active but user is not authenticated, show empty state
+        if (isArchiveActive && !isAuthenticated) {
+          setStudies([]);
+          setLoading(false);
+          return;
+        }
+
         const data = await apiService.getPublicStudies({
           category,
           filter,
           search: searchQuery,
           limit: 20,
           skip: 0,
+          likedOnly: isArchiveActive && isAuthenticated,
         });
         setStudies(data);
       } catch (err) {
@@ -48,7 +58,7 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
     };
 
     fetchStudies();
-  }, [category, filter, searchQuery, toast]);
+  }, [category, filter, searchQuery, isArchiveActive, isAuthenticated, toast]);
 
   if (loading) {
     return (
@@ -72,6 +82,30 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
   }
 
   if (studies.length === 0) {
+    // Show different message for archive empty state
+    if (isArchiveActive) {
+      if (!isAuthenticated) {
+        return (
+          <div className="flex min-h-[400px] items-center justify-center">
+            <div className="text-center">
+              <p className="text-muted-foreground text-lg">
+                Please log in to view your archived studies.
+              </p>
+            </div>
+          </div>
+        );
+      }
+      return (
+        <div className="flex min-h-[400px] items-center justify-center">
+          <div className="text-center">
+            <p className="text-muted-foreground text-lg">
+              Oops! You have 0 liked studies.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="text-center">

@@ -3,6 +3,9 @@ const {
   findStudyById,
   findStudiesByUser,
   findPublicStudies,
+  likeStudy,
+  unlikeStudy,
+  getUserLikedStudyIds,
 } = require("../models/studiesDataAccessService");
 const { validateCreateStudy } = require("../validations/studyValidatorService");
 const { handleJoiError } = require("../../utils/errorHandler");
@@ -89,15 +92,48 @@ const getUserStudiesService = async (userId) => {
 // Get public studies with filters
 const getPublicStudiesService = async (queryParams) => {
   try {
-    const { category, filter, search, limit, skip } = queryParams;
+    const { category, filter, search, limit, skip, userId, likedOnly } =
+      queryParams;
     const studies = await findPublicStudies({
       category,
       filter,
       search,
       limit: limit ? parseInt(limit) : 20,
       skip: skip ? parseInt(skip) : 0,
+      userId: userId || null,
+      likedOnly: likedOnly === true || likedOnly === "true",
     });
     return Promise.resolve(studies);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+// Like a study
+const likeStudyService = async (userId, studyId) => {
+  try {
+    const result = await likeStudy(userId, studyId);
+    return Promise.resolve(result);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+// Unlike a study
+const unlikeStudyService = async (userId, studyId) => {
+  try {
+    const result = await unlikeStudy(userId, studyId);
+    return Promise.resolve(result);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+// Get user's liked study IDs
+const getUserLikedStudyIdsService = async (userId) => {
+  try {
+    const studyIds = await getUserLikedStudyIds(userId);
+    return Promise.resolve(studyIds);
   } catch (error) {
     return Promise.reject(error);
   }
@@ -108,4 +144,7 @@ module.exports = {
   getStudyByIdService,
   getUserStudiesService,
   getPublicStudiesService,
+  likeStudyService,
+  unlikeStudyService,
+  getUserLikedStudyIdsService,
 };

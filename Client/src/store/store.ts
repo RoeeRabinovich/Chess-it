@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
 import searchReducer from "./searchSlice";
+import archiveReducer from "./archiveSlice";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     search: searchReducer,
+    archive: archiveReducer,
   },
 });
 

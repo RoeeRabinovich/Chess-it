@@ -60,11 +60,16 @@ export const CreateStudy = () => {
 
   // Store the current position's RAW evaluation (from Stockfish, not normalized) to keep it stable during analysis
   // Key: position FEN, Value: raw Stockfish evaluation
-  const positionEvalCache = useRef<Map<string, { evaluation: number; possibleMate: string | null }>>(new Map());
-  
+  const positionEvalCache = useRef<
+    Map<string, { evaluation: number; possibleMate: string | null }>
+  >(new Map());
+
   // Store the last DISPLAYED evaluation (already normalized) to keep it visible during transitions
   // Show it as-is without re-normalizing to prevent sign flips
-  const lastDisplayedEvalRef = useRef<{ evaluation: number; possibleMate: string | null } | null>(null);
+  const lastDisplayedEvalRef = useRef<{
+    evaluation: number;
+    possibleMate: string | null;
+  } | null>(null);
 
   const displayEvaluation = useMemo(() => {
     // Determine whose turn it is to negate evaluation if needed
@@ -73,13 +78,16 @@ export const CreateStudy = () => {
       chess.load(gameState.position);
     } catch {
       // Invalid position, return last displayed eval if available (show as-is)
-      return lastDisplayedEvalRef.current || { evaluation: 0, possibleMate: null };
+      return (
+        lastDisplayedEvalRef.current || { evaluation: 0, possibleMate: null }
+      );
     }
     const isBlackToMove = chess.turn() === "b";
 
     // Stockfish evaluates from White's perspective
     // When it's Black's turn, negate the evaluation to show it from Black's perspective
-    const normalizeEval = (evaluation: number) => (isBlackToMove ? -evaluation : evaluation);
+    const normalizeEval = (evaluation: number) =>
+      isBlackToMove ? -evaluation : evaluation;
     const normalizeMate = (mate: string | null) => {
       if (!mate) return null;
       const mateNum = parseInt(mate);
@@ -89,13 +97,17 @@ export const CreateStudy = () => {
     // Priority 1: If we have a valid evaluation from the engine for the CURRENT position, use it
     // CRITICAL: Only use positionEvaluation if it belongs to the current position
     // This prevents sign flips when position changes but evaluation hasn't updated yet
-    if (depth > 0 && isEngineEnabled && evaluationPosition === gameState.position) {
+    if (
+      depth > 0 &&
+      isEngineEnabled &&
+      evaluationPosition === gameState.position
+    ) {
       // Cache the RAW evaluation (not normalized) so we can normalize it correctly each time
       positionEvalCache.current.set(gameState.position, {
         evaluation: positionEvaluation, // Store raw Stockfish evaluation
         possibleMate: possibleMate || null,
       });
-      
+
       // Normalize and store as last displayed (for fallback during transitions)
       const normalizedEval = normalizeEval(positionEvaluation);
       const normalizedMate = normalizeMate(possibleMate || null);
@@ -103,13 +115,13 @@ export const CreateStudy = () => {
         evaluation: normalizedEval,
         possibleMate: normalizedMate,
       };
-      
+
       return {
         evaluation: normalizedEval,
         possibleMate: normalizedMate,
       };
     }
-    
+
     // Priority 2: If we have a cached evaluation for this exact position, use it
     if (isEngineEnabled) {
       const cached = positionEvalCache.current.get(gameState.position);
@@ -128,13 +140,13 @@ export const CreateStudy = () => {
         };
       }
     }
-    
+
     // Priority 3: Keep showing last displayed evaluation as-is (don't re-normalize)
     // This prevents sign flips and keeps the number stable during transitions
     if (lastDisplayedEvalRef.current) {
       return lastDisplayedEvalRef.current;
     }
-    
+
     // Priority 4: Engine disabled or no previous evaluation (show neutral/0)
     return { evaluation: 0, possibleMate: null };
   }, [
@@ -142,7 +154,7 @@ export const CreateStudy = () => {
     positionEvaluation,
     possibleMate,
     isEngineEnabled,
-    isAnalyzing,
+
     gameState.position,
     evaluationPosition, // Include evaluationPosition to detect when evaluation becomes stale
   ]);
@@ -285,4 +297,3 @@ export const CreateStudy = () => {
     </>
   );
 };
-

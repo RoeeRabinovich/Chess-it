@@ -8,6 +8,8 @@ const corsMiddleware = cors({
     "http://localhost:4173",
     "http://localhost:5173",
     "https://localhost:5173",
+    "http://localhost:5174",
+    "https://localhost:5174",
     "http://localhost:8181",
     "https://localhost:8181",
     "http://localhost:9191",

@@ -54,10 +54,10 @@ const gameStateSchema = Joi.object({
 
 const createStudyValidator = (study) => {
   const schema = Joi.object({
-    studyName: Joi.string().min(8).max(24).trim().required().messages({
+    studyName: Joi.string().min(8).max(52).trim().required().messages({
       "string.empty": "Study name is required.",
       "string.min": "Study name must be at least 8 characters.",
-      "string.max": "Study name must be at most 24 characters.",
+      "string.max": "Study name must be at most 52 characters.",
       "any.required": "Study name is required.",
     }),
     category: Joi.string()

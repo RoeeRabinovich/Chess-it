@@ -45,7 +45,7 @@ const studySchema = new mongoose.Schema(
       type: String,
       required: true,
       minlength: 8,
-      maxlength: 24,
+      maxlength: 52,
       trim: true,
     },
     category: {

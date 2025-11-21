@@ -1,4 +1,5 @@
 const Study = require("./mongodb/Study");
+const StudyLike = require("./mongodb/StudyLike");
 const config = require("config");
 const _ = require("lodash");
 const { handleBadRequest } = require("../../utils/errorHandler");
@@ -77,6 +78,8 @@ const findPublicStudies = async ({
   search,
   limit = 20,
   skip = 0,
+  userId = null,
+  likedOnly = false,
 } = {}) => {
   if (DB === "MONGODB") {
     try {
@@ -92,6 +95,19 @@ const findPublicStudies = async ({
           { studyName: { $regex: search.trim(), $options: "i" } },
           { description: { $regex: search.trim(), $options: "i" } },
         ];
+      }
+
+      // If filtering by liked studies, get list of liked study IDs
+      if (likedOnly && userId) {
+        const likedStudies = await StudyLike.find({ user: userId }).select(
+          "study"
+        );
+        const likedStudyIds = likedStudies.map((like) => like.study);
+        if (likedStudyIds.length === 0) {
+          // User has no liked studies, return empty array
+          return Promise.resolve([]);
+        }
+        query._id = { $in: likedStudyIds };
       }
 
       // Build sort
@@ -123,9 +139,112 @@ const findPublicStudies = async ({
   );
 };
 
+// Like a study
+const likeStudy = async (userId, studyId) => {
+  if (DB === "MONGODB") {
+    try {
+      // Check if study exists
+      const study = await Study.findById(studyId);
+      if (!study) {
+        const error = new Error("Study not found");
+        error.status = 404;
+        throw error;
+      }
+
+      // Check if already liked
+      const existingLike = await StudyLike.findOne({
+        user: userId,
+        study: studyId,
+      });
+      if (existingLike) {
+        const error = new Error("Study already liked");
+        error.status = 400;
+        throw error;
+      }
+
+      // Create like
+      const studyLike = new StudyLike({ user: userId, study: studyId });
+      await studyLike.save();
+
+      // Increment likes count on study
+      study.likes = (study.likes || 0) + 1;
+      await study.save();
+
+      return Promise.resolve({ success: true });
+    } catch (error) {
+      if (error.status) {
+        return Promise.reject(error);
+      }
+      error.status = 400;
+      return handleBadRequest("Mongoose", error);
+    }
+  }
+  return Promise.resolve(
+    "likeStudy function is not supported for this database"
+  );
+};
+
+// Unlike a study
+const unlikeStudy = async (userId, studyId) => {
+  if (DB === "MONGODB") {
+    try {
+      // Check if like exists
+      const studyLike = await StudyLike.findOne({
+        user: userId,
+        study: studyId,
+      });
+      if (!studyLike) {
+        const error = new Error("Study not liked");
+        error.status = 404;
+        throw error;
+      }
+
+      // Remove like
+      await StudyLike.deleteOne({ _id: studyLike._id });
+
+      // Decrement likes count on study
+      const study = await Study.findById(studyId);
+      if (study) {
+        study.likes = Math.max(0, (study.likes || 0) - 1);
+        await study.save();
+      }
+
+      return Promise.resolve({ success: true });
+    } catch (error) {
+      if (error.status) {
+        return Promise.reject(error);
+      }
+      error.status = 400;
+      return handleBadRequest("Mongoose", error);
+    }
+  }
+  return Promise.resolve(
+    "unlikeStudy function is not supported for this database"
+  );
+};
+
+// Get user's liked study IDs
+const getUserLikedStudyIds = async (userId) => {
+  if (DB === "MONGODB") {
+    try {
+      const likes = await StudyLike.find({ user: userId }).select("study");
+      return Promise.resolve(likes.map((like) => like.study.toString()));
+    } catch (error) {
+      error.status = 400;
+      return handleBadRequest("Mongoose", error);
+    }
+  }
+  return Promise.resolve(
+    "getUserLikedStudyIds function is not supported for this database"
+  );
+};
+
 module.exports = {
   createStudy,
   findStudyById,
   findStudiesByUser,
   findPublicStudies,
+  likeStudy,
+  unlikeStudy,
+  getUserLikedStudyIds,
 };

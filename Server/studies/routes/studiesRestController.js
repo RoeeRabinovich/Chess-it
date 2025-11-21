@@ -7,6 +7,9 @@ const {
   getStudyByIdService,
   getUserStudiesService,
   getPublicStudiesService,
+  likeStudyService,
+  unlikeStudyService,
+  getUserLikedStudyIdsService,
 } = require("../services/studiesService");
 const { auth, optionalAuth } = require("../../auth/authService");
 
@@ -36,18 +39,56 @@ router.get("/my-studies", auth, async (req, res) => {
 });
 
 // Get public studies with filters
-// Query params: category (All, Opening, Endgame, Strategy, Tactics), filter (All, New, Popular), search, limit, skip
-router.get("/public", async (req, res) => {
+// Query params: category (All, Opening, Endgame, Strategy, Tactics), filter (All, New, Popular), search, limit, skip, likedOnly
+router.get("/public", optionalAuth, async (req, res) => {
   try {
-    const { category, filter, search, limit, skip } = req.query;
+    const { category, filter, search, limit, skip, likedOnly } = req.query;
+    const userId = req.user?._id || null;
     const studies = await getPublicStudiesService({
       category: category || "All",
       filter: filter || "All",
       search: search || "",
       limit,
       skip,
+      userId,
+      likedOnly: likedOnly === "true" || likedOnly === true,
     });
     res.status(200).json(studies);
+  } catch (error) {
+    return handleError(res, error.status || 500, error.message);
+  }
+});
+
+// Like a study
+router.post("/:id/like", auth, async (req, res) => {
+  try {
+    const studyId = req.params.id;
+    const userId = req.user._id;
+    await likeStudyService(userId, studyId);
+    res.status(200).json({ success: true });
+  } catch (error) {
+    return handleError(res, error.status || 500, error.message);
+  }
+});
+
+// Unlike a study
+router.delete("/:id/like", auth, async (req, res) => {
+  try {
+    const studyId = req.params.id;
+    const userId = req.user._id;
+    await unlikeStudyService(userId, studyId);
+    res.status(200).json({ success: true });
+  } catch (error) {
+    return handleError(res, error.status || 500, error.message);
+  }
+});
+
+// Get user's liked study IDs
+router.get("/liked/ids", auth, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const studyIds = await getUserLikedStudyIdsService(userId);
+    res.status(200).json(studyIds);
   } catch (error) {
     return handleError(res, error.status || 500, error.message);
   }
