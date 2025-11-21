@@ -8,6 +8,9 @@ import { StudyMetadata } from "../components/StudyMetadata";
 import ChessBoard from "../../../components/ChessBoard/ChessBoard";
 import { StudyLayoutProps } from "../../../types/studyLayout";
 import { ChessMove } from "../../../types/chess";
+import { Button } from "../../../components/ui/Button";
+import { Heart } from "lucide-react";
+import { apiService } from "../../../services/api";
 
 export const MobileStudyLayout = ({
   gameState,
@@ -46,6 +49,12 @@ export const MobileStudyLayout = ({
   studyName,
   studyCategory,
   studyDescription,
+  studyId,
+  isLiked,
+  likesCount,
+  isLiking,
+  onLike,
+  onUnlike,
 }: StudyLayoutProps) => {
   const [evalBarWidth, setEvalBarWidth] = useState(280);
 
@@ -77,6 +86,30 @@ export const MobileStudyLayout = ({
             studyCategory={studyCategory}
             studyDescription={studyDescription}
           />
+          {/* Like Button - only show in review mode for public studies */}
+          {studyId && apiService.isAuthenticated() && (
+            <div className="mt-3 px-2 sm:px-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={isLiked ? onUnlike : onLike}
+                disabled={isLiking}
+                className="w-full justify-center gap-2"
+              >
+                <Heart
+                  className={`h-4 w-4 ${
+                    isLiked ? "fill-red-300 text-red-300" : ""
+                  }`}
+                />
+                <span className="font-minecraft text-xs sm:text-sm">
+                  {isLiked ? "Liked" : "Like"}
+                </span>
+                {likesCount !== undefined && likesCount > 0 && (
+                  <span className="text-xs sm:text-sm">({likesCount})</span>
+                )}
+              </Button>
+            </div>
+          )}
         </div>
       ) : (
         // Create mode: Show engine lines

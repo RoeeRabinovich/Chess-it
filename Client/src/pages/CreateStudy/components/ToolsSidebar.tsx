@@ -4,6 +4,9 @@ import { EngineLines } from "../../../components/EngineLines/EngineLines";
 import { MoveComment } from "./MoveComment";
 import { StudyMetadata } from "./StudyMetadata";
 import { ChessMove, MoveBranch } from "../../../types/chess";
+import { Button } from "../../../components/ui/Button";
+import { Heart } from "lucide-react";
+import { apiService } from "../../../services/api";
 
 interface ToolsSidebarProps {
   // Engine Analysis
@@ -67,6 +70,14 @@ interface ToolsSidebarProps {
   studyName?: string;
   studyCategory?: string;
   studyDescription?: string;
+
+  // Like functionality (for review mode)
+  studyId?: string;
+  isLiked?: boolean;
+  likesCount?: number;
+  isLiking?: boolean;
+  onLike?: () => void;
+  onUnlike?: () => void;
 }
 
 export const ToolsSidebar = ({
@@ -108,6 +119,12 @@ export const ToolsSidebar = ({
   studyName,
   studyCategory,
   studyDescription,
+  studyId,
+  isLiked,
+
+  isLiking,
+  onLike,
+  onUnlike,
 }: ToolsSidebarProps) => {
   return (
     <div className="bg-card flex h-full max-h-full flex-col overflow-hidden p-1.5 sm:p-2 lg:p-4">
@@ -127,6 +144,27 @@ export const ToolsSidebar = ({
               studyCategory={studyCategory}
               studyDescription={studyDescription}
             />
+            {/* Like Button - only show in review mode for public studies */}
+            {studyId && apiService.isAuthenticated() && (
+              <div className="mt-3 px-2 sm:px-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={isLiked ? onUnlike : onLike}
+                  disabled={isLiking}
+                  className="w-full justify-center gap-2"
+                >
+                  <Heart
+                    className={`h-4 w-4 ${
+                      isLiked ? "fill-red-300 text-red-300" : ""
+                    }`}
+                  />
+                  <span className="font-minecraft text-xs sm:text-sm">
+                    {isLiked ? "Liked" : "Like"}
+                  </span>
+                </Button>
+              </div>
+            )}
           </div>
           <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />
         </>

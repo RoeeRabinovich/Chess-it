@@ -21,6 +21,9 @@ export const ReviewStudy = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<ApiError | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+  const [isLiking, setIsLiking] = useState(false);
 
   // Memoize studyGameState to prevent unnecessary re-renders
   const studyGameState = useMemo(() => {
@@ -75,6 +78,77 @@ export const ReviewStudy = () => {
     // Comments are read-only in review mode - do nothing
   }, []);
 
+  // Check if study is liked and fetch likes count
+  useEffect(() => {
+    const checkLikedStatus = async () => {
+      if (!id || !apiService.isAuthenticated() || !study) return;
+
+      try {
+        const likedIds = await apiService.getLikedStudyIds();
+        setIsLiked(likedIds.includes(id));
+      } catch (err) {
+        // Silently fail - user might not be authenticated
+        console.error("Failed to check liked status:", err);
+      }
+    };
+
+    if (study) {
+      setLikesCount(study.likes || 0);
+      checkLikedStatus();
+    }
+  }, [id, study]);
+
+  // Handle like/unlike
+  const handleLike = useCallback(async () => {
+    if (!id || !apiService.isAuthenticated() || isLiking) return;
+
+    setIsLiking(true);
+    try {
+      await apiService.likeStudy(id);
+      setIsLiked(true);
+      setLikesCount((prev) => prev + 1);
+      toast({
+        title: "Study liked",
+        description: "This study has been added to your archive.",
+      });
+    } catch (err) {
+      const apiError = err as ApiError;
+      toast({
+        title: "Error",
+        description:
+          apiError?.message || "Failed to like study. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLiking(false);
+    }
+  }, [id, isLiking, toast]);
+
+  const handleUnlike = useCallback(async () => {
+    if (!id || !apiService.isAuthenticated() || isLiking) return;
+
+    setIsLiking(true);
+    try {
+      await apiService.unlikeStudy(id);
+      setIsLiked(false);
+      setLikesCount((prev) => Math.max(0, prev - 1));
+      toast({
+        title: "Study unliked",
+        description: "This study has been removed from your archive.",
+      });
+    } catch (err) {
+      const apiError = err as ApiError;
+      toast({
+        title: "Error",
+        description:
+          apiError?.message || "Failed to unlike study. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLiking(false);
+    }
+  }, [id, isLiking, toast]);
+
   // Get current move comment reactively (updates when navigating between moves)
   const currentMoveComment = useMemo(() => {
     return chessGameReview.getComment() || "";
@@ -125,6 +199,13 @@ export const ReviewStudy = () => {
       studyName: study?.studyName,
       studyCategory: study?.category,
       studyDescription: study?.description,
+      // Like functionality
+      studyId: study?._id,
+      isLiked,
+      likesCount,
+      isLiking,
+      onLike: handleLike,
+      onUnlike: handleUnlike,
     }),
     [
       chessGameReview,
@@ -137,6 +218,12 @@ export const ReviewStudy = () => {
       study?.studyName,
       study?.category,
       study?.description,
+      study?._id,
+      isLiked,
+      likesCount,
+      isLiking,
+      handleLike,
+      handleUnlike,
     ],
   );
 

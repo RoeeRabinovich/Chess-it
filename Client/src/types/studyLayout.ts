@@ -67,4 +67,12 @@ export interface StudyLayoutProps {
   studyName?: string;
   studyCategory?: string;
   studyDescription?: string;
+
+  // Like functionality (for review mode)
+  studyId?: string;
+  isLiked?: boolean;
+  likesCount?: number;
+  isLiking?: boolean;
+  onLike?: () => void;
+  onUnlike?: () => void;
 }

@@ -42,6 +42,12 @@ export const DesktopStudyLayout = ({
   studyName,
   studyCategory,
   studyDescription,
+  studyId,
+  isLiked,
+  likesCount,
+  isLiking,
+  onLike,
+  onUnlike,
 }: StudyLayoutProps) => {
   // Calculate board size to match ChessBoard component logic
   const [boardSize, setBoardSize] = useState(() => {
@@ -165,6 +171,12 @@ export const DesktopStudyLayout = ({
             studyName={studyName}
             studyCategory={studyCategory}
             studyDescription={studyDescription}
+            studyId={studyId}
+            isLiked={isLiked}
+            likesCount={likesCount}
+            isLiking={isLiking}
+            onLike={onLike}
+            onUnlike={onUnlike}
           />
         </div>
       </div>
