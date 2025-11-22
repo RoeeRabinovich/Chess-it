@@ -10,4 +10,5 @@ export interface User {
     alt: string;
   };
   createdAt: string;
+  puzzleRating?: number;
 }

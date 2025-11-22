@@ -1,0 +1,96 @@
+import { useEffect, useState } from "react";
+import { useAuth } from "../../../hooks/useAuth";
+
+interface PuzzlesSidebarProps {
+  // Timer state
+  isTimerRunning: boolean;
+  onTimerStop?: () => void;
+  // Puzzle ID or key to reset timer when puzzle changes
+  puzzleKey?: string | number;
+}
+
+export const PuzzlesSidebar = ({
+  isTimerRunning,
+  onTimerStop,
+  puzzleKey,
+}: PuzzlesSidebarProps) => {
+  const { user } = useAuth();
+  const [elapsedTime, setElapsedTime] = useState(0); // Time in seconds
+
+  // Reset timer when puzzle changes
+  useEffect(() => {
+    setElapsedTime(0);
+  }, [puzzleKey]);
+
+  // Timer effect
+  useEffect(() => {
+    if (!isTimerRunning) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setElapsedTime((prev) => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isTimerRunning]);
+
+  // Format time as MM:SS or HH:MM:SS
+  const formatTime = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    if (hours > 0) {
+      return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    }
+    return `${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  // Get user's puzzle rating (default to 1200 if not set)
+  const userRating = user?.puzzleRating ?? 1200;
+
+  return (
+    <div className="bg-card flex h-full max-h-full flex-col overflow-hidden p-1.5 sm:p-2 lg:p-4">
+      {/* Puzzle Rating Section */}
+      <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
+        <div className="h-1.5 w-1.5 rounded-full bg-blue-500 sm:h-2 sm:w-2"></div>
+        <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
+          Puzzle Rating
+        </span>
+      </div>
+      <div className="mb-2 sm:mb-3 lg:mb-4">
+        <div className="px-2 sm:px-3">
+          <div className="text-2xl font-bold sm:text-3xl">{userRating}</div>
+          <p className="text-muted-foreground text-xs sm:text-sm">
+            Your current puzzle rating
+          </p>
+        </div>
+      </div>
+      <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />
+
+      {/* Timer Section */}
+      <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
+        <div
+          className={`h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2 ${
+            isTimerRunning ? "animate-pulse bg-green-500" : "bg-gray-500"
+          }`}
+        ></div>
+        <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
+          Timer
+        </span>
+      </div>
+      <div className="mb-2 sm:mb-3 lg:mb-4">
+        <div className="px-2 sm:px-3">
+          <div className="text-2xl font-bold sm:text-3xl">
+            {formatTime(elapsedTime)}
+          </div>
+          <p className="text-muted-foreground text-xs sm:text-sm">
+            {isTimerRunning ? "Solving puzzle..." : "Puzzle solved"}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+

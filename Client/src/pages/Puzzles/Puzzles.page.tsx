@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PuzzlesLayout } from "./layouts/PuzzlesLayout";
+import { PuzzlesSidebar } from "./components/PuzzlesSidebar";
 import { MoveData } from "../../types/chess";
 
 export const Puzzles = () => {
@@ -9,21 +10,39 @@ export const Puzzles = () => {
   );
   const [isFlipped] = useState(false);
   const [boardScale] = useState(1.0);
+  const [isTimerRunning, setIsTimerRunning] = useState(true);
+
+  // Start timer when puzzle loads (reset when puzzle changes)
+  useEffect(() => {
+    setIsTimerRunning(true);
+  }, [puzzlePosition]);
 
   // Placeholder move handler
   const handleMove = (move: MoveData): boolean => {
     // TODO: Implement puzzle move validation
     console.log("Move made:", move);
+
+    // TODO: Check if puzzle is solved after this move
+    // For now, this is a placeholder
+    // When puzzle is solved, stop the timer
+    // setIsPuzzleSolved(true);
+    // setIsTimerRunning(false);
+
     return true;
   };
 
-  // Placeholder sidebar content (will be replaced with PuzzlesSidebar component)
+  // Handle timer stop callback
+  const handleTimerStop = () => {
+    setIsTimerRunning(false);
+  };
+
+  // Sidebar content with PuzzlesSidebar component
   const sidebarContent = (
-    <div className="flex h-full items-center justify-center p-4">
-      <div className="text-muted-foreground text-center">
-        <p>Sidebar content coming soon...</p>
-      </div>
-    </div>
+    <PuzzlesSidebar
+      isTimerRunning={isTimerRunning}
+      onTimerStop={handleTimerStop}
+      puzzleKey={puzzlePosition}
+    />
   );
 
   return (
