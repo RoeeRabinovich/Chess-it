@@ -1,21 +1,93 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { PuzzlesLayout } from "./layouts/PuzzlesLayout";
 import { PuzzlesSidebar } from "./components/PuzzlesSidebar";
 import { MoveData } from "../../types/chess";
+import { PUZZLE_THEMES } from "../../constants/puzzleThemes";
+import { getPuzzles, Puzzle } from "../../services/puzzleService";
+import { useAuth } from "../../hooks/useAuth";
+import { useToast } from "../../hooks/useToast";
 
 export const Puzzles = () => {
-  // Placeholder puzzle position (starting position for now)
-  const [puzzlePosition] = useState<string>(
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  // Puzzle state
+  // currentPuzzle will be used for puzzle validation logic in future implementation
+  const [currentPuzzle, setCurrentPuzzle] = useState<Puzzle | null>(null);
+  const [puzzlePosition, setPuzzlePosition] = useState<string>(
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
   );
+  const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
+  const [puzzleIndex, setPuzzleIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [puzzleError, setPuzzleError] = useState<string | null>(null);
+
   const [isFlipped] = useState(false);
   const [boardScale] = useState(1.0);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
-  // Selected themes (default to middlegame and advantage)
-  const [selectedThemes, setSelectedThemes] = useState<string[]>([
-    "middlegame",
-    "advantage",
-  ]);
+  // Selected themes (default to all themes)
+  const [selectedThemes, setSelectedThemes] = useState<string[]>(() => {
+    return PUZZLE_THEMES.map((theme: { key: string }) => theme.key);
+  });
+
+  // Get user's puzzle rating
+  const userRating = user?.puzzleRating ?? 600;
+
+  // Fetch puzzles when themes or rating changes
+  const fetchPuzzles = useCallback(async () => {
+    setIsLoading(true);
+    setPuzzleError(null);
+    try {
+      // If all themes are selected, pass all theme keys
+      // Otherwise, pass the selected themes
+      const themesToFetch =
+        selectedThemes.length === PUZZLE_THEMES.length
+          ? selectedThemes
+          : selectedThemes;
+
+      const fetchedPuzzles = await getPuzzles({
+        rating: userRating,
+        themes: themesToFetch,
+        count: 25,
+        themesType: "ALL",
+        playerMoves: 4,
+      });
+
+      if (fetchedPuzzles.length === 0) {
+        setPuzzleError("No puzzles found with the selected criteria");
+        toast({
+          title: "No Puzzles Found",
+          description: "Try adjusting your theme selection or rating.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setPuzzles(fetchedPuzzles);
+      setPuzzleIndex(0);
+      // Load first puzzle
+      if (fetchedPuzzles[0]) {
+        setCurrentPuzzle(fetchedPuzzles[0]);
+        setPuzzlePosition(fetchedPuzzles[0].fen);
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch puzzles";
+      setPuzzleError(errorMessage);
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedThemes, userRating, toast]);
+
+  // Fetch puzzles on mount and when themes/rating change
+  useEffect(() => {
+    fetchPuzzles();
+  }, [fetchPuzzles]);
 
   // Start timer when puzzle loads (reset when puzzle changes)
   useEffect(() => {
@@ -41,10 +113,52 @@ export const Puzzles = () => {
     setIsTimerRunning(false);
   };
 
-  // Handle themes change
+  // Handle themes change - fetch new puzzles when themes change
   const handleThemesChange = (themes: string[]) => {
     setSelectedThemes(themes);
+    // Puzzles will be fetched via useEffect when selectedThemes changes
   };
+
+  // Load next puzzle (for future use when puzzle is solved)
+  // This will be called when puzzle is successfully solved
+  const loadNextPuzzle = useCallback(() => {
+    if (puzzles.length === 0) return;
+
+    const nextIndex = (puzzleIndex + 1) % puzzles.length;
+    setPuzzleIndex(nextIndex);
+    const nextPuzzle = puzzles[nextIndex];
+    setCurrentPuzzle(nextPuzzle);
+    setPuzzlePosition(nextPuzzle.fen);
+    setIsTimerRunning(true);
+  }, [puzzles, puzzleIndex]);
+
+  // Store references for future puzzle solving logic
+  // These will be used when implementing puzzle validation
+  void currentPuzzle;
+  void loadNextPuzzle;
+
+  // Show loading or error state
+  if (isLoading) {
+    return (
+      <div className="bg-background flex h-screen items-center justify-center pt-16 sm:pt-20 md:pt-24">
+        <div className="text-center">
+          <div className="bg-muted border-primary mx-auto h-16 w-16 animate-spin rounded-full border-4 border-t-transparent"></div>
+          <p className="text-muted-foreground mt-4">Loading puzzles...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (puzzleError && puzzles.length === 0) {
+    return (
+      <div className="bg-background flex h-screen items-center justify-center pt-16 sm:pt-20 md:pt-24">
+        <div className="text-center">
+          <p className="text-destructive mb-2 text-lg font-semibold">Error</p>
+          <p className="text-muted-foreground">{puzzleError}</p>
+        </div>
+      </div>
+    );
+  }
 
   // Sidebar content with PuzzlesSidebar component
   const sidebarContent = (

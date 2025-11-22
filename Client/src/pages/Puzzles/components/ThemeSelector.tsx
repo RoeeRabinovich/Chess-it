@@ -29,6 +29,12 @@ export const ThemeSelector = ({
     selectedThemes.includes(theme.key),
   ).map((theme) => theme.name);
 
+  // Check if all themes are selected
+  const allThemeKeys = PUZZLE_THEMES.map((theme) => theme.key);
+  const isAllSelected =
+    selectedThemes.length === allThemeKeys.length &&
+    allThemeKeys.every((key) => selectedThemes.includes(key));
+
   const handleThemeToggle = (themeKey: string) => {
     if (selectedThemes.includes(themeKey)) {
       // Remove theme
@@ -39,15 +45,25 @@ export const ThemeSelector = ({
     }
   };
 
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      // Select all themes
+      onThemesChange([...allThemeKeys]);
+    } else {
+      // Deselect all themes
+      onThemesChange([]);
+    }
+  };
+
   // Group themes by category for better organization
   const gamePhaseThemes = PUZZLE_THEMES.filter((theme) =>
     ["opening", "middlegame", "endgame"].includes(theme.key),
   );
-  const mateThemes = PUZZLE_THEMES.filter((theme) =>
-    theme.key.includes("mate") || theme.key.includes("Mate"),
+  const mateThemes = PUZZLE_THEMES.filter(
+    (theme) => theme.key.includes("mate") || theme.key.includes("Mate"),
   );
-  const endgameThemes = PUZZLE_THEMES.filter((theme) =>
-    theme.key.includes("endgame") || theme.key.includes("Endgame"),
+  const endgameThemes = PUZZLE_THEMES.filter(
+    (theme) => theme.key.includes("endgame") || theme.key.includes("Endgame"),
   );
   const tacticalThemes = PUZZLE_THEMES.filter(
     (theme) =>
@@ -71,8 +87,9 @@ export const ThemeSelector = ({
     ),
   );
 
-  const displayText =
-    selectedThemeNames.length === 0
+  const displayText = isAllSelected
+    ? "All"
+    : selectedThemeNames.length === 0
       ? "Select themes"
       : selectedThemeNames.length === 1
         ? selectedThemeNames[0]
@@ -94,13 +111,23 @@ export const ThemeSelector = ({
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="max-h-[400px] w-[300px] overflow-y-auto">
+        <DropdownMenuContent className="bg-background max-h-[400px] w-[300px] overflow-y-auto">
+          <DropdownMenuCheckboxItem
+            checked={isAllSelected}
+            onCheckedChange={handleSelectAll}
+            onSelect={(e) => e.preventDefault()}
+            className="font-semibold"
+          >
+            All
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuSeparator />
           <DropdownMenuLabel>Game Phase</DropdownMenuLabel>
           {gamePhaseThemes.map((theme) => (
             <DropdownMenuCheckboxItem
               key={theme.key}
               checked={selectedThemes.includes(theme.key)}
               onCheckedChange={() => handleThemeToggle(theme.key)}
+              onSelect={(e) => e.preventDefault()}
             >
               {theme.name}
             </DropdownMenuCheckboxItem>
@@ -113,6 +140,7 @@ export const ThemeSelector = ({
               key={theme.key}
               checked={selectedThemes.includes(theme.key)}
               onCheckedChange={() => handleThemeToggle(theme.key)}
+              onSelect={(e) => e.preventDefault()}
             >
               {theme.name}
             </DropdownMenuCheckboxItem>
@@ -125,6 +153,7 @@ export const ThemeSelector = ({
               key={theme.key}
               checked={selectedThemes.includes(theme.key)}
               onCheckedChange={() => handleThemeToggle(theme.key)}
+              onSelect={(e) => e.preventDefault()}
             >
               {theme.name}
             </DropdownMenuCheckboxItem>
@@ -137,6 +166,7 @@ export const ThemeSelector = ({
               key={theme.key}
               checked={selectedThemes.includes(theme.key)}
               onCheckedChange={() => handleThemeToggle(theme.key)}
+              onSelect={(e) => e.preventDefault()}
             >
               {theme.name}
             </DropdownMenuCheckboxItem>
@@ -149,6 +179,7 @@ export const ThemeSelector = ({
               key={theme.key}
               checked={selectedThemes.includes(theme.key)}
               onCheckedChange={() => handleThemeToggle(theme.key)}
+              onSelect={(e) => e.preventDefault()}
             >
               {theme.name}
             </DropdownMenuCheckboxItem>
@@ -161,6 +192,7 @@ export const ThemeSelector = ({
               key={theme.key}
               checked={selectedThemes.includes(theme.key)}
               onCheckedChange={() => handleThemeToggle(theme.key)}
+              onSelect={(e) => e.preventDefault()}
             >
               {theme.name}
             </DropdownMenuCheckboxItem>
@@ -169,10 +201,11 @@ export const ThemeSelector = ({
       </DropdownMenu>
       {selectedThemeNames.length > 0 && (
         <p className="text-muted-foreground text-xs">
-          {selectedThemeNames.join(", ")}
+          {isAllSelected
+            ? "All themes selected"
+            : selectedThemeNames.join(", ")}
         </p>
       )}
     </div>
   );
 };
-
