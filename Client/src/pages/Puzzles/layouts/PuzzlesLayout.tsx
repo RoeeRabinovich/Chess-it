@@ -12,6 +12,10 @@ interface PuzzlesLayoutProps {
   boardScale?: number;
   // Right sidebar content (will be PuzzlesSidebar component)
   sidebarContent: React.ReactNode;
+  // Square to highlight as wrong move
+  wrongMoveSquare?: string | null;
+  // Whether the board is interactive
+  isInteractive?: boolean;
 }
 
 export const PuzzlesLayout = ({
@@ -20,6 +24,8 @@ export const PuzzlesLayout = ({
   isFlipped = false,
   boardScale = 1.0,
   sidebarContent,
+  wrongMoveSquare,
+  isInteractive = true,
 }: PuzzlesLayoutProps) => {
   return (
     <div className="flex flex-1 flex-col overflow-hidden lg:flex-row">
@@ -33,8 +39,9 @@ export const PuzzlesLayout = ({
                 position={position}
                 onMove={onMove}
                 isFlipped={isFlipped}
-                isInteractive={true}
+                isInteractive={isInteractive}
                 boardScale={boardScale}
+                wrongMoveSquare={wrongMoveSquare}
               />
             </div>
           </div>

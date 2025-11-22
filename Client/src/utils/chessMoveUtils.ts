@@ -9,6 +9,14 @@ export const toMoveData = (move: MoveData | ChessMove): MoveData => ({
   promotion: move.promotion,
 });
 
+/**
+ * Converts MoveData to UCI format string (e.g., "e2e4" or "e7e8q")
+ */
+export const moveDataToUCI = (move: MoveData): string => {
+  const promotion = move.promotion ? move.promotion.toLowerCase() : "";
+  return `${move.from}${move.to}${promotion}`;
+};
+
 export const toChessMove = (move: ChessJsMove): ChessMove => ({
   from: move.from,
   to: move.to,

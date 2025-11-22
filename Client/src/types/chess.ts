@@ -50,6 +50,8 @@ export interface ChessBoardProps {
   boardScale?: number;
   /** Show board notation (rank/file labels) */
   showNotation?: boolean;
+  /** Square to highlight as wrong move (shows red background and X icon) */
+  wrongMoveSquare?: string | null;
 }
 
 /**

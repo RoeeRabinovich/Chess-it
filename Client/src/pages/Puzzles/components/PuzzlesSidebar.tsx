@@ -1,6 +1,7 @@
 import { useAuth } from "../../../hooks/useAuth";
 import { usePuzzleTimer } from "../../../hooks/usePuzzleTimer";
 import { ThemeSelector } from "./ThemeSelector";
+import { Button } from "../../../components/ui/Button";
 
 interface PuzzlesSidebarProps {
   // Timer state
@@ -16,6 +17,20 @@ interface PuzzlesSidebarProps {
   onThemesApply: () => void;
   // Initial FEN position to determine which color is to move
   initialFen?: string;
+  // Puzzle completion state
+  isPuzzleSolved?: boolean;
+  // Time taken to solve (in seconds)
+  timeTaken?: number;
+  // Puzzle rating
+  puzzleRating?: number;
+  // Puzzle difficulty/themes
+  puzzleThemes?: string[];
+  // Callback to load next puzzle
+  onNextPuzzle?: () => void;
+  // Show "Try Again" button (when wrong move was made)
+  showTryAgain?: boolean;
+  // Callback to revert wrong move
+  onTryAgain?: () => void;
 }
 
 export const PuzzlesSidebar = ({
@@ -25,6 +40,13 @@ export const PuzzlesSidebar = ({
   onThemesChange,
   onThemesApply,
   initialFen,
+  isPuzzleSolved = false,
+  timeTaken,
+  puzzleRating,
+  puzzleThemes = [],
+  onNextPuzzle,
+  showTryAgain = false,
+  onTryAgain,
 }: PuzzlesSidebarProps) => {
   const { user } = useAuth();
 
@@ -99,25 +121,101 @@ export const PuzzlesSidebar = ({
         </>
       )}
 
-      {/* Timer Section */}
-      <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
-        <div
-          className={`h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2 ${
-            isTimerRunning ? "animate-pulse bg-green-500" : "bg-gray-500"
-          }`}
-        ></div>
-        <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
-          Timer
-        </span>
-      </div>
-      <div className="mb-2 sm:mb-3 lg:mb-4">
-        <div className="px-2 sm:px-3">
-          <div className="text-2xl font-bold sm:text-3xl">{formattedTime}</div>
-          <p className="text-muted-foreground text-xs sm:text-sm">
-            {isTimerRunning ? "Solving puzzle..." : "Puzzle solved"}
-          </p>
-        </div>
-      </div>
+      {/* Try Again Button (shown when wrong move is made) */}
+      {showTryAgain && onTryAgain && !isPuzzleSolved && (
+        <>
+          <div className="mb-2 sm:mb-3 lg:mb-4">
+            <div className="px-2 sm:px-3">
+              <Button
+                onClick={onTryAgain}
+                className="w-full"
+                variant="destructive"
+              >
+                Try Again
+              </Button>
+              <p className="text-muted-foreground mt-1 text-xs">
+                Revert your last move
+              </p>
+            </div>
+          </div>
+          <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />
+        </>
+      )}
+
+      {/* Timer or Completion Section */}
+      {isPuzzleSolved ? (
+        <>
+          <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
+            <div className="h-1.5 w-1.5 rounded-full bg-green-500 sm:h-2 sm:w-2"></div>
+            <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
+              Puzzle Solved
+            </span>
+          </div>
+          <div className="mb-2 sm:mb-3 lg:mb-4">
+            <div className="px-2 sm:px-3">
+              <div className="mb-2 text-2xl font-bold text-green-600 sm:text-3xl">
+                Puzzle Solved!
+              </div>
+
+              {/* Statistics */}
+              {timeTaken !== undefined && (
+                <div className="mb-2 space-y-1">
+                  <p className="text-muted-foreground text-xs sm:text-sm">
+                    <span className="font-semibold">Time:</span> {formattedTime}
+                  </p>
+                  {puzzleRating !== undefined && (
+                    <p className="text-muted-foreground text-xs sm:text-sm">
+                      <span className="font-semibold">Rating:</span>{" "}
+                      {puzzleRating}
+                    </p>
+                  )}
+                  {puzzleThemes.length > 0 && (
+                    <p className="text-muted-foreground text-xs sm:text-sm">
+                      <span className="font-semibold">Themes:</span>{" "}
+                      {puzzleThemes.slice(0, 3).join(", ")}
+                      {puzzleThemes.length > 3 && "..."}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Next Puzzle Button */}
+              {onNextPuzzle && (
+                <Button
+                  onClick={onNextPuzzle}
+                  className="w-full"
+                  variant="default"
+                >
+                  Next Puzzle
+                </Button>
+              )}
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
+            <div
+              className={`h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2 ${
+                isTimerRunning ? "animate-pulse bg-green-500" : "bg-gray-500"
+              }`}
+            ></div>
+            <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
+              Timer
+            </span>
+          </div>
+          <div className="mb-2 sm:mb-3 lg:mb-4">
+            <div className="px-2 sm:px-3">
+              <div className="text-2xl font-bold sm:text-3xl">
+                {formattedTime}
+              </div>
+              <p className="text-muted-foreground text-xs sm:text-sm">
+                {isTimerRunning ? "Solving puzzle..." : "Puzzle solved"}
+              </p>
+            </div>
+          </div>
+        </>
+      )}
       <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />
 
       {/* Theme Selector Section */}

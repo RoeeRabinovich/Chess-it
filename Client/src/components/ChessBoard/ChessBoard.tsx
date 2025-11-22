@@ -1,6 +1,7 @@
 import { useState, useRef, useMemo, useEffect, memo } from "react";
 import { Chessboard } from "react-chessboard";
 import { Chess, Square } from "chess.js";
+import { XCircle } from "lucide-react";
 import { ChessBoardProps } from "../../types/chess";
 import { useChessBoardOptions } from "./useChessBoardOptions";
 import { useChessBoardInteractions } from "./useChessBoardInteractions";
@@ -18,6 +19,7 @@ const ChessBoard = ({
   isInteractive = true,
   boardScale = 1.0,
   showNotation = true,
+  wrongMoveSquare,
 }: ChessBoardProps) => {
   const chessGameRef = useRef(new Chess(position));
   const positionRef = useRef(position);
@@ -135,6 +137,18 @@ const ChessBoard = ({
     }
   }, [position, clearSelection]);
 
+  // Merge wrong move square styles with option squares
+  const squareStyles = useMemo(() => {
+    const styles = { ...optionSquares };
+    if (wrongMoveSquare) {
+      styles[wrongMoveSquare] = {
+        ...styles[wrongMoveSquare],
+        backgroundColor: "rgba(239, 68, 68, 0.4)", // Red background
+      };
+    }
+    return styles;
+  }, [optionSquares, wrongMoveSquare]);
+
   // Memoize board options
   const chessboardOptions = useMemo(
     () => ({
@@ -144,7 +158,7 @@ const ChessBoard = ({
       onPieceDrag,
       position: chessPosition,
       boardOrientation: (isFlipped ? "black" : "white") as "white" | "black",
-      squareStyles: optionSquares,
+      squareStyles: squareStyles,
       allowDragging: isInteractive,
       canDragPiece: ({
         piece,
@@ -183,7 +197,7 @@ const ChessBoard = ({
       onPieceDrag,
       chessPosition,
       isFlipped,
-      optionSquares,
+      squareStyles,
       isInteractive,
       showNotation,
     ],
@@ -205,7 +219,29 @@ const ChessBoard = ({
       }}
     >
       {isMounted ? (
-        <Chessboard options={chessboardOptions as unknown as ChessBoardProps} />
+        <>
+          <Chessboard options={chessboardOptions as unknown as ChessBoardProps} />
+          {/* Wrong move X icon overlay - positioned at top-right of the wrong square */}
+          {wrongMoveSquare && (
+            <div
+              style={{
+                position: "absolute",
+                pointerEvents: "none",
+                zIndex: 10,
+                // Calculate position based on square coordinates
+                // Each square is 1/8 of the board
+                left: `${((wrongMoveSquare.charCodeAt(0) - 97) * (100 / 8)) + (100 / 8) - 8}%`,
+                top: `${((8 - parseInt(wrongMoveSquare[1])) * (100 / 8)) + 2}%`,
+              }}
+            >
+              <XCircle
+                className="text-red-500 drop-shadow-lg"
+                size={20}
+                strokeWidth={2.5}
+              />
+            </div>
+          )}
+        </>
       ) : (
         <div
           style={{
