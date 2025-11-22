@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { useAuth } from "../../../hooks/useAuth";
+import { usePuzzleTimer } from "../../../hooks/usePuzzleTimer";
 
 interface PuzzlesSidebarProps {
   // Timer state
@@ -15,40 +15,15 @@ export const PuzzlesSidebar = ({
   puzzleKey,
 }: PuzzlesSidebarProps) => {
   const { user } = useAuth();
-  const [elapsedTime, setElapsedTime] = useState(0); // Time in seconds
 
-  // Reset timer when puzzle changes
-  useEffect(() => {
-    setElapsedTime(0);
-  }, [puzzleKey]);
-
-  // Timer effect
-  useEffect(() => {
-    if (!isTimerRunning) {
-      return;
-    }
-
-    const interval = setInterval(() => {
-      setElapsedTime((prev) => prev + 1);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isTimerRunning]);
-
-  // Format time as MM:SS or HH:MM:SS
-  const formatTime = (seconds: number): string => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-
-    if (hours > 0) {
-      return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-    }
-    return `${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  };
+  // Use custom timer hook
+  const { formattedTime } = usePuzzleTimer({
+    isRunning: isTimerRunning,
+    resetKey: puzzleKey,
+  });
 
   // Get user's puzzle rating (default to 1200 if not set)
-  const userRating = user?.puzzleRating ?? 1200;
+  const userRating = user?.puzzleRating ?? 600;
 
   return (
     <div className="bg-card flex h-full max-h-full flex-col overflow-hidden p-1.5 sm:p-2 lg:p-4">
@@ -82,9 +57,7 @@ export const PuzzlesSidebar = ({
       </div>
       <div className="mb-2 sm:mb-3 lg:mb-4">
         <div className="px-2 sm:px-3">
-          <div className="text-2xl font-bold sm:text-3xl">
-            {formatTime(elapsedTime)}
-          </div>
+          <div className="text-2xl font-bold sm:text-3xl">{formattedTime}</div>
           <p className="text-muted-foreground text-xs sm:text-sm">
             {isTimerRunning ? "Solving puzzle..." : "Puzzle solved"}
           </p>
@@ -93,4 +66,3 @@ export const PuzzlesSidebar = ({
     </div>
   );
 };
-
