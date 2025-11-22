@@ -185,6 +185,7 @@ export const Puzzles = () => {
       selectedThemes={pendingThemes}
       onThemesChange={handleThemesChange}
       onThemesApply={handleThemesApply}
+      initialFen={puzzlePosition}
     />
   );
 
