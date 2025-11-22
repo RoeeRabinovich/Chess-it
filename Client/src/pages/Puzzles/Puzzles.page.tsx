@@ -11,6 +11,11 @@ export const Puzzles = () => {
   const [isFlipped] = useState(false);
   const [boardScale] = useState(1.0);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
+  // Selected themes (default to middlegame and advantage)
+  const [selectedThemes, setSelectedThemes] = useState<string[]>([
+    "middlegame",
+    "advantage",
+  ]);
 
   // Start timer when puzzle loads (reset when puzzle changes)
   useEffect(() => {
@@ -36,12 +41,19 @@ export const Puzzles = () => {
     setIsTimerRunning(false);
   };
 
+  // Handle themes change
+  const handleThemesChange = (themes: string[]) => {
+    setSelectedThemes(themes);
+  };
+
   // Sidebar content with PuzzlesSidebar component
   const sidebarContent = (
     <PuzzlesSidebar
       isTimerRunning={isTimerRunning}
       onTimerStop={handleTimerStop}
       puzzleKey={puzzlePosition}
+      selectedThemes={selectedThemes}
+      onThemesChange={handleThemesChange}
     />
   );
 

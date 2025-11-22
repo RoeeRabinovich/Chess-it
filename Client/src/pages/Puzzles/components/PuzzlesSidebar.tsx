@@ -1,5 +1,6 @@
 import { useAuth } from "../../../hooks/useAuth";
 import { usePuzzleTimer } from "../../../hooks/usePuzzleTimer";
+import { ThemeSelector } from "./ThemeSelector";
 
 interface PuzzlesSidebarProps {
   // Timer state
@@ -7,12 +8,17 @@ interface PuzzlesSidebarProps {
   onTimerStop?: () => void;
   // Puzzle ID or key to reset timer when puzzle changes
   puzzleKey?: string | number;
+  // Selected themes
+  selectedThemes: string[];
+  // Callback when themes change
+  onThemesChange: (themes: string[]) => void;
 }
 
 export const PuzzlesSidebar = ({
   isTimerRunning,
-  onTimerStop,
   puzzleKey,
+  selectedThemes,
+  onThemesChange,
 }: PuzzlesSidebarProps) => {
   const { user } = useAuth();
 
@@ -62,6 +68,21 @@ export const PuzzlesSidebar = ({
             {isTimerRunning ? "Solving puzzle..." : "Puzzle solved"}
           </p>
         </div>
+      </div>
+      <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />
+
+      {/* Theme Selector Section */}
+      <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
+        <div className="h-1.5 w-1.5 rounded-full bg-purple-500 sm:h-2 sm:w-2"></div>
+        <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
+          Themes
+        </span>
+      </div>
+      <div className="mb-2 flex-shrink-0 px-2 sm:mb-3 sm:px-3 lg:mb-4">
+        <ThemeSelector
+          selectedThemes={selectedThemes}
+          onThemesChange={onThemesChange}
+        />
       </div>
     </div>
   );
