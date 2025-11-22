@@ -14,13 +14,16 @@ import { ChevronDown } from "lucide-react";
 interface ThemeSelectorProps {
   /** Selected theme keys */
   selectedThemes: string[];
-  /** Callback when themes change */
+  /** Callback when themes change (for preview) */
   onThemesChange: (themes: string[]) => void;
+  /** Callback when "Set Themes" button is clicked */
+  onThemesApply: () => void;
 }
 
 export const ThemeSelector = ({
   selectedThemes,
   onThemesChange,
+  onThemesApply,
 }: ThemeSelectorProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -206,6 +209,9 @@ export const ThemeSelector = ({
             : selectedThemeNames.join(", ")}
         </p>
       )}
+      <Button onClick={onThemesApply} className="mt-2 w-full" variant="default">
+        Set Themes
+      </Button>
     </div>
   );
 };

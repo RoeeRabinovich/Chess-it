@@ -12,6 +12,8 @@ interface PuzzlesSidebarProps {
   selectedThemes: string[];
   // Callback when themes change
   onThemesChange: (themes: string[]) => void;
+  // Callback when "Set Themes" button is clicked
+  onThemesApply: () => void;
 }
 
 export const PuzzlesSidebar = ({
@@ -19,6 +21,7 @@ export const PuzzlesSidebar = ({
   puzzleKey,
   selectedThemes,
   onThemesChange,
+  onThemesApply,
 }: PuzzlesSidebarProps) => {
   const { user } = useAuth();
 
@@ -82,6 +85,7 @@ export const PuzzlesSidebar = ({
         <ThemeSelector
           selectedThemes={selectedThemes}
           onThemesChange={onThemesChange}
+          onThemesApply={onThemesApply}
         />
       </div>
     </div>

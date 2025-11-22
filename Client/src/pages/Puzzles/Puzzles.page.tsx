@@ -25,69 +25,79 @@ export const Puzzles = () => {
   const [isFlipped] = useState(false);
   const [boardScale] = useState(1.0);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
-  // Selected themes (default to all themes)
+  // Applied themes (themes used for fetching puzzles)
   const [selectedThemes, setSelectedThemes] = useState<string[]>(() => {
+    return PUZZLE_THEMES.map((theme: { key: string }) => theme.key);
+  });
+  // Pending themes (themes being selected but not yet applied)
+  const [pendingThemes, setPendingThemes] = useState<string[]>(() => {
     return PUZZLE_THEMES.map((theme: { key: string }) => theme.key);
   });
 
   // Get user's puzzle rating
   const userRating = user?.puzzleRating ?? 600;
 
-  // Fetch puzzles when themes or rating changes
-  const fetchPuzzles = useCallback(async () => {
-    setIsLoading(true);
-    setPuzzleError(null);
-    try {
-      // If all themes are selected, pass all theme keys
-      // Otherwise, pass the selected themes
-      const themesToFetch =
-        selectedThemes.length === PUZZLE_THEMES.length
-          ? selectedThemes
-          : selectedThemes;
+  // Fetch puzzles with specified themes
+  const fetchPuzzles = useCallback(
+    async (themes?: string[]) => {
+      setIsLoading(true);
+      setPuzzleError(null);
+      try {
+        // Use provided themes or fall back to selectedThemes
+        const themesToUse = themes || selectedThemes;
+        // If all themes are selected, pass all theme keys
+        // Otherwise, pass the selected themes
+        const themesToFetch =
+          themesToUse.length === PUZZLE_THEMES.length
+            ? themesToUse
+            : themesToUse;
 
-      const fetchedPuzzles = await getPuzzles({
-        rating: userRating,
-        themes: themesToFetch,
-        count: 25,
-        themesType: "ALL",
-        playerMoves: 4,
-      });
+        const fetchedPuzzles = await getPuzzles({
+          rating: userRating,
+          themes: themesToFetch,
+          count: 25,
+          themesType: "ALL",
+          playerMoves: 4,
+        });
 
-      if (fetchedPuzzles.length === 0) {
-        setPuzzleError("No puzzles found with the selected criteria");
+        if (fetchedPuzzles.length === 0) {
+          setPuzzleError("No puzzles found with the selected criteria");
+          toast({
+            title: "No Puzzles Found",
+            description: "Try adjusting your theme selection or rating.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        setPuzzles(fetchedPuzzles);
+        setPuzzleIndex(0);
+        // Load first puzzle
+        if (fetchedPuzzles[0]) {
+          setCurrentPuzzle(fetchedPuzzles[0]);
+          setPuzzlePosition(fetchedPuzzles[0].fen);
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to fetch puzzles";
+        setPuzzleError(errorMessage);
         toast({
-          title: "No Puzzles Found",
-          description: "Try adjusting your theme selection or rating.",
+          title: "Error",
+          description: errorMessage,
           variant: "destructive",
         });
-        return;
+      } finally {
+        setIsLoading(false);
       }
+    },
+    [selectedThemes, userRating, toast],
+  );
 
-      setPuzzles(fetchedPuzzles);
-      setPuzzleIndex(0);
-      // Load first puzzle
-      if (fetchedPuzzles[0]) {
-        setCurrentPuzzle(fetchedPuzzles[0]);
-        setPuzzlePosition(fetchedPuzzles[0].fen);
-      }
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to fetch puzzles";
-      setPuzzleError(errorMessage);
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [selectedThemes, userRating, toast]);
-
-  // Fetch puzzles on mount and when themes/rating change
+  // Fetch puzzles on mount only
   useEffect(() => {
     fetchPuzzles();
-  }, [fetchPuzzles]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount
 
   // Start timer when puzzle loads (reset when puzzle changes)
   useEffect(() => {
@@ -113,10 +123,16 @@ export const Puzzles = () => {
     setIsTimerRunning(false);
   };
 
-  // Handle themes change - fetch new puzzles when themes change
+  // Handle themes change (preview only, doesn't fetch)
   const handleThemesChange = (themes: string[]) => {
-    setSelectedThemes(themes);
-    // Puzzles will be fetched via useEffect when selectedThemes changes
+    setPendingThemes(themes);
+  };
+
+  // Handle themes apply - fetch new puzzles when button is clicked
+  const handleThemesApply = () => {
+    setSelectedThemes(pendingThemes);
+    // Fetch with the new themes immediately
+    fetchPuzzles(pendingThemes);
   };
 
   // Load next puzzle (for future use when puzzle is solved)
@@ -166,8 +182,9 @@ export const Puzzles = () => {
       isTimerRunning={isTimerRunning}
       onTimerStop={handleTimerStop}
       puzzleKey={puzzlePosition}
-      selectedThemes={selectedThemes}
+      selectedThemes={pendingThemes}
       onThemesChange={handleThemesChange}
+      onThemesApply={handleThemesApply}
     />
   );
 

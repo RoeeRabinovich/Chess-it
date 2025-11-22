@@ -68,26 +68,45 @@ export async function getPuzzles(params: GetPuzzlesParams): Promise<Puzzle[]> {
   let url = "";
 
   try {
-    // Encode themes array for URL (must be JSON stringified and URL encoded)
-    // Build URL manually to avoid double encoding
-    const themesParam = encodeURIComponent(JSON.stringify(themes));
+    // Build query parameters
+    const queryParams: string[] = [];
 
-    // Build query string manually
-    const queryParams = [
-      `themes=${themesParam}`,
-      `rating=${rating}`,
-      `themesType=${themesType}`,
-      `playerMoves=${playerMoves}`,
-      `count=${count}`,
-    ].join("&");
+    // Handle themes parameter
+    // According to API docs: if more than one theme, MUST include themesType
+    // If all themes are selected (too many), don't send themes parameter to get random puzzles
+    // Or limit to a reasonable number (max 3 themes recommended by API docs)
+    if (themes && themes.length > 0) {
+      // If too many themes selected (likely "All"), don't filter by themes
+      // API docs say "any rating and up to 3 themes should never fail to return 500 matching puzzles"
+      if (themes.length <= 3) {
+        const themesParam = encodeURIComponent(JSON.stringify(themes));
+        queryParams.push(`themes=${themesParam}`);
 
-    url = `${RAPIDAPI_BASE_URL}/?${queryParams}`;
+        // themesType is REQUIRED when more than 1 theme
+        if (themes.length > 1) {
+          queryParams.push(`themesType=${themesType}`);
+        }
+      } else {
+        // Too many themes - don't filter by themes (get random puzzles)
+        console.log(
+          `Too many themes selected (${themes.length}). Fetching random puzzles without theme filter.`,
+        );
+      }
+    }
+
+    // Add other parameters
+    queryParams.push(`rating=${rating}`);
+    queryParams.push(`playerMoves=${playerMoves}`);
+    queryParams.push(`count=${count}`);
+
+    url = `${RAPIDAPI_BASE_URL}/?${queryParams.join("&")}`;
 
     console.log("Fetching puzzles from RapidAPI:", url);
     console.log("Request params:", {
       rating,
-      themes: themes.length,
-      themesType,
+      themesCount: themes?.length || 0,
+      themes: themes && themes.length <= 3 ? themes : "none (too many)",
+      themesType: themes && themes.length > 1 ? themesType : "not sent",
       playerMoves,
       count,
     });
@@ -112,21 +131,23 @@ export async function getPuzzles(params: GetPuzzlesParams): Promise<Puzzle[]> {
     );
     console.log("===========================");
 
-    // Handle different response structures
+    // Handle response structure - API returns { "puzzles": [...] }
     let puzzles: Puzzle[] = [];
 
-    if (Array.isArray(response.data)) {
-      console.log(`Received ${response.data.length} puzzles as array`);
-      puzzles = response.data;
-    } else if (
+    if (
       response.data &&
       typeof response.data === "object" &&
       "puzzles" in response.data &&
       Array.isArray((response.data as PuzzleApiResponse).puzzles)
     ) {
+      // Standard API response format
       const apiResponse = response.data as PuzzleApiResponse;
       puzzles = apiResponse.puzzles || [];
       console.log(`Received ${puzzles.length} puzzles from puzzles property`);
+    } else if (Array.isArray(response.data)) {
+      // Fallback: if response is directly an array
+      console.log(`Received ${response.data.length} puzzles as array`);
+      puzzles = response.data;
     } else {
       console.warn("Unexpected API response structure:", {
         data: response.data,
@@ -165,6 +186,13 @@ export async function getPuzzles(params: GetPuzzlesParams): Promise<Puzzle[]> {
 
       if (axiosError.response) {
         const errorData = axiosError.response.data;
+
+        // Log full error response for debugging
+        console.error(
+          "Full error response:",
+          JSON.stringify(errorData, null, 2),
+        );
+
         const errorMessage =
           typeof errorData === "string"
             ? errorData
@@ -173,6 +201,13 @@ export async function getPuzzles(params: GetPuzzlesParams): Promise<Puzzle[]> {
                 "message" in errorData
               ? (errorData as { message: string }).message
               : `HTTP ${axiosError.response.status}: ${axiosError.response.statusText}`;
+
+        // Special handling for 400 errors
+        if (axiosError.response.status === 400) {
+          throw new Error(
+            `Bad Request (400): ${errorMessage}. Please check your theme selection and try again.`,
+          );
+        }
 
         throw new Error(`Failed to fetch puzzles: ${errorMessage}`);
       } else if (axiosError.request) {
