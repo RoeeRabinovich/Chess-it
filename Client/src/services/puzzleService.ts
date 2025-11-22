@@ -1,11 +1,12 @@
 import axios, { AxiosError } from "axios";
-import { Chess } from "chess.js";
 
-// Lichess API configuration (free, open API with better CORS support)
-const LICHESS_API_BASE_URL = "https://lichess.org/api";
+// RapidAPI configuration
+const RAPIDAPI_BASE_URL = "https://chess-puzzles.p.rapidapi.com";
+const RAPIDAPI_KEY = "fb30da447amsh500815fac37b82ep1649e6jsnf921440ec6d5";
+const RAPIDAPI_HOST = "chess-puzzles.p.rapidapi.com";
 
 /**
- * Puzzle data structure from Lichess API
+ * Puzzle data structure from RapidAPI
  */
 export interface Puzzle {
   /** Puzzle ID */
@@ -27,32 +28,11 @@ export interface Puzzle {
 }
 
 /**
- * Lichess puzzle response structure
+ * RapidAPI puzzle response structure
  */
-export interface LichessPuzzleResponse {
-  game?: {
-    id: string;
-    perf: {
-      key: string;
-      name: string;
-    };
-    rated: boolean;
-    players: Array<{
-      userId: string;
-      name: string;
-      color: string;
-    }>;
-    pgn: string;
-    clock: string;
-  };
-  puzzle: {
-    id: string;
-    rating: number;
-    plays: number;
-    initialPly: number;
-    solution: string[];
-    themes: string[];
-  };
+export interface PuzzleApiResponse {
+  puzzles?: Puzzle[];
+  count?: number;
 }
 
 /**
@@ -72,138 +52,148 @@ export interface GetPuzzlesParams {
 }
 
 /**
- * Fetches chess puzzles from Lichess API
+ * Fetches chess puzzles from RapidAPI
  * @param params - Parameters for fetching puzzles
  * @returns Promise resolving to an array of puzzles
  */
 export async function getPuzzles(params: GetPuzzlesParams): Promise<Puzzle[]> {
-  const { rating, count = 25, themes = [] } = params;
+  const {
+    rating,
+    count = 25,
+    themes = ["middlegame", "advantage"],
+    themesType = "ALL",
+    playerMoves = 4,
+  } = params;
+
+  let url = "";
 
   try {
-    const puzzles: Puzzle[] = [];
+    // Encode themes array for URL (must be JSON stringified and URL encoded)
+    // Build URL manually to avoid double encoding
+    const themesParam = encodeURIComponent(JSON.stringify(themes));
 
-    // Lichess API returns one puzzle per request
-    // We need to fetch multiple puzzles by making multiple requests
-    // Using Promise.all to fetch multiple puzzles in parallel (limited to avoid rate limits)
-    const fetchPromises: Promise<Puzzle>[] = [];
-    const maxConcurrent = Math.min(count, 10); // Limit concurrent requests
+    // Build query string manually
+    const queryParams = [
+      `themes=${themesParam}`,
+      `rating=${rating}`,
+      `themesType=${themesType}`,
+      `playerMoves=${playerMoves}`,
+      `count=${count}`,
+    ].join("&");
 
-    for (let i = 0; i < count; i++) {
-      // Add delay between batches to avoid rate limiting
-      if (i > 0 && i % maxConcurrent === 0) {
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 second delay
-      }
+    url = `${RAPIDAPI_BASE_URL}/?${queryParams}`;
 
-      fetchPromises.push(fetchLichessPuzzle(rating, themes));
-    }
-
-    const results = await Promise.allSettled(fetchPromises);
-
-    // Extract successful puzzles
-    results.forEach((result) => {
-      if (result.status === "fulfilled" && result.value) {
-        puzzles.push(result.value);
-      }
+    console.log("Fetching puzzles from RapidAPI:", url);
+    console.log("Request params:", {
+      rating,
+      themes: themes.length,
+      themesType,
+      playerMoves,
+      count,
     });
 
-    console.log(`Fetched ${puzzles.length} puzzles from Lichess`);
-    return puzzles;
-  } catch (error) {
-    console.error("Error fetching puzzles:", error);
-    throw error;
-  }
-}
-
-/**
- * Fetches a single puzzle from Lichess API
- * Note: Lichess API doesn't support filtering by rating or themes in the request
- * The API returns random puzzles, and we filter client-side if needed
- */
-async function fetchLichessPuzzle(
-  rating: number, // Reserved for future filtering
-  themes: string[], // Reserved for future filtering
-): Promise<Puzzle> {
-  // Mark parameters as used (will be used for filtering in future)
-  void rating;
-  void themes;
-
-  try {
-    // Lichess puzzle endpoint - returns a random puzzle
-    // Correct endpoint is /api/puzzle/next (not /api/puzzle)
-    const url = `${LICHESS_API_BASE_URL}/puzzle/next`;
-
-    console.log("Fetching puzzle from Lichess:", url);
-
-    const response = await axios.get<LichessPuzzleResponse>(url, {
-      timeout: 10000,
+    const response = await axios.get<PuzzleApiResponse | Puzzle[]>(url, {
       headers: {
-        Accept: "application/json",
+        "x-rapidapi-host": RAPIDAPI_HOST,
+        "x-rapidapi-key": RAPIDAPI_KEY,
+        "Content-Type": "application/json",
       },
+      timeout: 30000,
     });
 
-    if (!response.data || !response.data.puzzle) {
-      throw new Error("Invalid puzzle response from Lichess");
+    // Log full response for debugging
+    console.log("=== RapidAPI Response ===");
+    console.log("Status:", response.status);
+    console.log("Status Text:", response.statusText);
+    console.log("Full Response Data:", JSON.stringify(response.data, null, 2));
+    console.log(
+      "Response Data Type:",
+      Array.isArray(response.data) ? "array" : typeof response.data,
+    );
+    console.log("===========================");
+
+    // Handle different response structures
+    let puzzles: Puzzle[] = [];
+
+    if (Array.isArray(response.data)) {
+      console.log(`Received ${response.data.length} puzzles as array`);
+      puzzles = response.data;
+    } else if (
+      response.data &&
+      typeof response.data === "object" &&
+      "puzzles" in response.data &&
+      Array.isArray((response.data as PuzzleApiResponse).puzzles)
+    ) {
+      const apiResponse = response.data as PuzzleApiResponse;
+      puzzles = apiResponse.puzzles || [];
+      console.log(`Received ${puzzles.length} puzzles from puzzles property`);
+    } else {
+      console.warn("Unexpected API response structure:", {
+        data: response.data,
+        type: typeof response.data,
+        keys:
+          typeof response.data === "object" && response.data !== null
+            ? Object.keys(response.data)
+            : null,
+      });
+      return [];
     }
 
-    const lichessPuzzle = response.data.puzzle;
-    const game = response.data.game;
+    console.log(`\n=== Fetch Summary ===`);
+    console.log(`Requested: ${count} puzzles`);
+    console.log(`Successfully fetched: ${puzzles.length} puzzles`);
 
-    // Convert Lichess puzzle format to our Puzzle format
-    // We need to extract FEN from the game PGN
-    const fen = extractFENFromPGN(game?.pgn || "", lichessPuzzle.initialPly);
-
-    const puzzle: Puzzle = {
-      id: lichessPuzzle.id,
-      rating: lichessPuzzle.rating,
-      themes: lichessPuzzle.themes,
-      fen: fen || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", // Fallback to starting position
-      moves: lichessPuzzle.solution,
-      playerMoves: lichessPuzzle.solution.length,
-      solution: lichessPuzzle.solution,
-      gameId: game?.id,
-    };
-
-    return puzzle;
+    return puzzles;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError;
-      console.error("Lichess API Error:", {
+      console.error("\n=== RapidAPI Error ===");
+      console.error("Error Details:", {
         status: axiosError.response?.status,
-        data: axiosError.response?.data,
+        statusText: axiosError.response?.statusText,
         message: axiosError.message,
+        code: axiosError.code,
+        url: url,
+        responseData: axiosError.response?.data,
       });
-      throw new Error(
-        `Failed to fetch puzzle from Lichess: ${axiosError.message}`,
-      );
+
+      if (axiosError.response?.status === 429) {
+        throw new Error(
+          "Rate limit exceeded. Please wait a moment and try again.",
+        );
+      }
+
+      if (axiosError.response) {
+        const errorData = axiosError.response.data;
+        const errorMessage =
+          typeof errorData === "string"
+            ? errorData
+            : typeof errorData === "object" &&
+                errorData !== null &&
+                "message" in errorData
+              ? (errorData as { message: string }).message
+              : `HTTP ${axiosError.response.status}: ${axiosError.response.statusText}`;
+
+        throw new Error(`Failed to fetch puzzles: ${errorMessage}`);
+      } else if (axiosError.request) {
+        console.error("No response received from server:", axiosError.request);
+        if (
+          axiosError.code === "ERR_NETWORK" ||
+          axiosError.message.includes("Network Error")
+        ) {
+          throw new Error(
+            "Network/CORS Error: The API might not allow direct browser requests. " +
+              "This could be a CORS (Cross-Origin Resource Sharing) issue. " +
+              "You may need to make the request through a backend proxy server.",
+          );
+        }
+        throw new Error(
+          "Failed to fetch puzzles: No response from server. Check your network connection.",
+        );
+      }
     }
+    console.error("Unexpected error:", error);
     throw error;
-  }
-}
-
-/**
- * Extracts FEN position from PGN at a specific move number
- */
-function extractFENFromPGN(pgn: string, initialPly: number): string | null {
-  if (!pgn) return null;
-
-  try {
-    const chess = new Chess();
-    chess.loadPgn(pgn);
-
-    // Navigate to the initial ply position
-    const history = chess.history({ verbose: true });
-    const targetMoveIndex = Math.floor(initialPly / 2);
-
-    // Reset and replay moves up to initialPly
-    chess.reset();
-    for (let i = 0; i < targetMoveIndex && i < history.length; i++) {
-      chess.move(history[i]);
-    }
-
-    return chess.fen();
-  } catch (error) {
-    console.error("Error extracting FEN from PGN:", error);
-    return null;
   }
 }
 

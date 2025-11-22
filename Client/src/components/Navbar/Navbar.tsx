@@ -14,9 +14,9 @@ import { ThemeToggle } from "../ui/ThemeToggle";
 import { useAuth } from "../../hooks/useAuth";
 import { Logout } from "../icons/Logout.icon";
 const navLinks = [
-  { name: "Learn", href: "#learn" },
+  { name: "Puzzles", path: "/puzzles" },
   { name: "Tools", href: "#tools" },
-  { name: "Create Study", href: "/create-study" },
+  { name: "Create Study", path: "/create-study" },
 ];
 
 const Navbar = () => {
@@ -57,15 +57,25 @@ const Navbar = () => {
           {/* Desktop Navigation */}
 
           <div className="hidden items-center gap-12 md:flex">
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="text-muted-foreground hover:text-foreground text-sm font-medium tracking-wide transition-colors duration-200"
-              >
-                {link.name}
-              </a>
-            ))}
+            {navLinks.map((link) =>
+              link.path ? (
+                <button
+                  key={link.name}
+                  onClick={() => navigate(link.path!)}
+                  className="text-muted-foreground hover:text-foreground cursor-pointer text-sm font-medium tracking-wide transition-colors duration-200"
+                >
+                  {link.name}
+                </button>
+              ) : (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className="text-muted-foreground hover:text-foreground cursor-pointer text-sm font-medium tracking-wide transition-colors duration-200"
+                >
+                  {link.name}
+                </a>
+              ),
+            )}
           </div>
 
           {/* Desktop CTA */}
@@ -115,8 +125,16 @@ const Navbar = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-background w-xs">
               {navLinks.map((link) => (
-                <DropdownMenuItem key={link.name} asChild>
-                  <a href={link.href}>{link.name}</a>
+                <DropdownMenuItem
+                  key={link.name}
+                  onClick={() => link.path && navigate(link.path)}
+                  asChild={!link.path}
+                >
+                  {link.path ? (
+                    <span>{link.name}</span>
+                  ) : (
+                    <a href={link.href}>{link.name}</a>
+                  )}
                 </DropdownMenuItem>
               ))}
 
