@@ -42,6 +42,11 @@ const userSchema = new mongoose.Schema(
       url: URL,
       alt: DEFAULT_VALIDATION,
     },
+    puzzleRating: {
+      type: Number,
+      default: 600,
+      min: 0,
+    },
   },
   {
     timestamps: true,

@@ -1,4 +1,8 @@
-const { registerUser, loginUser } = require("../models/usersDataAccessService");
+const {
+  registerUser,
+  loginUser,
+  updatePuzzleRating,
+} = require("../models/usersDataAccessService");
 const normalizeUser = require("../helpers/normalizeUser");
 const {
   validateRegister,
@@ -44,4 +48,32 @@ const loginUserService = async (rawUser) => {
   }
 };
 
-module.exports = { registerUserService, loginUserService };
+//Update user puzzle rating
+const updatePuzzleRatingService = async (userId, newRating) => {
+  try {
+    if (!userId) {
+      return Promise.reject({
+        status: 400,
+        message: "User ID is required",
+      });
+    }
+
+    if (typeof newRating !== "number" || newRating < 0) {
+      return Promise.reject({
+        status: 400,
+        message: "Invalid rating value",
+      });
+    }
+
+    const user = await updatePuzzleRating(userId, newRating);
+    return Promise.resolve(user);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+module.exports = {
+  registerUserService,
+  loginUserService,
+  updatePuzzleRatingService,
+};

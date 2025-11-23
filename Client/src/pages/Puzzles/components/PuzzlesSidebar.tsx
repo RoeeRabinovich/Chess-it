@@ -2,6 +2,7 @@ import { useAuth } from "../../../hooks/useAuth";
 import { usePuzzleTimer } from "../../../hooks/usePuzzleTimer";
 import { ThemeSelector } from "./ThemeSelector";
 import { Button } from "../../../components/ui/Button";
+import { RatingAnimation } from "../../../components/ui/RatingAnimation";
 
 interface PuzzlesSidebarProps {
   // Timer state
@@ -31,6 +32,10 @@ interface PuzzlesSidebarProps {
   showTryAgain?: boolean;
   // Callback to revert wrong move
   onTryAgain?: () => void;
+  // Current user rating (for animation)
+  currentUserRating?: number;
+  // Rating change to display
+  ratingChange?: number | null;
 }
 
 export const PuzzlesSidebar = ({
@@ -47,6 +52,8 @@ export const PuzzlesSidebar = ({
   onNextPuzzle,
   showTryAgain = false,
   onTryAgain,
+  currentUserRating,
+  ratingChange,
 }: PuzzlesSidebarProps) => {
   const { user } = useAuth();
 
@@ -56,8 +63,8 @@ export const PuzzlesSidebar = ({
     resetKey: puzzleKey,
   });
 
-  // Get user's puzzle rating (default to 1200 if not set)
-  const userRating = user?.puzzleRating ?? 600;
+  // Get user's puzzle rating - use currentUserRating if provided, otherwise fall back
+  const userRating = currentUserRating ?? user?.puzzleRating ?? 600;
 
   // Extract turn from FEN (FEN format: "position w/b ..." - second part indicates turn)
   const getTurnFromFen = (
@@ -82,7 +89,15 @@ export const PuzzlesSidebar = ({
       </div>
       <div className="mb-2 sm:mb-3 lg:mb-4">
         <div className="px-2 sm:px-3">
-          <div className="text-2xl font-bold sm:text-3xl">{userRating}</div>
+          {ratingChange !== null && ratingChange !== undefined ? (
+            <RatingAnimation
+              startValue={userRating - ratingChange}
+              change={ratingChange}
+              duration={1000}
+            />
+          ) : (
+            <div className="text-2xl font-bold sm:text-3xl">{userRating}</div>
+          )}
           <p className="text-muted-foreground text-xs sm:text-sm">
             Your current puzzle rating
           </p>

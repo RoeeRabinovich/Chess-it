@@ -55,6 +55,7 @@ const loginUser = async ({ email, password }) => {
         "email",
         "image",
         "createdAt",
+        "puzzleRating",
       ]);
       return Promise.resolve({ token, user: userData });
     } catch (error) {
@@ -67,4 +68,35 @@ const loginUser = async ({ email, password }) => {
   );
 };
 
-module.exports = { registerUser, loginUser };
+//Update user puzzle rating
+const updatePuzzleRating = async (userId, newRating) => {
+  if (DB === "MONGODB") {
+    try {
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { puzzleRating: newRating },
+        { new: true, runValidators: true }
+      );
+
+      if (!user) throw new Error("User not found");
+
+      const userData = _.pick(user, [
+        "_id",
+        "username",
+        "email",
+        "image",
+        "createdAt",
+        "puzzleRating",
+      ]);
+      return Promise.resolve(userData);
+    } catch (error) {
+      error.status = 400;
+      return handleBadRequest("Mongoose", error);
+    }
+  }
+  return Promise.resolve(
+    "updatePuzzleRating function is not supported for this database"
+  );
+};
+
+module.exports = { registerUser, loginUser, updatePuzzleRating };

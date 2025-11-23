@@ -9,10 +9,15 @@ import { useToast } from "../../hooks/useToast";
 import { moveDataToUCI } from "../../utils/chessMoveUtils";
 import { Chess } from "chess.js";
 import confetti from "canvas-confetti";
+import { calculateRatingChange } from "../../utils/puzzleRatingUtils";
+import { apiService } from "../../services/api";
+import { useAppDispatch } from "../../store/hooks";
+import { login as loginAction } from "../../store/authSlice";
 
 export const Puzzles = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const dispatch = useAppDispatch();
 
   // Puzzle state
   const [currentPuzzle, setCurrentPuzzle] = useState<Puzzle | null>(null);
@@ -32,6 +37,14 @@ export const Puzzles = () => {
   const [positionBeforeWrongMove, setPositionBeforeWrongMove] = useState<
     string | null
   >(null); // FEN before wrong move to revert
+
+  // Rating tracking state
+  const [hasWrongMove, setHasWrongMove] = useState(false); // Track if wrong move was made (once per puzzle)
+  const [ratingDeducted, setRatingDeducted] = useState(false); // Track if rating was already deducted
+  const initialUserRating = user?.puzzleRating ?? 600;
+  const [currentUserRating, setCurrentUserRating] =
+    useState<number>(initialUserRating); // Track current rating for animation
+  const [ratingChange, setRatingChange] = useState<number | null>(null); // Rating change to display
 
   const [isFlipped] = useState(false);
   const [boardScale] = useState(1.0);
@@ -130,6 +143,11 @@ export const Puzzles = () => {
       setWrongMoveSquare(null);
       setIsPuzzleSolved(false);
       setPositionBeforeWrongMove(null);
+      // Reset rating tracking for new puzzle
+      setHasWrongMove(false);
+      setRatingDeducted(false);
+      setRatingChange(null);
+      // Note: currentUserRating persists across puzzles to maintain the updated rating
 
       // Set initial position first
       setPuzzlePosition(currentPuzzle.fen);
@@ -277,6 +295,40 @@ export const Puzzles = () => {
                   setIsPuzzleSolved(true);
                   setIsTimerRunning(false);
                   triggerConfetti();
+
+                  // Add rating if puzzle was solved without mistakes
+                  // Note: This handles the case where puzzle ends after computer's move
+                  if (!hasWrongMove && currentPuzzle && puzzleStartTime) {
+                    const solveTimeSeconds = Math.floor(
+                      (Date.now() - puzzleStartTime) / 1000,
+                    );
+                    const change = calculateRatingChange(
+                      currentUserRating,
+                      currentPuzzle.rating,
+                      false, // no wrong move
+                      solveTimeSeconds,
+                    );
+
+                    const newRating = Math.max(0, currentUserRating + change);
+                    setCurrentUserRating(newRating);
+                    setRatingChange(change);
+
+                    // Update database and user object
+                    apiService
+                      .updatePuzzleRating(newRating)
+                      .then((updatedUser) => {
+                        // Update Redux store
+                        dispatch(loginAction(updatedUser));
+                        // Update localStorage
+                        localStorage.setItem(
+                          "user",
+                          JSON.stringify(updatedUser),
+                        );
+                      })
+                      .catch((error) => {
+                        console.error("Error updating puzzle rating:", error);
+                      });
+                  }
                 }
               }
             } catch (error) {
@@ -290,13 +342,17 @@ export const Puzzles = () => {
         }, 300);
       }
     },
-    [currentPuzzle, isPuzzleSolved, triggerConfetti, puzzlePosition],
+    [
+      currentPuzzle,
+      isPuzzleSolved,
+      triggerConfetti,
+      puzzlePosition,
+      currentUserRating,
+      hasWrongMove,
+      puzzleStartTime,
+      dispatch,
+    ],
   );
-
-  // Legacy function for backward compatibility (used by initial puzzle load)
-  const playComputerMove = useCallback(() => {
-    playComputerMoveAt(currentMoveIndex);
-  }, [currentMoveIndex, playComputerMoveAt]);
 
   // Move handler with validation
   const handleMove = useCallback(
@@ -336,6 +392,36 @@ export const Puzzles = () => {
                 setIsPuzzleSolved(true);
                 setIsTimerRunning(false);
                 triggerConfetti();
+
+                // Add rating if puzzle was solved without mistakes
+                if (!hasWrongMove && currentPuzzle && puzzleStartTime) {
+                  const solveTimeSeconds = Math.floor(
+                    (Date.now() - puzzleStartTime) / 1000,
+                  );
+                  const change = calculateRatingChange(
+                    currentUserRating,
+                    currentPuzzle.rating,
+                    false, // no wrong move
+                    solveTimeSeconds,
+                  );
+
+                  const newRating = Math.max(0, currentUserRating + change);
+                  setCurrentUserRating(newRating);
+                  setRatingChange(change);
+
+                  // Update database and user object
+                  apiService
+                    .updatePuzzleRating(newRating)
+                    .then((updatedUser) => {
+                      // Update Redux store
+                      dispatch(loginAction(updatedUser));
+                      // Update localStorage
+                      localStorage.setItem("user", JSON.stringify(updatedUser));
+                    })
+                    .catch((error) => {
+                      console.error("Error updating puzzle rating:", error);
+                    });
+                }
               } else {
                 // Play computer's response move (at nextMoveIndex, which is even: 2, 4, 6...)
                 // Update state first, then play computer move with the new position
@@ -358,6 +444,37 @@ export const Puzzles = () => {
           setPositionBeforeWrongMove(chessRef.current.fen());
         }
         setWrongMoveSquare(move.to);
+
+        // Mark that wrong move was made (only once per puzzle)
+        if (!hasWrongMove && !ratingDeducted && currentPuzzle) {
+          setHasWrongMove(true);
+          setRatingDeducted(true);
+
+          // Deduct rating immediately on first wrong move
+          const change = calculateRatingChange(
+            currentUserRating,
+            currentPuzzle.rating,
+            true, // hasWrongMove
+            0, // solveTime not relevant for wrong move
+          );
+
+          const newRating = Math.max(0, currentUserRating + change); // Prevent negative rating
+          setCurrentUserRating(newRating);
+          setRatingChange(change);
+
+          // Update database and user object
+          apiService
+            .updatePuzzleRating(newRating)
+            .then((updatedUser) => {
+              // Update Redux store
+              dispatch(loginAction(updatedUser));
+              // Update localStorage
+              localStorage.setItem("user", JSON.stringify(updatedUser));
+            })
+            .catch((error) => {
+              console.error("Error updating puzzle rating:", error);
+            });
+        }
 
         // Still allow the move to be made (as per requirements)
         if (chessRef.current) {
@@ -385,8 +502,13 @@ export const Puzzles = () => {
       currentMoveIndex,
       isPuzzleSolved,
       triggerConfetti,
-      playComputerMove,
+      playComputerMoveAt,
       positionBeforeWrongMove,
+      currentUserRating,
+      hasWrongMove,
+      puzzleStartTime,
+      ratingDeducted,
+      dispatch,
     ],
   );
 
@@ -436,6 +558,10 @@ export const Puzzles = () => {
     setIsPuzzleSolved(false);
     setPuzzleStartTime(Date.now());
     setPositionBeforeWrongMove(null);
+    // Reset rating tracking for new puzzle
+    setHasWrongMove(false);
+    setRatingDeducted(false);
+    setRatingChange(null);
 
     // Play computer's first move automatically when loading next puzzle
     // Use setTimeout to ensure state updates are processed first
@@ -521,6 +647,8 @@ export const Puzzles = () => {
       onNextPuzzle={loadNextPuzzle}
       showTryAgain={positionBeforeWrongMove !== null}
       onTryAgain={handleTryAgain}
+      currentUserRating={currentUserRating}
+      ratingChange={ratingChange}
     />
   );
 

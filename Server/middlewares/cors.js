@@ -15,7 +15,7 @@ const corsMiddleware = cors({
     "http://localhost:9191",
     "https://localhost:9191",
   ],
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
   optionsSuccessStatus: 200,
 });
