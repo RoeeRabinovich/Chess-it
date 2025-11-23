@@ -215,6 +215,9 @@
   .hover\:bg-pastel-mint\/80:hover {
     background-color: hsl(var(--pastel-mint) / 0.8);
   }
+  .hover\:text-pastel-mint:hover {
+    color: hsl(var(--pastel-mint));
+  }
   .hover\:underline:hover {
     text-decoration: underline;
   }

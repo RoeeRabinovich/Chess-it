@@ -14,8 +14,8 @@ import { ThemeToggle } from "../ui/ThemeToggle";
 import { useAuth } from "../../hooks/useAuth";
 import { Logout } from "../icons/Logout.icon";
 const navLinks = [
+  { name: "Explore", path: "/home" },
   { name: "Puzzles", path: "/puzzles" },
-  { name: "Tools", href: "#tools" },
   { name: "Create Study", path: "/create-study" },
 ];
 
@@ -57,25 +57,15 @@ const Navbar = () => {
           {/* Desktop Navigation */}
 
           <div className="hidden items-center gap-12 md:flex">
-            {navLinks.map((link) =>
-              link.path ? (
-                <button
-                  key={link.name}
-                  onClick={() => navigate(link.path!)}
-                  className="text-muted-foreground hover:text-foreground cursor-pointer text-sm font-medium tracking-wide transition-colors duration-200"
-                >
-                  {link.name}
-                </button>
-              ) : (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className="text-muted-foreground hover:text-foreground cursor-pointer text-sm font-medium tracking-wide transition-colors duration-200"
-                >
-                  {link.name}
-                </a>
-              ),
-            )}
+            {navLinks.map((link) => (
+              <button
+                key={link.name}
+                onClick={() => navigate(link.path)}
+                className="text-muted-foreground hover:text-pastel-mint cursor-pointer text-sm font-medium tracking-wide transition-colors duration-200"
+              >
+                {link.name}
+              </button>
+            ))}
           </div>
 
           {/* Desktop CTA */}
@@ -85,7 +75,7 @@ const Navbar = () => {
               <>
                 <button
                   onClick={() => navigate("/profile")}
-                  className="text-muted-foreground hover:text-foreground cursor-pointer text-sm transition-colors"
+                  className="text-muted-foreground hover:text-pastel-mint cursor-pointer text-sm transition-colors"
                 >
                   Hi, {user.username}
                 </button>
@@ -132,14 +122,9 @@ const Navbar = () => {
               {navLinks.map((link) => (
                 <DropdownMenuItem
                   key={link.name}
-                  onClick={() => link.path && navigate(link.path)}
-                  asChild={!link.path}
+                  onClick={() => navigate(link.path)}
                 >
-                  {link.path ? (
-                    <span>{link.name}</span>
-                  ) : (
-                    <a href={link.href}>{link.name}</a>
-                  )}
+                  {link.name}
                 </DropdownMenuItem>
               ))}
 
