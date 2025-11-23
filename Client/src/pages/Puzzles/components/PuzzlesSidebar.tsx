@@ -79,116 +79,109 @@ export const PuzzlesSidebar = ({
   const initialTurn = getTurnFromFen(initialFen);
 
   return (
-    <div className="bg-card flex h-full max-h-full flex-col overflow-hidden p-1.5 sm:p-2 lg:p-4">
-      {/* Puzzle Rating Section */}
-      <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
-        <div className="h-1.5 w-1.5 rounded-full bg-blue-500 sm:h-2 sm:w-2"></div>
-        <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
-          Puzzle Rating
-        </span>
-      </div>
-      <div className="mb-2 sm:mb-3 lg:mb-4">
-        <div className="px-2 sm:px-3">
-          {ratingChange !== null && ratingChange !== undefined ? (
-            <RatingAnimation
-              startValue={userRating - ratingChange}
-              change={ratingChange}
-              duration={1000}
-            />
-          ) : (
-            <div className="text-2xl font-bold sm:text-3xl">{userRating}</div>
-          )}
-          <p className="text-muted-foreground text-xs sm:text-sm">
-            Your current puzzle rating
-          </p>
+    <div className="bg-card flex h-full max-h-full flex-col overflow-y-auto overflow-x-hidden p-1 sm:p-1.5 lg:p-3">
+      {/* Desktop: Puzzle Rating & Turn (shown only on desktop) */}
+      <div className="hidden lg:block">
+        <div className="mb-2 flex items-center gap-1.5">
+          <div className="h-1.5 w-1.5 rounded-full bg-blue-500"></div>
+          <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
+            Puzzle Rating
+          </span>
         </div>
-      </div>
-      <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />
-
-      {/* Move Indicator Section */}
-      {initialTurn && (
-        <>
-          <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
-            <div className="h-1.5 w-1.5 rounded-full bg-orange-500 sm:h-2 sm:w-2"></div>
-            <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
-              Turn
-            </span>
+        <div className="mb-3">
+          <div className="px-2">
+            {ratingChange !== null && ratingChange !== undefined ? (
+              <RatingAnimation
+                startValue={userRating - ratingChange}
+                change={ratingChange}
+                duration={1000}
+              />
+            ) : (
+              <div className="text-xl font-bold">{userRating}</div>
+            )}
+            <p className="text-muted-foreground text-xs">Your rating</p>
           </div>
-          <div className="mb-2 sm:mb-3 lg:mb-4">
-            <div className="px-2 sm:px-3">
-              <div className="flex items-center gap-2">
-                {/* Square indicator */}
-                <div
-                  className={`h-4 w-4 shrink-0 border-2 ${
-                    initialTurn === "white"
-                      ? "border-black bg-white"
-                      : "border-white bg-black"
-                  }`}
-                ></div>
-                {/* Text */}
-                <span className="text-lg font-semibold sm:text-xl">
-                  {initialTurn === "white" ? "White" : "Black"} to move
-                </span>
+        </div>
+        {initialTurn && (
+          <>
+            <div className="mb-2 flex items-center gap-1.5">
+              <div className="h-1.5 w-1.5 rounded-full bg-orange-500"></div>
+              <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
+                Turn
+              </span>
+            </div>
+            <div className="mb-3">
+              <div className="px-2">
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`h-3 w-3 shrink-0 border-2 ${
+                      initialTurn === "white"
+                        ? "border-black bg-white"
+                        : "border-white bg-black"
+                    }`}
+                  ></div>
+                  <span className="text-sm font-semibold">
+                    {initialTurn === "white" ? "White" : "Black"} to move
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-          <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />
-        </>
-      )}
+          </>
+        )}
+        <hr className="border-border/30 my-2" />
+      </div>
 
       {/* Try Again Button (shown when wrong move is made) */}
       {showTryAgain && onTryAgain && !isPuzzleSolved && (
         <>
-          <div className="mb-2 sm:mb-3 lg:mb-4">
-            <div className="px-2 sm:px-3">
+          <div className="mb-1.5">
+            <div className="px-2">
               <Button
                 onClick={onTryAgain}
-                className="w-full"
+                className="w-full text-xs"
                 variant="destructive"
+                size="sm"
               >
                 Try Again
               </Button>
-              <p className="text-muted-foreground mt-1 text-xs">
-                Revert your last move
-              </p>
             </div>
           </div>
-          <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />
+          <hr className="border-border/30 my-1.5" />
         </>
       )}
 
       {/* Timer or Completion Section */}
       {isPuzzleSolved ? (
         <>
-          <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
-            <div className="h-1.5 w-1.5 rounded-full bg-green-500 sm:h-2 sm:w-2"></div>
-            <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
-              Puzzle Solved
+          <div className="mb-1.5 flex items-center gap-1.5">
+            <div className="h-1.5 w-1.5 rounded-full bg-green-500"></div>
+            <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
+              Solved
             </span>
           </div>
-          <div className="mb-2 sm:mb-3 lg:mb-4">
-            <div className="px-2 sm:px-3">
-              <div className="mb-2 text-2xl font-bold text-green-600 sm:text-3xl">
+          <div className="mb-2">
+            <div className="px-2">
+              <div className="mb-1.5 text-lg font-bold text-green-600">
                 Puzzle Solved!
               </div>
 
               {/* Statistics */}
               {timeTaken !== undefined && (
-                <div className="mb-2 space-y-1">
-                  <p className="text-muted-foreground text-xs sm:text-sm">
+                <div className="mb-2 space-y-0.5 text-xs">
+                  <p className="text-muted-foreground">
                     <span className="font-semibold">Time:</span> {formattedTime}
                   </p>
                   {puzzleRating !== undefined && (
-                    <p className="text-muted-foreground text-xs sm:text-sm">
+                    <p className="text-muted-foreground">
                       <span className="font-semibold">Rating:</span>{" "}
                       {puzzleRating}
                     </p>
                   )}
                   {puzzleThemes.length > 0 && (
-                    <p className="text-muted-foreground text-xs sm:text-sm">
+                    <p className="text-muted-foreground">
                       <span className="font-semibold">Themes:</span>{" "}
-                      {puzzleThemes.slice(0, 3).join(", ")}
-                      {puzzleThemes.length > 3 && "..."}
+                      {puzzleThemes.slice(0, 2).join(", ")}
+                      {puzzleThemes.length > 2 && "..."}
                     </p>
                   )}
                 </div>
@@ -198,8 +191,9 @@ export const PuzzlesSidebar = ({
               {onNextPuzzle && (
                 <Button
                   onClick={onNextPuzzle}
-                  className="w-full"
+                  className="w-full text-xs"
                   variant="default"
+                  size="sm"
                 >
                   Next Puzzle
                 </Button>
@@ -209,38 +203,36 @@ export const PuzzlesSidebar = ({
         </>
       ) : (
         <>
-          <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
+          <div className="mb-1 flex items-center gap-1.5">
             <div
-              className={`h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2 ${
+              className={`h-1.5 w-1.5 rounded-full ${
                 isTimerRunning ? "animate-pulse bg-green-500" : "bg-gray-500"
               }`}
             ></div>
-            <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
+            <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
               Timer
             </span>
           </div>
-          <div className="mb-2 sm:mb-3 lg:mb-4">
-            <div className="px-2 sm:px-3">
-              <div className="text-2xl font-bold sm:text-3xl">
-                {formattedTime}
-              </div>
-              <p className="text-muted-foreground text-xs sm:text-sm">
-                {isTimerRunning ? "Solving puzzle..." : "Puzzle solved"}
+          <div className="mb-1.5">
+            <div className="px-2">
+              <div className="text-base font-bold sm:text-lg">{formattedTime}</div>
+              <p className="text-muted-foreground text-[10px] sm:text-xs">
+                {isTimerRunning ? "Solving..." : "Solved"}
               </p>
             </div>
           </div>
         </>
       )}
-      <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />
+      <hr className="border-border/30 my-1.5" />
 
       {/* Theme Selector Section */}
-      <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
-        <div className="h-1.5 w-1.5 rounded-full bg-purple-500 sm:h-2 sm:w-2"></div>
-        <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
+      <div className="mb-1.5 flex items-center gap-1.5">
+        <div className="h-1.5 w-1.5 rounded-full bg-purple-500"></div>
+        <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
           Themes
         </span>
       </div>
-      <div className="mb-2 flex-shrink-0 px-2 sm:mb-3 sm:px-3 lg:mb-4">
+      <div className="flex-shrink-0 px-2">
         <ThemeSelector
           selectedThemes={selectedThemes}
           onThemesChange={onThemesChange}

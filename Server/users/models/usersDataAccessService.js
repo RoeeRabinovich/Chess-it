@@ -68,6 +68,33 @@ const loginUser = async ({ email, password }) => {
   );
 };
 
+//Get user profile
+const getUserProfile = async (userId) => {
+  if (DB === "MONGODB") {
+    try {
+      const user = await User.findById(userId);
+
+      if (!user) throw new Error("User not found");
+
+      const userData = _.pick(user, [
+        "_id",
+        "username",
+        "email",
+        "image",
+        "createdAt",
+        "puzzleRating",
+      ]);
+      return Promise.resolve(userData);
+    } catch (error) {
+      error.status = 400;
+      return handleBadRequest("Mongoose", error);
+    }
+  }
+  return Promise.resolve(
+    "getUserProfile function is not supported for this database"
+  );
+};
+
 //Update user puzzle rating
 const updatePuzzleRating = async (userId, newRating) => {
   if (DB === "MONGODB") {
@@ -99,4 +126,9 @@ const updatePuzzleRating = async (userId, newRating) => {
   );
 };
 
-module.exports = { registerUser, loginUser, updatePuzzleRating };
+module.exports = {
+  registerUser,
+  loginUser,
+  getUserProfile,
+  updatePuzzleRating,
+};

@@ -16,6 +16,8 @@ interface PuzzlesLayoutProps {
   wrongMoveSquare?: string | null;
   // Whether the board is interactive
   isInteractive?: boolean;
+  // Content to display above the board (rating, turn indicator)
+  topContent?: React.ReactNode;
 }
 
 export const PuzzlesLayout = ({
@@ -26,31 +28,42 @@ export const PuzzlesLayout = ({
   sidebarContent,
   wrongMoveSquare,
   isInteractive = true,
+  topContent,
 }: PuzzlesLayoutProps) => {
   return (
     <div className="flex flex-1 flex-col overflow-hidden lg:flex-row">
-      {/* Left/Top Column - Chessboard */}
-      <div className="bg-muted/30 relative flex min-h-0 flex-1 items-center justify-center overflow-auto p-3 sm:p-4 lg:max-h-screen lg:max-w-[calc(100%-400px)] lg:p-6">
-        <div className="flex items-center justify-center">
-          {/* Board */}
-          <div className="relative flex items-center justify-center">
-            <div className="relative z-0 flex-shrink-0 transition-all duration-200">
-              <ChessBoard
-                position={position}
-                onMove={onMove}
-                isFlipped={isFlipped}
-                isInteractive={isInteractive}
-                boardScale={boardScale}
-                wrongMoveSquare={wrongMoveSquare}
-              />
+      {/* Left/Top Column - Chessboard Area */}
+      <div className="bg-muted/30 relative flex min-h-0 flex-1 flex-col overflow-hidden lg:max-w-[calc(100%-350px)]">
+        {/* Top Content (Rating & Turn) - Mobile/Tablet */}
+        {topContent && (
+          <div className="border-border bg-background flex-shrink-0 border-b px-2 py-1 sm:px-3 sm:py-1.5 lg:hidden">
+            {topContent}
+          </div>
+        )}
+
+        {/* Board Container - Maximize space, especially on mobile */}
+        <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-auto p-0.5 sm:p-1 md:p-2 lg:p-4">
+          <div className="flex h-full w-full items-center justify-center">
+            {/* Board */}
+            <div className="relative flex h-full w-full items-center justify-center">
+              <div className="relative z-0 flex-shrink-0 transition-all duration-200">
+                <ChessBoard
+                  position={position}
+                  onMove={onMove}
+                  isFlipped={isFlipped}
+                  isInteractive={isInteractive}
+                  boardScale={boardScale}
+                  wrongMoveSquare={wrongMoveSquare}
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Right/Bottom Column - Puzzles Sidebar */}
-      <div className="border-border bg-background w-full border-t lg:w-[400px] lg:max-w-[400px] lg:min-w-[400px] lg:border-t-0 lg:border-l">
-        <div className="flex h-full flex-col overflow-hidden">
+      <div className="border-border bg-background flex-shrink-0 w-full border-t max-h-[40vh] lg:max-h-none lg:w-[350px] lg:max-w-[350px] lg:min-w-[350px] lg:border-t-0 lg:border-l">
+        <div className="flex h-full flex-col overflow-y-auto overflow-x-hidden">
           {sidebarContent}
         </div>
       </div>

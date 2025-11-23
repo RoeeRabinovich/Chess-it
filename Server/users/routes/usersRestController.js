@@ -5,6 +5,7 @@ const { handleError } = require("../../utils/errorHandler");
 const {
   registerUserService,
   loginUserService,
+  getUserProfileService,
   updatePuzzleRatingService,
 } = require("../services/usersService");
 const { auth } = require("../../auth/authService");
@@ -27,6 +28,17 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const user = await loginUserService(req.body);
+    res.status(200).json(user);
+  } catch (error) {
+    return handleError(res, error.status || 500, error.message);
+  }
+});
+
+//Get user profile (requires authentication)
+router.get("/profile", auth, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await getUserProfileService(userId);
     res.status(200).json(user);
   } catch (error) {
     return handleError(res, error.status || 500, error.message);

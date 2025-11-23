@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { PuzzlesLayout } from "./layouts/PuzzlesLayout";
 import { PuzzlesSidebar } from "./components/PuzzlesSidebar";
+import { PuzzlesTopBar } from "./components/PuzzlesTopBar";
 import { MoveData } from "../../types/chess";
 import { PUZZLE_THEMES } from "../../constants/puzzleThemes";
 import { getPuzzles, Puzzle } from "../../services/puzzleService";
@@ -630,6 +631,15 @@ export const Puzzles = () => {
     ? Math.floor((Date.now() - puzzleStartTime) / 1000)
     : undefined;
 
+  // Top content (Rating & Turn) - shown above board on mobile/tablet
+  const topContent = (
+    <PuzzlesTopBar
+      currentUserRating={currentUserRating}
+      ratingChange={ratingChange}
+      initialFen={puzzlePosition}
+    />
+  );
+
   // Sidebar content with PuzzlesSidebar component
   const sidebarContent = (
     <PuzzlesSidebar
@@ -653,7 +663,7 @@ export const Puzzles = () => {
   );
 
   return (
-    <div className="bg-background flex h-screen overflow-hidden pt-16 sm:pt-20 md:pt-24">
+    <div className="bg-background flex h-screen overflow-hidden pt-12 sm:pt-14 md:pt-16 lg:pt-20">
       <PuzzlesLayout
         position={puzzlePosition}
         onMove={handleMove}
@@ -662,6 +672,7 @@ export const Puzzles = () => {
         sidebarContent={sidebarContent}
         wrongMoveSquare={wrongMoveSquare}
         isInteractive={positionBeforeWrongMove === null && !isPuzzleSolved}
+        topContent={topContent}
       />
     </div>
   );

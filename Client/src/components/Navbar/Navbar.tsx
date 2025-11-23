@@ -83,7 +83,12 @@ const Navbar = () => {
             <ThemeToggle />
             {user ? (
               <>
-                <span className="text-sm">Hi, {user.username}</span>
+                <button
+                  onClick={() => navigate("/profile")}
+                  className="text-muted-foreground hover:text-foreground cursor-pointer text-sm transition-colors"
+                >
+                  Hi, {user.username}
+                </button>
                 <Button
                   onClick={handleLogout}
                   variant="ghost"
@@ -151,7 +156,7 @@ const Navbar = () => {
 
               {user ? (
                 <>
-                  <DropdownMenuItem disabled>
+                  <DropdownMenuItem onClick={() => navigate("/profile")}>
                     Hi, {user.username}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLogout}>
