@@ -13,6 +13,14 @@ const apiClient = axios.create({
   },
 });
 
+// Callback function to handle logout (set by auth hook)
+let onUnauthorizedCallback: (() => void) | null = null;
+
+// Function to set the logout callback
+export const setUnauthorizedHandler = (callback: () => void) => {
+  onUnauthorizedCallback = callback;
+};
+
 // Request interceptor to add auth token
 apiClient.interceptors.request.use(
   (config) => {
@@ -59,6 +67,18 @@ apiClient.interceptors.response.use(
         apiError.type = "AUTHENTICATION";
         apiError.message =
           errorMessage || "Authentication required. Please log in.";
+        // Automatically log out user on 401 (token expired/invalid)
+        // Skip logout for login/register endpoints to avoid infinite loops
+        const url = error.config?.url || "";
+        if (!url.includes("/login") && !url.includes("/register")) {
+          // Clear auth data
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("user");
+          // Trigger logout callback if set
+          if (onUnauthorizedCallback) {
+            onUnauthorizedCallback();
+          }
+        }
       } else if (status === 403) {
         apiError.type = "AUTHENTICATION";
         apiError.message = errorMessage || "Access denied";

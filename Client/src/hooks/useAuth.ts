@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   login as loginAction,
@@ -7,7 +7,7 @@ import {
   setError,
   clearError,
 } from "../store/authSlice";
-import { apiService } from "../services/api";
+import { apiService, setUnauthorizedHandler } from "../services/api";
 import { LoginData, RegisterData, ApiError } from "../types";
 
 // Track if auth check has been performed globally
@@ -132,14 +132,19 @@ export const useAuth = () => {
     }
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
     // Reset auth check flags on logout
     hasCheckedAuth.current = false;
     authCheckPerformed = false;
     dispatch(logoutAction());
-  };
+  }, [dispatch]);
+
+  // Set up unauthorized handler to auto-logout on 401
+  useEffect(() => {
+    setUnauthorizedHandler(logout);
+  }, [logout]);
 
   return {
     user,
