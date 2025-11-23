@@ -2,12 +2,14 @@ const {
   registerUser,
   loginUser,
   getUserProfile,
+  updateUsername,
   updatePuzzleRating,
 } = require("../models/usersDataAccessService");
 const normalizeUser = require("../helpers/normalizeUser");
 const {
   validateRegister,
   validateLogin,
+  validateUpdateUsername,
 } = require("../validations/userValidatorService");
 const { hashUserPassword } = require("../helpers/bcrypt");
 const { handleJoiError } = require("../../utils/errorHandler");
@@ -66,6 +68,36 @@ const getUserProfileService = async (userId) => {
   }
 };
 
+//Update username
+const updateUsernameService = async (userId, newUsername) => {
+  try {
+    if (!userId) {
+      return Promise.reject({
+        status: 400,
+        message: "User ID is required",
+      });
+    }
+
+    if (!newUsername || typeof newUsername !== "string") {
+      return Promise.reject({
+        status: 400,
+        message: "Username is required",
+      });
+    }
+
+    // Validate username
+    const { error } = validateUpdateUsername({ username: newUsername });
+    if (error) {
+      return Promise.reject(await handleJoiError(error));
+    }
+
+    const user = await updateUsername(userId, newUsername);
+    return Promise.resolve(user);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
 //Update user puzzle rating
 const updatePuzzleRatingService = async (userId, newRating) => {
   try {
@@ -94,5 +126,6 @@ module.exports = {
   registerUserService,
   loginUserService,
   getUserProfileService,
+  updateUsernameService,
   updatePuzzleRatingService,
 };

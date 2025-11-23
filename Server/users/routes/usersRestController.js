@@ -6,6 +6,7 @@ const {
   registerUserService,
   loginUserService,
   getUserProfileService,
+  updateUsernameService,
   updatePuzzleRatingService,
 } = require("../services/usersService");
 const { auth } = require("../../auth/authService");
@@ -39,6 +40,23 @@ router.get("/profile", auth, async (req, res) => {
   try {
     const userId = req.user._id;
     const user = await getUserProfileService(userId);
+    res.status(200).json(user);
+  } catch (error) {
+    return handleError(res, error.status || 500, error.message);
+  }
+});
+
+//Update username (requires authentication)
+router.patch("/username", auth, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { username } = req.body;
+
+    if (!username) {
+      return handleError(res, 400, "Username is required");
+    }
+
+    const user = await updateUsernameService(userId, username);
     res.status(200).json(user);
   } catch (error) {
     return handleError(res, error.status || 500, error.message);

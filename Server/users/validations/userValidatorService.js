@@ -1,5 +1,6 @@
 const registerValidator = require("./joi/registerValidator");
 const loginValidator = require("./joi/loginValidator");
+const updateUsernameValidator = require("./joi/updateUsernameValidator");
 const config = require("config");
 
 const validator = config.get("VALIDATOR");
@@ -15,4 +16,14 @@ const validateLogin = (user) => {
     return loginValidator(user);
   }
 };
-module.exports = { validateRegister, validateLogin };
+
+const validateUpdateUsername = (data) => {
+  if (validator === "joi") {
+    return updateUsernameValidator(data);
+  }
+};
+module.exports = {
+  validateRegister,
+  validateLogin,
+  validateUpdateUsername,
+};

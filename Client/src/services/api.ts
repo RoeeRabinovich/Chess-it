@@ -107,6 +107,13 @@ class ApiService {
     return response.data;
   }
 
+  async updateUsername(username: string): Promise<User> {
+    const response = await apiClient.patch<User>("/users/username", {
+      username,
+    });
+    return response.data;
+  }
+
   async updatePuzzleRating(newRating: number): Promise<User> {
     const response = await apiClient.patch<User>("/users/puzzle-rating", {
       puzzleRating: newRating,

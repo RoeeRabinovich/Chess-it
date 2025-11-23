@@ -95,6 +95,43 @@ const getUserProfile = async (userId) => {
   );
 };
 
+//Update username
+const updateUsername = async (userId, newUsername) => {
+  if (DB === "MONGODB") {
+    try {
+      // Check if username already exists
+      const existingUser = await User.findOne({ username: newUsername });
+      if (existingUser && existingUser._id.toString() !== userId.toString()) {
+        throw new Error("Username already exists");
+      }
+
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { username: newUsername },
+        { new: true, runValidators: true }
+      );
+
+      if (!user) throw new Error("User not found");
+
+      const userData = _.pick(user, [
+        "_id",
+        "username",
+        "email",
+        "image",
+        "createdAt",
+        "puzzleRating",
+      ]);
+      return Promise.resolve(userData);
+    } catch (error) {
+      error.status = 400;
+      return handleBadRequest("Mongoose", error);
+    }
+  }
+  return Promise.resolve(
+    "updateUsername function is not supported for this database"
+  );
+};
+
 //Update user puzzle rating
 const updatePuzzleRating = async (userId, newRating) => {
   if (DB === "MONGODB") {
@@ -130,5 +167,6 @@ module.exports = {
   registerUser,
   loginUser,
   getUserProfile,
+  updateUsername,
   updatePuzzleRating,
 };
