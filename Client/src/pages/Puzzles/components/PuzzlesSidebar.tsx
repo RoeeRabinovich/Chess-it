@@ -63,6 +63,18 @@ export const PuzzlesSidebar = ({
     resetKey: puzzleKey,
   });
 
+  // Format time in seconds to MM:SS or HH:MM:SS format
+  const formatTime = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    if (hours > 0) {
+      return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    }
+    return `${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
+
   // Get user's puzzle rating - use currentUserRating if provided, otherwise fall back
   const userRating = currentUserRating ?? user?.puzzleRating ?? 600;
 
@@ -79,7 +91,7 @@ export const PuzzlesSidebar = ({
   const initialTurn = getTurnFromFen(initialFen);
 
   return (
-    <div className="bg-card flex h-full max-h-full flex-col overflow-y-auto overflow-x-hidden p-1 sm:p-1.5 lg:p-3">
+    <div className="bg-card flex h-full max-h-full flex-col overflow-x-hidden overflow-y-auto p-1 sm:p-1.5 lg:p-3">
       {/* Desktop: Puzzle Rating & Turn (shown only on desktop) */}
       <div className="hidden lg:block">
         <div className="mb-2 flex items-center gap-1.5">
@@ -169,7 +181,8 @@ export const PuzzlesSidebar = ({
               {timeTaken !== undefined && (
                 <div className="mb-2 space-y-0.5 text-xs">
                   <p className="text-muted-foreground">
-                    <span className="font-semibold">Time:</span> {formattedTime}
+                    <span className="font-semibold">Time:</span>{" "}
+                    {formatTime(timeTaken)}
                   </p>
                   {puzzleRating !== undefined && (
                     <p className="text-muted-foreground">
@@ -215,7 +228,9 @@ export const PuzzlesSidebar = ({
           </div>
           <div className="mb-1.5">
             <div className="px-2">
-              <div className="text-base font-bold sm:text-lg">{formattedTime}</div>
+              <div className="text-base font-bold sm:text-lg">
+                {formattedTime}
+              </div>
               <p className="text-muted-foreground text-[10px] sm:text-xs">
                 {isTimerRunning ? "Solving..." : "Solved"}
               </p>

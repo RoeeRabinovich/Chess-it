@@ -35,7 +35,9 @@ export const Puzzles = () => {
   const [wrongMoveSquare, setWrongMoveSquare] = useState<string | null>(null); // Square to highlight red
   const [isPuzzleSolved, setIsPuzzleSolved] = useState(false);
   const [puzzleStartTime, setPuzzleStartTime] = useState<number | null>(null); // Timestamp when puzzle started
-  const [puzzleCompletionTime, setPuzzleCompletionTime] = useState<number | null>(null); // Time in seconds when puzzle was completed
+  const [puzzleCompletionTime, setPuzzleCompletionTime] = useState<
+    number | null
+  >(null); // Time in seconds when puzzle was completed
   const [positionBeforeWrongMove, setPositionBeforeWrongMove] = useState<
     string | null
   >(null); // FEN before wrong move to revert
@@ -179,6 +181,7 @@ export const Puzzles = () => {
       initialPuzzleFenRef.current = currentPuzzle.fen;
       setIsTimerRunning(true);
       setPuzzleStartTime(Date.now());
+      setPuzzleCompletionTime(null); // Reset completion time for new puzzle
       // Start at index 0 - moves[0] is computer's first move (not played yet)
       setCurrentMoveIndex(0);
       setWrongMoveSquare(null);
@@ -335,7 +338,7 @@ export const Puzzles = () => {
                 if (nextUserMoveIndex >= moves.length) {
                   setIsPuzzleSolved(true);
                   setIsTimerRunning(false);
-                  
+
                   // Store completion time
                   if (puzzleStartTime) {
                     const solveTimeSeconds = Math.floor(
@@ -343,7 +346,7 @@ export const Puzzles = () => {
                     );
                     setPuzzleCompletionTime(solveTimeSeconds);
                   }
-                  
+
                   triggerConfetti();
 
                   // Add rating if puzzle was solved without mistakes
@@ -456,6 +459,15 @@ export const Puzzles = () => {
               if (nextMoveIndex >= moves.length) {
                 setIsPuzzleSolved(true);
                 setIsTimerRunning(false);
+
+                // Store completion time
+                if (puzzleStartTime) {
+                  const solveTimeSeconds = Math.floor(
+                    (Date.now() - puzzleStartTime) / 1000,
+                  );
+                  setPuzzleCompletionTime(solveTimeSeconds);
+                }
+
                 triggerConfetti();
 
                 // Add rating if puzzle was solved without mistakes
@@ -718,10 +730,13 @@ export const Puzzles = () => {
     );
   }
 
-  // Calculate time taken if puzzle is solved
-  const timeTaken = puzzleStartTime
-    ? Math.floor((Date.now() - puzzleStartTime) / 1000)
-    : undefined;
+  // Use stored completion time if puzzle is solved, otherwise calculate current elapsed time
+  const timeTaken =
+    puzzleCompletionTime !== null
+      ? puzzleCompletionTime
+      : puzzleStartTime
+        ? Math.floor((Date.now() - puzzleStartTime) / 1000)
+        : undefined;
 
   // Top content (Rating & Turn) - shown above board on mobile/tablet
   const topContent = (
