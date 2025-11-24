@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { PublicStudy } from "../../types/study";
 import { apiService } from "../../services/api";
 import { ApiError } from "../../types/auth";
@@ -11,31 +11,65 @@ export const MyStudies = () => {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  useEffect(() => {
-    const fetchStudies = async () => {
-      setLoading(true);
-      setError(null);
+  const fetchStudies = useCallback(async () => {
+    setLoading(true);
+    setError(null);
 
-      try {
-        const data = await apiService.getUserStudies();
-        setStudies(data);
-      } catch (err) {
-        const apiError = err as ApiError;
-        const errorMessage =
-          apiError?.message || "Failed to load your studies. Please try again.";
-        setError(errorMessage);
-        toast({
-          title: "Error",
-          description: errorMessage,
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStudies();
+    try {
+      const data = await apiService.getUserStudies();
+      setStudies(data);
+    } catch (err) {
+      const apiError = err as ApiError;
+      const errorMessage =
+        apiError?.message || "Failed to load your studies. Please try again.";
+      setError(errorMessage);
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   }, [toast]);
+
+  useEffect(() => {
+    fetchStudies();
+  }, [fetchStudies]);
+
+  const handleDelete = async (studyId: string) => {
+    // Find the study to get its name for confirmation
+    const studyToDelete = studies.find((s) => s._id === studyId);
+    const studyName = studyToDelete?.studyName || "this study";
+
+    // Show confirmation dialog
+    if (
+      !window.confirm(
+        `Are you sure you want to delete "${studyName}"? This action cannot be undone.`,
+      )
+    ) {
+      return;
+    }
+
+    try {
+      await apiService.deleteStudy(studyId);
+      // Remove the study from the list
+      setStudies(studies.filter((s) => s._id !== studyId));
+      toast({
+        title: "Success",
+        description: "Study deleted successfully.",
+      });
+    } catch (err) {
+      const apiError = err as ApiError;
+      const errorMessage =
+        apiError?.message || "Failed to delete study. Please try again.";
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    }
+  };
 
   if (loading) {
     return (
@@ -93,7 +127,11 @@ export const MyStudies = () => {
         ) : (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {studies.map((study) => (
-              <StudyCard key={study._id} study={study} />
+              <StudyCard
+                key={study._id}
+                study={study}
+                onDelete={handleDelete}
+              />
             ))}
           </div>
         )}

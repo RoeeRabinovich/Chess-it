@@ -228,6 +228,14 @@ class ApiService {
     return response.data;
   }
 
+  // Delete a study
+  async deleteStudy(studyId: string): Promise<{ success: boolean }> {
+    const response = await apiClient.delete<{ success: boolean }>(
+      `/studies/${studyId}`,
+    );
+    return response.data;
+  }
+
   // Utility method to check if user is authenticated
   isAuthenticated(): boolean {
     return !!localStorage.getItem("authToken");

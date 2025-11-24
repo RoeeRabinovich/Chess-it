@@ -6,6 +6,7 @@ const {
   likeStudy,
   unlikeStudy,
   getUserLikedStudyIds,
+  deleteStudy,
 } = require("../models/studiesDataAccessService");
 const { validateCreateStudy } = require("../validations/studyValidatorService");
 const { handleJoiError } = require("../../utils/errorHandler");
@@ -139,6 +140,16 @@ const getUserLikedStudyIdsService = async (userId) => {
   }
 };
 
+// Delete a study
+const deleteStudyService = async (userId, studyId) => {
+  try {
+    const result = await deleteStudy(userId, studyId);
+    return Promise.resolve(result);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
 module.exports = {
   createStudyService,
   getStudyByIdService,
@@ -147,4 +158,5 @@ module.exports = {
   likeStudyService,
   unlikeStudyService,
   getUserLikedStudyIdsService,
+  deleteStudyService,
 };

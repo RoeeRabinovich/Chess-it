@@ -240,6 +240,46 @@ const getUserLikedStudyIds = async (userId) => {
   );
 };
 
+// Delete a study
+const deleteStudy = async (userId, studyId) => {
+  if (DB === "MONGODB") {
+    try {
+      // Check if study exists and user is the owner
+      const study = await Study.findById(studyId);
+      if (!study) {
+        const error = new Error("Study not found");
+        error.status = 404;
+        throw error;
+      }
+
+      // Verify ownership
+      const studyCreatorId = study.createdBy.toString();
+      if (studyCreatorId !== userId.toString()) {
+        const error = new Error("Access denied. You can only delete your own studies.");
+        error.status = 403;
+        throw error;
+      }
+
+      // Delete all likes associated with this study
+      await StudyLike.deleteMany({ study: studyId });
+
+      // Delete the study
+      await Study.deleteOne({ _id: studyId });
+
+      return Promise.resolve({ success: true });
+    } catch (error) {
+      if (error.status) {
+        return Promise.reject(error);
+      }
+      error.status = 400;
+      return handleBadRequest("Mongoose", error);
+    }
+  }
+  return Promise.resolve(
+    "deleteStudy function is not supported for this database"
+  );
+};
+
 module.exports = {
   createStudy,
   findStudyById,
@@ -248,4 +288,5 @@ module.exports = {
   likeStudy,
   unlikeStudy,
   getUserLikedStudyIds,
+  deleteStudy,
 };

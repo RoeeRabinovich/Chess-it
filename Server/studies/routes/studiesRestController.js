@@ -10,6 +10,7 @@ const {
   likeStudyService,
   unlikeStudyService,
   getUserLikedStudyIdsService,
+  deleteStudyService,
 } = require("../services/studiesService");
 const { auth, optionalAuth } = require("../../auth/authService");
 
@@ -89,6 +90,19 @@ router.get("/liked/ids", auth, async (req, res) => {
     const userId = req.user._id;
     const studyIds = await getUserLikedStudyIdsService(userId);
     res.status(200).json(studyIds);
+  } catch (error) {
+    return handleError(res, error.status || 500, error.message);
+  }
+});
+
+// Delete a study
+// Must come before /:id to avoid route conflict
+router.delete("/:id", auth, async (req, res) => {
+  try {
+    const studyId = req.params.id;
+    const userId = req.user._id;
+    await deleteStudyService(userId, studyId);
+    res.status(200).json({ success: true });
   } catch (error) {
     return handleError(res, error.status || 500, error.message);
   }
