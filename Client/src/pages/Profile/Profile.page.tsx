@@ -15,6 +15,7 @@ import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { Edit } from "../../components/icons/Edit.icon";
 import { Modal } from "../../components/ui/Modal";
+import { Avatar } from "../../components/ui/Avatar";
 import Joi from "joi";
 
 const usernameSchema = Joi.string().min(3).max(30).required().messages({
@@ -196,19 +197,13 @@ export const Profile = () => {
             <CardContent className="space-y-6">
               {/* Profile Image */}
               <div className="flex items-center gap-6">
-                <div className="border-border bg-muted flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-2">
-                  {user.image?.url ? (
-                    <img
-                      src={user.image.url}
-                      alt={user.image.alt || user.username}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-muted-foreground text-2xl font-bold">
-                      {user.username.charAt(0).toUpperCase()}
-                    </span>
-                  )}
-                </div>
+                <Avatar
+                  username={user.username}
+                  imageUrl={user.image?.url}
+                  imageAlt={user.image?.alt}
+                  size="xl"
+                  showBorder
+                />
                 <div>
                   <h2 className="text-foreground text-2xl font-semibold">
                     {user.username}
