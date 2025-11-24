@@ -35,6 +35,7 @@ export const Puzzles = () => {
   const [wrongMoveSquare, setWrongMoveSquare] = useState<string | null>(null); // Square to highlight red
   const [isPuzzleSolved, setIsPuzzleSolved] = useState(false);
   const [puzzleStartTime, setPuzzleStartTime] = useState<number | null>(null); // Timestamp when puzzle started
+  const [puzzleCompletionTime, setPuzzleCompletionTime] = useState<number | null>(null); // Time in seconds when puzzle was completed
   const [positionBeforeWrongMove, setPositionBeforeWrongMove] = useState<
     string | null
   >(null); // FEN before wrong move to revert
@@ -47,16 +48,43 @@ export const Puzzles = () => {
     useState<number>(initialUserRating); // Track current rating for animation
   const [ratingChange, setRatingChange] = useState<number | null>(null); // Rating change to display
 
-  const [isFlipped] = useState(false);
   const [boardScale] = useState(1.0);
+
+  // Extract turn from FEN
+  const getTurnFromFen = (fen: string): "white" | "black" | null => {
+    if (!fen) return null;
+    const parts = fen.split(" ");
+    if (parts.length < 2) return null;
+    // FEN format: "position turn ..." where turn is "w" (white) or "b" (black)
+    const turnChar = parts[1];
+    console.log("FEN turn character:", turnChar, "from FEN:", fen);
+    return turnChar === "w" ? "white" : turnChar === "b" ? "black" : null;
+  };
+
+  // Determine board flip based on player's color (who moves second)
+  // The puzzle FEN shows the position before the computer's first move
+  // - If initial turn is "white": Computer (white) moves first, Player (black) moves second → Flip board
+  // - If initial turn is "black": Computer (black) moves first, Player (white) moves second → Don't flip
+  const initialPuzzleTurn = currentPuzzle
+    ? getTurnFromFen(currentPuzzle.fen)
+    : null;
+  // Flip when initial turn is white (because player is black and moves second)
+  const isFlipped = initialPuzzleTurn === "white";
   const [isTimerRunning, setIsTimerRunning] = useState(true);
   // Applied themes (themes used for fetching puzzles)
+  // Default: Only select themes from "Themes" category (tactical + checkmate)
   const [selectedThemes, setSelectedThemes] = useState<string[]>(() => {
-    return PUZZLE_THEMES.map((theme: { key: string }) => theme.key);
+    return PUZZLE_THEMES.filter(
+      (theme) =>
+        theme.category === "tactical" || theme.category === "checkmate",
+    ).map((theme) => theme.key);
   });
   // Pending themes (themes being selected but not yet applied)
   const [pendingThemes, setPendingThemes] = useState<string[]>(() => {
-    return PUZZLE_THEMES.map((theme: { key: string }) => theme.key);
+    return PUZZLE_THEMES.filter(
+      (theme) =>
+        theme.category === "tactical" || theme.category === "checkmate",
+    ).map((theme) => theme.key);
   });
 
   // Get user's puzzle rating
@@ -80,9 +108,9 @@ export const Puzzles = () => {
         const fetchedPuzzles = await getPuzzles({
           rating: userRating,
           themes: themesToFetch,
-          count: 25,
-          themesType: "ALL",
-          playerMoves: 4,
+          count: 15,
+          themesType: "OR", // Use "OR" to find puzzles with any of the selected themes (API expects "ALL" or "OR")
+          // playerMoves will be determined automatically from difficulty themes if selected
         });
 
         if (fetchedPuzzles.length === 0) {
@@ -122,6 +150,18 @@ export const Puzzles = () => {
     },
     [selectedThemes, userRating, toast],
   );
+
+  // Sync currentUserRating with user object when it updates from the database
+  useEffect(() => {
+    if (
+      user?.puzzleRating !== undefined &&
+      user.puzzleRating !== currentUserRating
+    ) {
+      // Update local state to match the user object (which gets updated after API call)
+      setCurrentUserRating(user.puzzleRating);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.puzzleRating]);
 
   // Fetch puzzles on mount only
   useEffect(() => {
@@ -295,6 +335,15 @@ export const Puzzles = () => {
                 if (nextUserMoveIndex >= moves.length) {
                   setIsPuzzleSolved(true);
                   setIsTimerRunning(false);
+                  
+                  // Store completion time
+                  if (puzzleStartTime) {
+                    const solveTimeSeconds = Math.floor(
+                      (Date.now() - puzzleStartTime) / 1000,
+                    );
+                    setPuzzleCompletionTime(solveTimeSeconds);
+                  }
+                  
                   triggerConfetti();
 
                   // Add rating if puzzle was solved without mistakes
@@ -315,9 +364,14 @@ export const Puzzles = () => {
                     setRatingChange(change);
 
                     // Update database and user object
+                    console.log("Updating puzzle rating to:", newRating);
                     apiService
                       .updatePuzzleRating(newRating)
                       .then((updatedUser) => {
+                        console.log(
+                          "Rating updated successfully:",
+                          updatedUser.puzzleRating,
+                        );
                         // Update Redux store
                         dispatch(loginAction(updatedUser));
                         // Update localStorage
@@ -325,9 +379,19 @@ export const Puzzles = () => {
                           "user",
                           JSON.stringify(updatedUser),
                         );
+                        // Sync local state with updated user
+                        if (updatedUser.puzzleRating !== undefined) {
+                          setCurrentUserRating(updatedUser.puzzleRating);
+                        }
                       })
                       .catch((error) => {
                         console.error("Error updating puzzle rating:", error);
+                        toast({
+                          title: "Error",
+                          description:
+                            "Failed to save rating. Please try again.",
+                          variant: "destructive",
+                        });
                       });
                   }
                 }
@@ -411,16 +475,30 @@ export const Puzzles = () => {
                   setRatingChange(change);
 
                   // Update database and user object
+                  console.log("Updating puzzle rating to:", newRating);
                   apiService
                     .updatePuzzleRating(newRating)
                     .then((updatedUser) => {
+                      console.log(
+                        "Rating updated successfully:",
+                        updatedUser.puzzleRating,
+                      );
                       // Update Redux store
                       dispatch(loginAction(updatedUser));
                       // Update localStorage
                       localStorage.setItem("user", JSON.stringify(updatedUser));
+                      // Sync local state with updated user
+                      if (updatedUser.puzzleRating !== undefined) {
+                        setCurrentUserRating(updatedUser.puzzleRating);
+                      }
                     })
                     .catch((error) => {
                       console.error("Error updating puzzle rating:", error);
+                      toast({
+                        title: "Error",
+                        description: "Failed to save rating. Please try again.",
+                        variant: "destructive",
+                      });
                     });
                 }
               } else {
@@ -464,16 +542,30 @@ export const Puzzles = () => {
           setRatingChange(change);
 
           // Update database and user object
+          console.log("Updating puzzle rating to:", newRating);
           apiService
             .updatePuzzleRating(newRating)
             .then((updatedUser) => {
+              console.log(
+                "Rating updated successfully:",
+                updatedUser.puzzleRating,
+              );
               // Update Redux store
               dispatch(loginAction(updatedUser));
               // Update localStorage
               localStorage.setItem("user", JSON.stringify(updatedUser));
+              // Sync local state with updated user
+              if (updatedUser.puzzleRating !== undefined) {
+                setCurrentUserRating(updatedUser.puzzleRating);
+              }
             })
             .catch((error) => {
               console.error("Error updating puzzle rating:", error);
+              toast({
+                title: "Error",
+                description: "Failed to save rating. Please try again.",
+                variant: "destructive",
+              });
             });
         }
 

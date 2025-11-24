@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 
 // RapidAPI configuration
 const RAPIDAPI_BASE_URL = "https://chess-puzzles.p.rapidapi.com";
-const RAPIDAPI_KEY = "fb30da447amsh500815fac37b82ep1649e6jsnf921440ec6d5";
+const RAPIDAPI_KEY = "f4a0bf4fb8msh1dc8034ed679677p1d4ed1jsn766d960f3b32";
 const RAPIDAPI_HOST = "chess-puzzles.p.rapidapi.com";
 
 /**
@@ -45,8 +45,8 @@ export interface GetPuzzlesParams {
   count?: number;
   /** Puzzle themes (default: ["middlegame", "advantage"]) */
   themes?: string[];
-  /** Themes type (default: "ALL") */
-  themesType?: "ALL" | "ANY";
+  /** Themes type - "ALL" means puzzle must have all themes, "OR" means puzzle can have any of the themes */
+  themesType?: "ALL" | "OR";
   /** Number of player moves (default: 4) */
   playerMoves?: number;
 }
@@ -59,9 +59,9 @@ export interface GetPuzzlesParams {
 export async function getPuzzles(params: GetPuzzlesParams): Promise<Puzzle[]> {
   const {
     rating,
-    count = 25,
+    count = 15,
     themes = ["middlegame", "advantage"],
-    themesType = "ALL",
+    themesType = "OR", // Default to "OR" for better results (API expects "ALL" or "OR")
     playerMoves = 4,
   } = params;
 
@@ -71,45 +71,103 @@ export async function getPuzzles(params: GetPuzzlesParams): Promise<Puzzle[]> {
     // Build query parameters
     const queryParams: string[] = [];
 
-    // Handle themes parameter
-    // According to API docs: if more than one theme, MUST include themesType
-    // If all themes are selected (too many), don't send themes parameter to get random puzzles
-    // Or limit to a reasonable number (max 3 themes recommended by API docs)
-    if (themes && themes.length > 0) {
-      // If too many themes selected (likely "All"), don't filter by themes
-      // API docs say "any rating and up to 3 themes should never fail to return 500 matching puzzles"
-      if (themes.length <= 3) {
-        const themesParam = encodeURIComponent(JSON.stringify(themes));
-        queryParams.push(`themes=${themesParam}`);
+    // Separate difficulty themes from regular themes
+    // Difficulty themes are filtered out (not sent to API)
+    const difficultyThemeMap: Record<string, number> = {
+      oneMove: 1,
+      short: 2,
+      long: 3,
+      veryLong: 4,
+    };
 
-        // themesType is REQUIRED when more than 1 theme
-        if (themes.length > 1) {
-          queryParams.push(`themesType=${themesType}`);
-        }
+    const regularThemes =
+      themes?.filter((theme) => !(theme in difficultyThemeMap)) || [];
+
+    // Check if difficulty themes are selected
+    const difficultyThemes =
+      themes?.filter((theme) => theme in difficultyThemeMap) || [];
+
+    // Calculate playerMoves: use difficulty theme if selected, otherwise base on rating
+    let actualPlayerMoves = playerMoves;
+
+    if (difficultyThemes.length > 0) {
+      // If difficulty theme is selected, use it to override rating-based difficulty
+      actualPlayerMoves = difficultyThemeMap[difficultyThemes[0]];
+    } else {
+      // Rating-based difficulty mapping (default when no difficulty theme selected):
+      // 0-800: 2 moves (short puzzles)
+      // 800-1200: 3 moves (medium puzzles)
+      // 1200-1600: 4 moves (long puzzles)
+      // 1600+: 4 moves (very long puzzles)
+      if (rating < 800) {
+        actualPlayerMoves = 2; // Short puzzles for beginners
+      } else if (rating < 1200) {
+        actualPlayerMoves = 3; // Medium puzzles for intermediate players
+      } else if (rating < 1600) {
+        actualPlayerMoves = 4; // Long puzzles for advanced players
       } else {
-        // Too many themes - don't filter by themes (get random puzzles)
-        console.log(
-          `Too many themes selected (${themes.length}). Fetching random puzzles without theme filter.`,
-        );
+        actualPlayerMoves = 4; // Very long puzzles for expert players
       }
+    }
+
+    // Handle themes parameter (only non-difficulty themes)
+    // Also filter out special themes that might not work with the themes parameter
+    const specialThemeKeys = [
+      "mix",
+      "master",
+      "masterVsMaster",
+      "superGM",
+      "playerGames",
+    ];
+    const themesToSend = regularThemes.filter(
+      (theme) => !specialThemeKeys.includes(theme),
+    );
+
+    if (themesToSend.length > 0) {
+      const themesParam = encodeURIComponent(JSON.stringify(themesToSend));
+      queryParams.push(`themes=${themesParam}`);
+
+      // themesType is REQUIRED when more than 1 theme
+      if (themesToSend.length > 1) {
+        queryParams.push(`themesType=${themesType}`);
+      }
+    } else if (regularThemes.length > 0) {
+      // Only special themes selected - don't send themes parameter
+      console.warn(
+        "Only special themes selected. These themes may not work with the themes parameter.",
+      );
     }
 
     // Add other parameters
     queryParams.push(`rating=${rating}`);
-    queryParams.push(`playerMoves=${playerMoves}`);
+    queryParams.push(`playerMoves=${actualPlayerMoves}`);
     queryParams.push(`count=${count}`);
 
     url = `${RAPIDAPI_BASE_URL}/?${queryParams.join("&")}`;
 
-    console.log("Fetching puzzles from RapidAPI:", url);
-    console.log("Request params:", {
-      rating,
-      themesCount: themes?.length || 0,
-      themes: themes && themes.length <= 3 ? themes : "none (too many)",
-      themesType: themes && themes.length > 1 ? themesType : "not sent",
-      playerMoves,
-      count,
-    });
+    console.log("=== Request Details ===");
+    console.log("Full URL:", url);
+    console.log("Themes requested:", themes || []);
+    console.log("Regular themes (before filtering):", regularThemes);
+    console.log("Themes sent to API:", themesToSend);
+    console.log(
+      "Special themes filtered out:",
+      regularThemes.filter((t) => specialThemeKeys.includes(t)),
+    );
+    console.log(
+      "ThemesType:",
+      themesToSend.length > 1 ? themesType : "not sent (only 1 or 0 themes)",
+    );
+    console.log(
+      "PlayerMoves:",
+      actualPlayerMoves,
+      difficultyThemes.length > 0
+        ? `(from difficulty theme: ${difficultyThemes[0]})`
+        : `(based on rating: ${rating})`,
+    );
+    console.log("Rating:", rating);
+    console.log("Count:", count);
+    console.log("======================");
 
     const response = await axios.get<PuzzleApiResponse | Puzzle[]>(url, {
       headers: {
@@ -204,6 +262,14 @@ export async function getPuzzles(params: GetPuzzlesParams): Promise<Puzzle[]> {
 
         // Special handling for 400 errors
         if (axiosError.response.status === 400) {
+          if (
+            errorMessage.includes("No Matching Puzzles") ||
+            errorMessage.includes("No matching puzzles")
+          ) {
+            throw new Error(
+              `No puzzles found matching the selected themes. Try selecting different themes or using fewer themes.`,
+            );
+          }
           throw new Error(
             `Bad Request (400): ${errorMessage}. Please check your theme selection and try again.`,
           );
