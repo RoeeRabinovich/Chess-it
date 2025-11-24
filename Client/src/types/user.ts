@@ -5,10 +5,6 @@ export interface User {
   password: string;
   confirmPassword?: string;
   role: "admin" | "user";
-  image: {
-    url: string;
-    alt: string;
-  };
   createdAt: string;
   puzzleRating?: number;
 }

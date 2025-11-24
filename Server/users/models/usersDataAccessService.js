@@ -22,7 +22,7 @@ const registerUser = async (normalizedUser) => {
       user = new User(normalizedUser);
       user = await user.save();
 
-      user = _.pick(user, ["_id", "username", "email", "image", "createdAt"]);
+      user = _.pick(user, ["_id", "username", "email", "createdAt"]);
       return Promise.resolve(user);
     } catch (error) {
       error.status = 400;
@@ -53,7 +53,6 @@ const loginUser = async ({ email, password }) => {
         "_id",
         "username",
         "email",
-        "image",
         "createdAt",
         "puzzleRating",
       ]);
@@ -80,7 +79,6 @@ const getUserProfile = async (userId) => {
         "_id",
         "username",
         "email",
-        "image",
         "createdAt",
         "puzzleRating",
       ]);
@@ -117,7 +115,6 @@ const updateUsername = async (userId, newUsername) => {
         "_id",
         "username",
         "email",
-        "image",
         "createdAt",
         "puzzleRating",
       ]);
@@ -148,7 +145,6 @@ const updatePuzzleRating = async (userId, newRating) => {
         "_id",
         "username",
         "email",
-        "image",
         "createdAt",
         "puzzleRating",
       ]);

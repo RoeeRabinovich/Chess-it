@@ -195,15 +195,9 @@ export const Profile = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Profile Image */}
+              {/* Profile Avatar */}
               <div className="flex items-center gap-6">
-                <Avatar
-                  username={user.username}
-                  imageUrl={user.image?.url}
-                  imageAlt={user.image?.alt}
-                  size="xl"
-                  showBorder
-                />
+                <Avatar username={user.username} size="xl" showBorder />
                 <div>
                   <h2 className="text-foreground text-2xl font-semibold">
                     {user.username}

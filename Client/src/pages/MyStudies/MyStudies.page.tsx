@@ -4,11 +4,19 @@ import { apiService } from "../../services/api";
 import { ApiError } from "../../types/auth";
 import { StudyCard } from "../HomeExplore/components/StudyCard";
 import { useToast } from "../../hooks/useToast";
+import { Modal } from "../../components/ui/Modal";
+import { Button } from "../../components/ui/Button";
 
 export const MyStudies = () => {
   const [studies, setStudies] = useState<PublicStudy[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [studyToDelete, setStudyToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
 
   const fetchStudies = useCallback(async () => {
@@ -37,24 +45,26 @@ export const MyStudies = () => {
     fetchStudies();
   }, [fetchStudies]);
 
-  const handleDelete = async (studyId: string) => {
+  const handleDelete = (studyId: string) => {
     // Find the study to get its name for confirmation
-    const studyToDelete = studies.find((s) => s._id === studyId);
-    const studyName = studyToDelete?.studyName || "this study";
+    const study = studies.find((s) => s._id === studyId);
+    const studyName = study?.studyName || "this study";
 
-    // Show confirmation dialog
-    if (
-      !window.confirm(
-        `Are you sure you want to delete "${studyName}"? This action cannot be undone.`,
-      )
-    ) {
-      return;
-    }
+    // Set the study to delete and show modal
+    setStudyToDelete({ id: studyId, name: studyName });
+    setShowDeleteModal(true);
+  };
 
+  const confirmDelete = async () => {
+    if (!studyToDelete) return;
+
+    setIsDeleting(true);
     try {
-      await apiService.deleteStudy(studyId);
+      await apiService.deleteStudy(studyToDelete.id);
       // Remove the study from the list
-      setStudies(studies.filter((s) => s._id !== studyId));
+      setStudies(studies.filter((s) => s._id !== studyToDelete.id));
+      setShowDeleteModal(false);
+      setStudyToDelete(null);
       toast({
         title: "Success",
         description: "Study deleted successfully.",
@@ -68,7 +78,14 @@ export const MyStudies = () => {
         description: errorMessage,
         variant: "destructive",
       });
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setStudyToDelete(null);
   };
 
   if (loading) {
@@ -136,6 +153,43 @@ export const MyStudies = () => {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={cancelDelete}
+        title="Delete Study"
+        titleId="delete-study-modal"
+        maxWidth="md"
+        preventBackdropClose={isDeleting}
+        closeButtonDisabled={isDeleting}
+      >
+        <div className="space-y-4">
+          <p className="text-foreground">
+            Are you sure you want to delete{" "}
+            <strong className="text-destructive">
+              "{studyToDelete?.name}"
+            </strong>
+            ? This action cannot be undone.
+          </p>
+          <div className="flex justify-end gap-3">
+            <Button
+              onClick={cancelDelete}
+              variant="secondary"
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmDelete}
+              variant="destructive"
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

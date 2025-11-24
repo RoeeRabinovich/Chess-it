@@ -3,8 +3,6 @@ import { cn } from "../../lib/utils";
 
 interface AvatarProps {
   username: string;
-  imageUrl?: string;
-  imageAlt?: string;
   size?: "sm" | "md" | "lg" | "xl";
   className?: string;
   showBorder?: boolean;
@@ -19,8 +17,6 @@ const sizeClasses = {
 
 export const Avatar = ({
   username,
-  imageUrl,
-  imageAlt,
   size = "md",
   className,
   showBorder = false,
@@ -41,24 +37,7 @@ export const Avatar = ({
       role="img"
       aria-label={`Avatar for ${username}`}
     >
-      {imageUrl ? (
-        <img
-          src={imageUrl}
-          alt={imageAlt || username}
-          className="h-full w-full object-cover"
-          onError={(e) => {
-            // Fallback to initial if image fails to load
-            const target = e.target as HTMLImageElement;
-            target.style.display = "none";
-            const parent = target.parentElement;
-            if (parent) {
-              parent.textContent = initial;
-            }
-          }}
-        />
-      ) : (
-        <span>{initial}</span>
-      )}
+      <span>{initial}</span>
     </div>
   );
 };

@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { URL, DEFAULT_VALIDATION } = require("../../helpers/mongooseValidators");
 
 const userSchema = new mongoose.Schema(
   {
@@ -37,10 +36,6 @@ const userSchema = new mongoose.Schema(
     isAdmin: {
       type: Boolean,
       default: false,
-    },
-    image: {
-      url: URL,
-      alt: DEFAULT_VALIDATION,
     },
     puzzleRating: {
       type: Number,
