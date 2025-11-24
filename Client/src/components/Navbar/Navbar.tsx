@@ -13,16 +13,18 @@ import { Menu } from "../icons/Menu.icon";
 import { ThemeToggle } from "../ui/ThemeToggle";
 import { useAuth } from "../../hooks/useAuth";
 import { Logout } from "../icons/Logout.icon";
-const navLinks = [
-  { name: "Explore", path: "/home" },
-  { name: "Puzzles", path: "/puzzles" },
-  { name: "Create Study", path: "/create-study" },
-];
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, logout } = useAuth();
+
+  const navLinks = [
+    { name: "Explore", path: "/home" },
+    { name: "Puzzles", path: "/puzzles" },
+    { name: "Create Study", path: "/create-study" },
+    ...(user ? [{ name: "My Studies", path: "/my-studies" }] : []),
+  ];
 
   useEffect(() => {
     const handleScroll = () => {

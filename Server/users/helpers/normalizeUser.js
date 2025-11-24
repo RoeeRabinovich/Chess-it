@@ -1,6 +1,6 @@
 const normalizeUser = (rawUser) => {
   const image = {
-    url: rawUser?.image?.url || "https://placehold.co/600x400",
+    url: rawUser?.image?.url || "",
     alt: rawUser?.image?.alt || "User Image",
   };
   const user = {

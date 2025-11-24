@@ -193,6 +193,12 @@ class ApiService {
     return response.data;
   }
 
+  // Get user's own studies
+  async getUserStudies(): Promise<PublicStudy[]> {
+    const response = await apiClient.get<PublicStudy[]>("/studies/my-studies");
+    return response.data;
+  }
+
   // Get study by ID
   // Returns full study with complete gameState including moves, branches, comments
   async getStudyById(studyId: string): Promise<Study> {

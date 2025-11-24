@@ -57,7 +57,8 @@ const findStudiesByUser = async (userId) => {
   if (DB === "MONGODB") {
     try {
       const studies = await Study.find({ createdBy: userId })
-        .select("studyName category description isPublic createdAt updatedAt")
+        .populate("createdBy", "username")
+        .select("studyName category description isPublic createdAt updatedAt likes gameState.position")
         .sort({ createdAt: -1 });
 
       return Promise.resolve(studies);
