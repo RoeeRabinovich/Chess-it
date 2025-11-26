@@ -10,12 +10,13 @@ const {
   updatePuzzleRatingService,
 } = require("../services/usersService");
 const { auth } = require("../../auth/authService");
+const { authRateLimiter, generalRateLimiter } = require("../../middlewares/rateLimiter");
 
 //Routes - handles the HTTP requests and responses. (frontend to backend)
 
 //Register a new user
 
-router.post("/register", async (req, res) => {
+router.post("/register", authRateLimiter, async (req, res) => {
   try {
     const user = await registerUserService(req.body);
     res.status(201).json(user);
@@ -26,7 +27,7 @@ router.post("/register", async (req, res) => {
 
 //Login a user
 
-router.post("/login", async (req, res) => {
+router.post("/login", authRateLimiter, async (req, res) => {
   try {
     const user = await loginUserService(req.body);
     res.status(200).json(user);
@@ -36,7 +37,7 @@ router.post("/login", async (req, res) => {
 });
 
 //Get user profile (requires authentication)
-router.get("/profile", auth, async (req, res) => {
+router.get("/profile", auth, generalRateLimiter, async (req, res) => {
   try {
     const userId = req.user._id;
     const user = await getUserProfileService(userId);
@@ -47,7 +48,7 @@ router.get("/profile", auth, async (req, res) => {
 });
 
 //Update username (requires authentication)
-router.patch("/username", auth, async (req, res) => {
+router.patch("/username", auth, generalRateLimiter, async (req, res) => {
   try {
     const userId = req.user._id;
     const { username } = req.body;
@@ -64,7 +65,7 @@ router.patch("/username", auth, async (req, res) => {
 });
 
 //Update user puzzle rating (requires authentication)
-router.patch("/puzzle-rating", auth, async (req, res) => {
+router.patch("/puzzle-rating", auth, generalRateLimiter, async (req, res) => {
   try {
     const userId = req.user._id;
     const { puzzleRating } = req.body;

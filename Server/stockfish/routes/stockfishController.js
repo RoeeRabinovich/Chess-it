@@ -4,9 +4,10 @@ const stockfishService = require("../services/stockfishService");
 const {
   validateAnalyzeRequest,
 } = require("../validations/stockfishValidatorService");
+const { stockfishRateLimiter } = require("../../middlewares/rateLimiter");
 
 // POST /analyze - Analyze a chess position
-router.post("/analyze", async (req, res) => {
+router.post("/analyze", stockfishRateLimiter, async (req, res) => {
   try {
     // Validate request body
     const validatedData = validateAnalyzeRequest(req.body);

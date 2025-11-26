@@ -13,11 +13,12 @@ const {
   deleteStudyService,
 } = require("../services/studiesService");
 const { auth, optionalAuth } = require("../../auth/authService");
+const { generalRateLimiter } = require("../../middlewares/rateLimiter");
 
 // Routes - handles the HTTP requests and responses. (frontend to backend)
 
 // Create a new study
-router.post("/create", auth, async (req, res) => {
+router.post("/create", auth, generalRateLimiter, async (req, res) => {
   try {
     const userId = req.user._id;
     const study = await createStudyService(userId, req.body);
@@ -29,7 +30,7 @@ router.post("/create", auth, async (req, res) => {
 
 // Get all studies by authenticated user
 // Must come before /:id to avoid route conflict
-router.get("/my-studies", auth, async (req, res) => {
+router.get("/my-studies", auth, generalRateLimiter, async (req, res) => {
   try {
     const userId = req.user._id;
     const studies = await getUserStudiesService(userId);
@@ -41,7 +42,7 @@ router.get("/my-studies", auth, async (req, res) => {
 
 // Get public studies with filters
 // Query params: category (All, Opening, Endgame, Strategy, Tactics), filter (All, New, Popular), search, limit, skip, likedOnly
-router.get("/public", optionalAuth, async (req, res) => {
+router.get("/public", optionalAuth, generalRateLimiter, async (req, res) => {
   try {
     const { category, filter, search, limit, skip, likedOnly } = req.query;
     const userId = req.user?._id || null;
@@ -61,7 +62,7 @@ router.get("/public", optionalAuth, async (req, res) => {
 });
 
 // Like a study
-router.post("/:id/like", auth, async (req, res) => {
+router.post("/:id/like", auth, generalRateLimiter, async (req, res) => {
   try {
     const studyId = req.params.id;
     const userId = req.user._id;
@@ -73,7 +74,7 @@ router.post("/:id/like", auth, async (req, res) => {
 });
 
 // Unlike a study
-router.delete("/:id/like", auth, async (req, res) => {
+router.delete("/:id/like", auth, generalRateLimiter, async (req, res) => {
   try {
     const studyId = req.params.id;
     const userId = req.user._id;
@@ -85,7 +86,7 @@ router.delete("/:id/like", auth, async (req, res) => {
 });
 
 // Get user's liked study IDs
-router.get("/liked/ids", auth, async (req, res) => {
+router.get("/liked/ids", auth, generalRateLimiter, async (req, res) => {
   try {
     const userId = req.user._id;
     const studyIds = await getUserLikedStudyIdsService(userId);
@@ -97,7 +98,7 @@ router.get("/liked/ids", auth, async (req, res) => {
 
 // Delete a study
 // Must come before /:id to avoid route conflict
-router.delete("/:id", auth, async (req, res) => {
+router.delete("/:id", auth, generalRateLimiter, async (req, res) => {
   try {
     const studyId = req.params.id;
     const userId = req.user._id;
@@ -111,7 +112,7 @@ router.delete("/:id", auth, async (req, res) => {
 // Get study by ID
 // Optional auth: if authenticated, can access private studies owned by user
 // If not authenticated, can only access public studies
-router.get("/:id", optionalAuth, async (req, res) => {
+router.get("/:id", optionalAuth, generalRateLimiter, async (req, res) => {
   try {
     const studyId = req.params.id;
     const userId = req.user?._id || null; // Optional auth

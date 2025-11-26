@@ -17,5 +17,23 @@
     "https://localhost:8181",
     "http://localhost:9191",
     "https://localhost:9191"
-  ]
+  ],
+  "RATE_LIMIT": {
+    "AUTH": {
+      "windowMs": 900000,
+      "max": 5,
+      "message": "Too many authentication attempts. Please try again later."
+    },
+    "STOCKFISH": {
+      "windowMs": 60000,
+      "max": 50,
+      "message": "Too many analysis requests. Please slow down."
+    },
+    "GENERAL": {
+      "windowMs": 900000,
+      "max": 100,
+      "message": "Too many requests. Please try again later."
+    },
+    "EXEMPT_LOCALHOST": false
+  }
 }
