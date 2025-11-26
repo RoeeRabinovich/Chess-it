@@ -5,6 +5,7 @@ import { ApiError } from "../../../types/auth";
 import { StudyCard } from "./StudyCard";
 import { useToast } from "../../../hooks/useToast";
 import { useAppSelector } from "../../../store/hooks";
+import { LoadingSpinner } from "../../../components/ui/LoadingSpinner";
 
 interface StudyCardsGridProps {
   category: GameAspect;
@@ -63,7 +64,7 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
   if (loading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
-        <div className="bg-muted border-primary h-16 w-16 animate-spin rounded-full border-4 border-t-transparent"></div>
+        <LoadingSpinner size="large" />
       </div>
     );
   }

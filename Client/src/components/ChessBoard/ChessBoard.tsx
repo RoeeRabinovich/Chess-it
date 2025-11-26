@@ -5,6 +5,7 @@ import { XCircle } from "lucide-react";
 import { ChessBoardProps } from "../../types/chess";
 import { useChessBoardOptions } from "./useChessBoardOptions";
 import { useChessBoardInteractions } from "./useChessBoardInteractions";
+import { LoadingSpinner } from "../ui/LoadingSpinner";
 import {
   BOARD_STYLE,
   DARK_SQUARE_STYLE,
@@ -252,7 +253,7 @@ const ChessBoard = ({
             justifyContent: "center",
           }}
         >
-          <div className="bg-muted border-primary h-16 w-16 animate-spin rounded-full border-4 border-t-transparent"></div>
+          <LoadingSpinner size="large" />
         </div>
       )}
     </div>

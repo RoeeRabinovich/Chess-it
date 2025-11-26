@@ -4,6 +4,7 @@ import { apiService } from "../../services/api";
 import { ApiError } from "../../types/auth";
 import { StudyCard } from "../HomeExplore/components/StudyCard";
 import { useToast } from "../../hooks/useToast";
+import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
 import { Modal } from "../../components/ui/Modal";
 import { Button } from "../../components/ui/Button";
 
@@ -93,7 +94,7 @@ export const MyStudies = () => {
       <div className="bg-background min-h-screen pt-16 sm:pt-20 md:pt-24">
         <div className="container mx-auto max-w-7xl px-4 py-8 md:px-6">
           <div className="flex min-h-[400px] items-center justify-center">
-            <div className="bg-muted border-primary h-16 w-16 animate-spin rounded-full border-4 border-t-transparent"></div>
+            <LoadingSpinner size="large" />
           </div>
         </div>
       </div>

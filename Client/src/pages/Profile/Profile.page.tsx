@@ -13,6 +13,7 @@ import {
 } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
+import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
 import { Edit } from "../../components/icons/Edit.icon";
 import { Modal } from "../../components/ui/Modal";
 import { Avatar } from "../../components/ui/Avatar";
@@ -146,9 +147,7 @@ export const Profile = () => {
       <div className="bg-background min-h-screen pt-16 sm:pt-20 md:pt-24">
         <div className="container mx-auto max-w-4xl px-4 py-8 md:px-6">
           <div className="flex items-center justify-center py-12">
-            <div className="text-muted-foreground text-lg">
-              Loading profile...
-            </div>
+            <LoadingSpinner size="large" text="Loading profile..." />
           </div>
         </div>
       </div>

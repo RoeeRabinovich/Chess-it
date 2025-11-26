@@ -4,6 +4,7 @@ import { apiService } from "../../services/api";
 import { Study } from "../../types/study";
 import { ApiError } from "../../types/auth";
 import { useToast } from "../../hooks/useToast";
+import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
 import { ErrorHandler } from "../../components/ErrorHandler/ErrorHandler";
 import { useChessGameReview } from "../../hooks/useChessGameReview";
 import { useOpeningDetection } from "../../hooks/useOpeningDetection";
@@ -281,14 +282,7 @@ export const ReviewStudy = () => {
 
   // Loading state
   if (loading) {
-    return (
-      <div className="bg-background flex h-screen items-center justify-center pt-16 sm:pt-20 md:pt-24">
-        <div className="text-center">
-          <div className="bg-muted border-primary mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-t-transparent"></div>
-          <p className="text-muted-foreground text-lg">Loading study...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner fullScreen size="large" text="Loading study..." />;
   }
 
   // Error state

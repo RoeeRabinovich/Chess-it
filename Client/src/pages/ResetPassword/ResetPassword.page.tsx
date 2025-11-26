@@ -16,6 +16,7 @@ import { resetPasswordSchema } from "../../validations/resetPassword.joi";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { apiService } from "../../services/api";
 import { ApiError } from "../../types/auth";
+import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
 
 interface ResetPasswordFormData {
   password: string;
@@ -108,10 +109,11 @@ const ResetPassword = () => {
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-green-50 to-emerald-100 px-4">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="bg-muted border-primary mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"></div>
-              <p className="text-muted-foreground">Validating reset link...</p>
-            </div>
+            <LoadingSpinner
+              size="small"
+              text="Validating reset link..."
+              className="mx-auto"
+            />
           </CardContent>
         </Card>
       </div>

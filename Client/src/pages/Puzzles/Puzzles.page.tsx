@@ -7,6 +7,7 @@ import { PUZZLE_THEMES } from "../../constants/puzzleThemes";
 import { getPuzzles, Puzzle } from "../../services/puzzleService";
 import { useAuth } from "../../hooks/useAuth";
 import { useToast } from "../../hooks/useToast";
+import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
 import { moveDataToUCI } from "../../utils/chessMoveUtils";
 import { Chess } from "chess.js";
 import confetti from "canvas-confetti";
@@ -710,12 +711,7 @@ export const Puzzles = () => {
   // Show loading or error state
   if (isLoading) {
     return (
-      <div className="bg-background flex h-screen items-center justify-center pt-16 sm:pt-20 md:pt-24">
-        <div className="text-center">
-          <div className="bg-muted border-primary mx-auto h-16 w-16 animate-spin rounded-full border-4 border-t-transparent"></div>
-          <p className="text-muted-foreground mt-4">Loading puzzles...</p>
-        </div>
-      </div>
+      <LoadingSpinner fullScreen size="large" text="Loading puzzles..." />
     );
   }
 
