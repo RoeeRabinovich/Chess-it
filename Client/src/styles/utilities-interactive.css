@@ -1,0 +1,42 @@
+@layer utilities {
+  /* Hover effects */
+  .hover\:bg-primary\/90:hover {
+    background-color: hsl(var(--primary) / 0.9);
+  }
+  .hover\:bg-destructive\/90:hover {
+    background-color: hsl(var(--destructive) / 0.9);
+  }
+  .hover\:bg-secondary\/80:hover {
+    background-color: hsl(var(--secondary) / 0.8);
+  }
+  .hover\:bg-accent:hover {
+    background-color: hsl(var(--accent));
+  }
+  .hover\:text-accent-foreground:hover {
+    color: hsl(var(--accent-foreground));
+  }
+  .hover\:bg-pastel-mint\/80:hover {
+    background-color: hsl(var(--pastel-mint) / 0.8);
+  }
+  .hover\:text-pastel-mint:hover {
+    color: hsl(var(--pastel-mint));
+  }
+  .hover\:underline:hover {
+    text-decoration: underline;
+  }
+
+  /* Focus states */
+  .focus-visible\:outline-none:focus-visible {
+    outline: none;
+  }
+  .focus-visible\:ring-2:focus-visible {
+    --tw-ring-width: 2px;
+  }
+  .focus-visible\:ring-ring:focus-visible {
+    --tw-ring-color: hsl(var(--ring));
+  }
+  .focus-visible\:ring-offset-2:focus-visible {
+    --tw-ring-offset-width: 2px;
+  }
+}
+
