@@ -37,6 +37,7 @@ export const useChessGame = () => {
     setGameState,
     getCommentKey,
     setCurrentBranchContext,
+    currentBranchContext,
   });
 
   const navigation = useChessNavigation({
