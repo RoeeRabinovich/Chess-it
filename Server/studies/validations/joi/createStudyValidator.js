@@ -71,9 +71,21 @@ const createStudyValidator = (study) => {
     isPublic: Joi.boolean().required().messages({
       "any.required": "Visibility is required.",
     }),
-    gameState: gameStateSchema.required().messages({
-      "any.required": "Game state is required.",
-    }),
+    gameState: gameStateSchema
+      .required()
+      .custom((value, helpers) => {
+        // Ensure the study has at least one move
+        if (!value.moves || value.moves.length === 0) {
+          return helpers.error("any.custom", {
+            message: "Study must contain at least one move.",
+          });
+        }
+        return value;
+      })
+      .messages({
+        "any.required": "Game state is required.",
+        "any.custom": "Study must contain at least one move.",
+      }),
     // Note: createdBy should NOT be in the request body - it comes from JWT token
   });
   return schema.validate(study, { abortEarly: false });

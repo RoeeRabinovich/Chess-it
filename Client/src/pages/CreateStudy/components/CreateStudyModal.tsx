@@ -80,6 +80,16 @@ export const CreateStudyModal = ({
     e.preventDefault();
     setErrors({});
 
+    // Check if study has any moves
+    if (!gameState.moves || gameState.moves.length === 0) {
+      toast({
+        title: "Cannot Create Study",
+        description: "Please add at least one move before creating a study.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Validate with Joi
     const { error } = createStudySchema.validate(formData, {
       abortEarly: false,

@@ -10,7 +10,6 @@ import { useOpeningDetection } from "../../hooks/useOpeningDetection";
 import { MobileStudyLayout } from "../CreateStudy/layouts/MobileStudyLayout";
 import { DesktopStudyLayout } from "../CreateStudy/layouts/DesktopStudyLayout";
 import { ChessMove } from "../../types/chess";
-import { Button } from "../../components/ui/Button";
 
 export const ReviewStudy = () => {
   const { id } = useParams<{ id: string }>();
@@ -314,53 +313,6 @@ export const ReviewStudy = () => {
   // Success state
   if (!study) {
     return null; // This should never happen due to the error check above
-  }
-
-  // Handle empty study (no moves)
-  const isEmptyStudy =
-    !study.gameState?.moves || study.gameState.moves.length === 0;
-
-  if (isEmptyStudy) {
-    return (
-      <div className="bg-background flex h-screen items-center justify-center pt-16 sm:pt-20 md:pt-24">
-        <div className="max-w-md px-4 text-center">
-          <div className="mb-6">
-            <div className="text-muted-foreground mb-4 text-6xl">📋</div>
-            <h1 className="text-foreground mb-2 text-2xl font-bold">
-              Empty Study
-            </h1>
-            <p className="text-muted-foreground text-base">
-              This study doesn't have any moves yet. The study may still be in
-              progress or the moves haven't been saved.
-            </p>
-            {study.studyName && (
-              <div className="bg-muted/50 mt-4 rounded-lg p-4 text-left">
-                <h2 className="text-foreground mb-2 font-semibold">
-                  {study.studyName}
-                </h2>
-                {study.category && (
-                  <span className="bg-accent text-foreground inline-block rounded px-2 py-1 text-xs">
-                    {study.category}
-                  </span>
-                )}
-                {study.description && (
-                  <p className="text-muted-foreground mt-2 text-sm">
-                    {study.description}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-          <Button
-            onClick={() => window.history.back()}
-            variant="outline"
-            className="w-full sm:w-auto"
-          >
-            Go Back
-          </Button>
-        </div>
-      </div>
-    );
   }
 
   return (
