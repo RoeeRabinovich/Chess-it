@@ -6,6 +6,7 @@ const chalk = require("chalk");
 const config = require("config");
 const connectToDb = require("./DB/dbService");
 const cors = require("./middlewares/cors");
+const sanitize = require("./middlewares/sanitize");
 const { handleError } = require("./utils/errorHandler");
 const logger = require("./logger/loggers/morganLogger");
 
@@ -14,6 +15,8 @@ app.use(cors);
 app.use(logger);
 app.use(express.json());
 app.use(express.text());
+// Apply sanitization after parsing JSON/text but before routes
+app.use(sanitize);
 app.use(express.static("./public"));
 app.use(router);
 

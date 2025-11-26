@@ -35,5 +35,20 @@
       "message": "Too many requests. Please try again later."
     },
     "EXEMPT_LOCALHOST": false
+  },
+  "SANITIZATION": {
+    "ENABLED": true,
+    "STRICT_MODE": true,
+    "REMOVE_HTML": true,
+    "TRIM_WHITESPACE": true,
+    "NORMALIZE_EMAIL": true,
+    "SKIP_FIELDS": ["password", "confirmPassword"],
+    "SKIP_TECHNICAL_FIELDS": [
+      "fen",
+      "position",
+      "moves",
+      "branches",
+      "gameState"
+    ]
   }
 }
