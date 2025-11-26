@@ -35,10 +35,10 @@ const ForgotPassword = () => {
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
     try {
-      const response = await apiService.forgotPassword(data.email);
+      await apiService.forgotPassword(data.email);
       toast({
         title: "Reset link sent",
-        description: response.message,
+        description: "Reset link has been sent.",
         variant: "success",
       });
       // Optionally navigate back to login after a delay
@@ -50,8 +50,7 @@ const ForgotPassword = () => {
       toast({
         title: "Error",
         description:
-          apiError?.message ||
-          "Failed to send reset email. Please try again.",
+          apiError?.message || "Failed to send reset email. Please try again.",
         variant: "destructive",
       });
     }
@@ -104,4 +103,3 @@ const ForgotPassword = () => {
 };
 
 export default ForgotPassword;
-
