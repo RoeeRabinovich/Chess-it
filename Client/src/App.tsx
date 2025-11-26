@@ -5,6 +5,8 @@ import Home from "./pages/Home/Home.page";
 import { HomeExplore } from "./pages/HomeExplore/HomeExplore.page";
 import Register from "./pages/Register/Register.page";
 import Login from "./pages/Login/Login.page";
+import ForgotPassword from "./pages/ForgotPassword/ForgotPassword.page";
+import ResetPassword from "./pages/ResetPassword/ResetPassword.page";
 import { CreateStudy } from "./pages/CreateStudy/CreateStudy.page";
 import { ReviewStudy } from "./pages/ReviewStudy/ReviewStudy.page";
 import { Puzzles } from "./pages/Puzzles/Puzzles.page";
@@ -44,6 +46,22 @@ export default function App() {
             element={
               <PublicRoute>
                 <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/forgot-password"
+            element={
+              <PublicRoute>
+                <ForgotPassword />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/reset-password"
+            element={
+              <PublicRoute>
+                <ResetPassword />
               </PublicRoute>
             }
           />

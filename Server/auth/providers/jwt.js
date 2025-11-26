@@ -24,7 +24,36 @@ const verifyAuthToken = (token) => {
   }
 };
 
+// Generate password reset token
+// Expires in 15 minutes by default
+const generateResetToken = (userId, expiresInMinutes = 15) => {
+  const payload = {
+    userId,
+    type: "password-reset",
+  };
+  return jwt.sign(payload, key, { expiresIn: `${expiresInMinutes}m` });
+};
+
+// Verify password reset token
+// Return user ID if token is valid, otherwise throw an error
+const verifyResetToken = (token) => {
+  try {
+    const decoded = jwt.verify(token, key);
+    if (decoded.type !== "password-reset") {
+      throw new Error("Invalid token type");
+    }
+    return decoded.userId;
+  } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      throw new Error("Reset token has expired. Please request a new one.");
+    }
+    throw new Error("Invalid or expired reset token");
+  }
+};
+
 module.exports = {
   generateAuthToken,
   verifyAuthToken,
+  generateResetToken,
+  verifyResetToken,
 };

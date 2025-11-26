@@ -159,10 +159,51 @@ const updatePuzzleRating = async (userId, newRating) => {
   );
 };
 
+//Find user by email (for password reset)
+const findUserByEmail = async (email) => {
+  if (DB === "MONGODB") {
+    try {
+      const user = await User.findOne({ email: email.toLowerCase() });
+      return Promise.resolve(user);
+    } catch (error) {
+      error.status = 400;
+      return handleBadRequest("Mongoose", error);
+    }
+  }
+  return Promise.resolve(
+    "findUserByEmail function is not supported for this database"
+  );
+};
+
+//Update user password
+const updateUserPassword = async (userId, hashedPassword) => {
+  if (DB === "MONGODB") {
+    try {
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { password: hashedPassword },
+        { new: true, runValidators: true }
+      );
+
+      if (!user) throw new Error("User not found");
+
+      return Promise.resolve(true);
+    } catch (error) {
+      error.status = 400;
+      return handleBadRequest("Mongoose", error);
+    }
+  }
+  return Promise.resolve(
+    "updateUserPassword function is not supported for this database"
+  );
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getUserProfile,
   updateUsername,
   updatePuzzleRating,
+  findUserByEmail,
+  updateUserPassword,
 };

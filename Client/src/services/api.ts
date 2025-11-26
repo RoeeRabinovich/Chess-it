@@ -141,6 +141,27 @@ class ApiService {
     return response.data;
   }
 
+  // Password reset endpoints
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    const response = await apiClient.post<{ message: string }>(
+      "/users/forgot-password",
+      { email },
+    );
+    return response.data;
+  }
+
+  async resetPassword(
+    token: string,
+    password: string,
+    confirmPassword: string,
+  ): Promise<{ message: string }> {
+    const response = await apiClient.post<{ message: string }>(
+      "/users/reset-password",
+      { token, password, confirmPassword },
+    );
+    return response.data;
+  }
+
   // Study endpoints
   async createStudy(data: {
     studyName: string;

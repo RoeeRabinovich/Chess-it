@@ -4,15 +4,23 @@ const {
   getUserProfile,
   updateUsername,
   updatePuzzleRating,
+  findUserByEmail,
+  updateUserPassword,
 } = require("../models/usersDataAccessService");
 const normalizeUser = require("../helpers/normalizeUser");
 const {
   validateRegister,
   validateLogin,
   validateUpdateUsername,
+  validateForgotPassword,
+  validateResetPassword,
 } = require("../validations/userValidatorService");
 const { hashUserPassword } = require("../helpers/bcrypt");
 const { handleJoiError } = require("../../utils/errorHandler");
+const { generateResetToken } = require("../../auth/providers/jwt");
+const { sendPasswordResetEmail } = require("../../services/emailService");
+const { verifyResetToken } = require("../../auth/providers/jwt");
+const config = require("config");
 
 //Service functions - performs the main logic of the application.
 
@@ -122,10 +130,98 @@ const updatePuzzleRatingService = async (userId, newRating) => {
   }
 };
 
+//Request password reset (forgot password)
+const forgotPasswordService = async (email, frontendUrl) => {
+  try {
+    // Validate email
+    const { error } = validateForgotPassword({ email });
+    if (error) {
+      return Promise.reject(await handleJoiError(error));
+    }
+
+    // Find user by email (don't reveal if user exists for security)
+    const user = await findUserByEmail(email);
+
+    // Always return success message (security best practice - don't reveal if email exists)
+    // But only send email if user actually exists
+    if (user) {
+      // Generate reset token (15 minutes expiry)
+      const resetToken = generateResetToken(
+        user._id.toString(),
+        config.get("EMAIL.RESET_PASSWORD_EXPIRY_MINUTES") || 15
+      );
+
+      // Send password reset email
+      try {
+        await sendPasswordResetEmail(email, resetToken, frontendUrl);
+      } catch (emailError) {
+        // Log error but don't reveal to user
+        console.error("Failed to send password reset email:", emailError);
+        // Still return success to prevent email enumeration
+      }
+    }
+
+    // Always return success (security: don't reveal if email exists)
+    return Promise.resolve({
+      message:
+        "If an account with that email exists, a password reset link has been sent.",
+    });
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+//Reset password with token
+const resetPasswordService = async (token, newPassword) => {
+  try {
+    // Validate token and get user ID
+    let userId;
+    try {
+      userId = verifyResetToken(token);
+    } catch (tokenError) {
+      return Promise.reject({
+        status: 400,
+        message: tokenError.message || "Invalid or expired reset token",
+      });
+    }
+
+    // Validate password
+    const { error } = validateResetPassword({
+      token,
+      password: newPassword,
+      confirmPassword: newPassword, // For validation, we'll check separately
+    });
+
+    if (error) {
+      // Extract password-specific errors
+      const passwordErrors = error.details.filter(
+        (detail) => detail.path[0] === "password"
+      );
+      if (passwordErrors.length > 0) {
+        return Promise.reject(await handleJoiError(error));
+      }
+    }
+
+    // Hash new password
+    const hashedPassword = await hashUserPassword(newPassword);
+
+    // Update user password
+    await updateUserPassword(userId, hashedPassword);
+
+    return Promise.resolve({
+      message: "Password has been reset successfully.",
+    });
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
 module.exports = {
   registerUserService,
   loginUserService,
   getUserProfileService,
   updateUsernameService,
   updatePuzzleRatingService,
+  forgotPasswordService,
+  resetPasswordService,
 };

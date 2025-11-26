@@ -60,5 +60,18 @@
     "CROSS_ORIGIN_RESOURCE_POLICY": {
       "policy": "cross-origin"
     }
+  },
+  "EMAIL": {
+    "SERVICE": "gmail",
+    "FROM_EMAIL": "rabinovichroee@gmail.com",
+    "FROM_NAME": "Chess-it",
+    "RESET_PASSWORD_EXPIRY_MINUTES": 15
+  },
+  "PASSWORD_RESET": {
+    "RATE_LIMIT": {
+      "windowMs": 3600000,
+      "max": 3,
+      "message": "Too many password reset requests. Please try again later."
+    }
   }
 }

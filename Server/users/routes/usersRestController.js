@@ -8,9 +8,15 @@ const {
   getUserProfileService,
   updateUsernameService,
   updatePuzzleRatingService,
+  forgotPasswordService,
+  resetPasswordService,
 } = require("../services/usersService");
 const { auth } = require("../../auth/authService");
-const { authRateLimiter, generalRateLimiter } = require("../../middlewares/rateLimiter");
+const {
+  authRateLimiter,
+  generalRateLimiter,
+  passwordResetLimiter,
+} = require("../../middlewares/rateLimiter");
 
 //Routes - handles the HTTP requests and responses. (frontend to backend)
 
@@ -76,6 +82,39 @@ router.patch("/puzzle-rating", auth, generalRateLimiter, async (req, res) => {
 
     const user = await updatePuzzleRatingService(userId, puzzleRating);
     res.status(200).json(user);
+  } catch (error) {
+    return handleError(res, error.status || 500, error.message);
+  }
+});
+
+//Request password reset (forgot password)
+router.post("/forgot-password", passwordResetLimiter, async (req, res) => {
+  try {
+    const { email } = req.body;
+    const frontendUrl = req.headers.origin || "http://localhost:5173";
+
+    const result = await forgotPasswordService(email, frontendUrl);
+    res.status(200).json(result);
+  } catch (error) {
+    return handleError(res, error.status || 500, error.message);
+  }
+});
+
+//Reset password with token
+router.post("/reset-password", async (req, res) => {
+  try {
+    const { token, password, confirmPassword } = req.body;
+
+    if (!token) {
+      return handleError(res, 400, "Reset token is required");
+    }
+
+    if (password !== confirmPassword) {
+      return handleError(res, 400, "Passwords do not match");
+    }
+
+    const result = await resetPasswordService(token, password);
+    res.status(200).json(result);
   } catch (error) {
     return handleError(res, error.status || 500, error.message);
   }

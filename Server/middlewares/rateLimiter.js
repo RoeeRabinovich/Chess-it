@@ -16,12 +16,18 @@ const shouldExemptIP = (ip) => {
     return false;
   }
 
+  // Ensure ip is a string before checking
+  if (typeof ip !== "string") {
+    return false;
+  }
+
   // Check if IP is localhost (IPv4 or IPv6)
   return (
     ip === "127.0.0.1" ||
     ip === "::1" ||
     ip === "::ffff:127.0.0.1" ||
-    ip.startsWith("::ffff:127.0.0.1")
+    ip.startsWith("::ffff:127.0.0.1") ||
+    ip.startsWith("127.0.0.1")
   );
 };
 
@@ -106,15 +112,59 @@ const createUserRateLimiter = (type) => {
 };
 
 /**
+ * Create password reset rate limiter (3 requests per hour per IP)
+ */
+const passwordResetRateLimiter = () => {
+  let resetConfig;
+  if (config.has("PASSWORD_RESET.RATE_LIMIT")) {
+    resetConfig = config.get("PASSWORD_RESET.RATE_LIMIT");
+  } else if (config.has("PASSWORD_RESET")) {
+    resetConfig = config.get("PASSWORD_RESET");
+  }
+
+  if (!resetConfig) {
+    // Fallback defaults
+    resetConfig = {
+      windowMs: 3600000, // 1 hour
+      max: 3,
+      message: "Too many password reset requests. Please try again later.",
+    };
+  }
+
+  return rateLimit({
+    windowMs: resetConfig.windowMs || 3600000,
+    max: resetConfig.max || 3,
+    message:
+      resetConfig.message ||
+      "Too many password reset requests. Please try again later.",
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: (req) => shouldExemptIP(ipKeyGenerator(req)),
+    keyGenerator: ipKeyGenerator,
+    handler: (req, res) => {
+      const retryAfter = Math.ceil((resetConfig.windowMs || 3600000) / 1000);
+      res.setHeader("Retry-After", retryAfter);
+      res
+        .status(429)
+        .send(
+          resetConfig.message ||
+            "Too many password reset requests. Please try again later."
+        );
+    },
+  });
+};
+
+/**
  * Rate limiters for different endpoint types
  */
 const authRateLimiter = createIPRateLimiter("AUTH");
 const stockfishRateLimiter = createIPRateLimiter("STOCKFISH");
 const generalRateLimiter = createUserRateLimiter("GENERAL");
+const passwordResetLimiter = passwordResetRateLimiter();
 
 module.exports = {
   authRateLimiter,
   stockfishRateLimiter,
   generalRateLimiter,
+  passwordResetLimiter,
 };
-
