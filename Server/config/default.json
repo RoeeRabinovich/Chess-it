@@ -1,0 +1,64 @@
+{
+  "TOKEN_GENERATOR": "jwt",
+  "LOGGER": "morgan",
+  "VALIDATOR": "joi",
+  "DB": "MONGODB",
+  "CORS_ORIGINS": [
+    "http://localhost:3000",
+    "http://127.0.0.1:5500",
+    "http://localhost:4173",
+    "http://localhost:5173",
+    "https://localhost:5173",
+    "http://localhost:5174",
+    "https://localhost:5174",
+    "http://localhost:8181",
+    "https://localhost:8181",
+    "http://localhost:9191",
+    "https://localhost:9191"
+  ],
+  "RATE_LIMIT": {
+    "AUTH": {
+      "windowMs": 900000,
+      "max": 5,
+      "message": "Too many authentication attempts. Please try again later."
+    },
+    "STOCKFISH": {
+      "windowMs": 60000,
+      "max": 50,
+      "message": "Too many analysis requests. Please slow down."
+    },
+    "GENERAL": {
+      "windowMs": 900000,
+      "max": 100,
+      "message": "Too many requests. Please try again later."
+    }
+  },
+  "SANITIZATION": {
+    "ENABLED": true,
+    "STRICT_MODE": true,
+    "REMOVE_HTML": true,
+    "TRIM_WHITESPACE": true,
+    "NORMALIZE_EMAIL": true,
+    "SKIP_FIELDS": ["password", "confirmPassword"],
+    "SKIP_TECHNICAL_FIELDS": [
+      "fen",
+      "position",
+      "moves",
+      "branches",
+      "gameState"
+    ]
+  },
+  "HELMET": {
+    "ENABLED": true,
+    "useDefaults": true,
+    "CROSS_ORIGIN_EMBEDDER_POLICY": {
+      "policy": "require-corp"
+    },
+    "CROSS_ORIGIN_OPENER_POLICY": {
+      "policy": "same-origin"
+    },
+    "CROSS_ORIGIN_RESOURCE_POLICY": {
+      "policy": "cross-origin"
+    }
+  }
+}

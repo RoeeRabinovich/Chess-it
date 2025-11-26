@@ -7,10 +7,13 @@ const config = require("config");
 const connectToDb = require("./DB/dbService");
 const cors = require("./middlewares/cors");
 const sanitize = require("./middlewares/sanitize");
+const helmet = require("./middlewares/helmet");
 const { handleError } = require("./utils/errorHandler");
 const logger = require("./logger/loggers/morganLogger");
 
 // Middlewares
+// Apply Helmet first for security headers
+app.use(helmet);
 app.use(cors);
 app.use(logger);
 app.use(express.json());

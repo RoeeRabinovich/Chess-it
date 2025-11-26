@@ -1,4 +1,5 @@
 const rateLimit = require("express-rate-limit");
+const { ipKeyGenerator } = require("express-rate-limit");
 const config = require("config");
 
 /**
@@ -53,9 +54,12 @@ const createIPRateLimiter = (type) => {
     standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
     legacyHeaders: false, // Disable `X-RateLimit-*` headers
     // Skip rate limiting for exempted IPs (localhost in development)
-    skip: (req) => shouldExemptIP(req.ip),
-    // Custom key generator - use IP address
-    keyGenerator: (req) => req.ip,
+    skip: (req) => {
+      const ip = ipKeyGenerator(req);
+      return shouldExemptIP(ip);
+    },
+    // Custom key generator - use IP address with proper IPv6 handling
+    keyGenerator: ipKeyGenerator,
     // Custom handler to match existing error format
     handler: (req, res) => {
       const retryAfter = Math.ceil(config.windowMs / 1000); // Convert to seconds
@@ -79,15 +83,18 @@ const createUserRateLimiter = (type) => {
     standardHeaders: true,
     legacyHeaders: false,
     // Skip rate limiting for exempted IPs (localhost in development)
-    skip: (req) => shouldExemptIP(req.ip),
-    // Custom key generator - use User ID if authenticated, otherwise IP
+    skip: (req) => {
+      const ip = ipKeyGenerator(req);
+      return shouldExemptIP(ip);
+    },
+    // Custom key generator - use User ID if authenticated, otherwise IP with proper IPv6 handling
     keyGenerator: (req) => {
       // If user is authenticated, use their ID
       if (req.user && req.user._id) {
         return `user:${req.user._id}`;
       }
-      // Otherwise fall back to IP
-      return `ip:${req.ip}`;
+      // Otherwise fall back to IP (using helper for proper IPv6 handling)
+      return `ip:${ipKeyGenerator(req)}`;
     },
     // Custom handler to match existing error format
     handler: (req, res) => {
