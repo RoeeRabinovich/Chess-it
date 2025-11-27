@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { PublicStudy } from "../../types/study";
 import { apiService } from "../../services/api";
 import { ApiError } from "../../types/auth";
@@ -9,6 +10,8 @@ import { Modal } from "../../components/ui/Modal";
 import { Button } from "../../components/ui/Button";
 import { SearchInput } from "../../components/ui/SearchInput";
 import { Pagination } from "../../components/ui/Pagination";
+import { EmptyState } from "../../components/ui/EmptyState";
+import { Book } from "../../components/icons/Book.icon";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -25,6 +28,7 @@ export const MyStudies = () => {
   } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const fetchStudies = useCallback(async () => {
     setLoading(true);
@@ -67,7 +71,10 @@ export const MyStudies = () => {
   }, [studies, searchQuery]);
 
   // Calculate pagination
-  const totalPages = Math.max(1, Math.ceil(filteredStudies.length / ITEMS_PER_PAGE));
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredStudies.length / ITEMS_PER_PAGE),
+  );
   const paginatedStudies = useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
@@ -138,14 +145,16 @@ export const MyStudies = () => {
     return (
       <div className="bg-background min-h-screen pt-16 sm:pt-20 md:pt-24">
         <div className="container mx-auto max-w-7xl px-4 py-8 md:px-6">
-          <div className="flex min-h-[400px] items-center justify-center">
-            <div className="text-center">
-              <p className="text-destructive mb-2 text-lg font-semibold">
-                Error loading studies
-              </p>
-              <p className="text-muted-foreground text-sm">{error}</p>
-            </div>
-          </div>
+          <EmptyState
+            variant="error"
+            title="Error loading studies"
+            description={error}
+            action={
+              <Button onClick={fetchStudies} variant="outline">
+                Try Again
+              </Button>
+            }
+          />
         </div>
       </div>
     );
@@ -159,11 +168,12 @@ export const MyStudies = () => {
           <h1 className="text-foreground font-minecraft mb-2 text-3xl font-bold">
             My Studies
           </h1>
-          <p className="text-muted-foreground text-sm">
-            {studies.length === 0
-              ? "You haven't created any studies yet."
-              : `You have ${studies.length} ${studies.length === 1 ? "study" : "studies"}.`}
-          </p>
+          {studies.length > 0 && (
+            <p className="text-muted-foreground text-sm">
+              You have {studies.length}{" "}
+              {studies.length === 1 ? "study" : "studies"}.
+            </p>
+          )}
         </div>
 
         {/* Search Input */}
@@ -182,21 +192,28 @@ export const MyStudies = () => {
 
         {/* Studies Grid */}
         {studies.length === 0 ? (
-          <div className="flex min-h-[400px] items-center justify-center">
-            <div className="text-center">
-              <p className="text-muted-foreground text-lg">
-                No studies found. Create your first study to get started!
-              </p>
-            </div>
-          </div>
+          <EmptyState
+            variant="empty"
+            icon={<Book className="text-muted-foreground h-12 w-12" />}
+            title="No studies yet"
+            description="Create your first study to get started!"
+            action={
+              <Button onClick={() => navigate("/create-study")}>
+                Create Study
+              </Button>
+            }
+          />
         ) : filteredStudies.length === 0 ? (
-          <div className="flex min-h-[400px] items-center justify-center">
-            <div className="text-center">
-              <p className="text-muted-foreground text-lg">
-                No studies match your search. Try a different query.
-              </p>
-            </div>
-          </div>
+          <EmptyState
+            variant="search"
+            title="No results found"
+            description="No studies match your search. Try a different query."
+            action={
+              <Button onClick={() => setSearchQuery("")} variant="outline">
+                Clear Search
+              </Button>
+            }
+          />
         ) : (
           <div className="space-y-6">
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -208,7 +225,7 @@ export const MyStudies = () => {
                 />
               ))}
             </div>
-            
+
             {totalPages > 1 && (
               <div className="flex justify-center pt-4">
                 <Pagination

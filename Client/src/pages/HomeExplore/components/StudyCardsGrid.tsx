@@ -4,9 +4,14 @@ import { apiService } from "../../../services/api";
 import { ApiError } from "../../../types/auth";
 import { StudyCard } from "./StudyCard";
 import { useToast } from "../../../hooks/useToast";
-import { useAppSelector } from "../../../store/hooks";
+import { useAppSelector, useAppDispatch } from "../../../store/hooks";
+import { clearArchive } from "../../../store/archiveSlice";
 import { LoadingSpinner } from "../../../components/ui/LoadingSpinner";
 import { Pagination } from "../../../components/ui/Pagination";
+import { EmptyState } from "../../../components/ui/EmptyState";
+import { Button } from "../../../components/ui/Button";
+import { Book } from "../../../components/icons/Book.icon";
+import { Search } from "../../../components/icons/Search.icon";
 
 interface StudyCardsGridProps {
   category: GameAspect;
@@ -25,6 +30,14 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
   const searchQuery = useAppSelector((state) => state.search.query);
   const isArchiveActive = useAppSelector((state) => state.archive.isActive);
   const isAuthenticated = apiService.isAuthenticated();
+  const dispatch = useAppDispatch();
+
+  // Clear archive state if user is not authenticated
+  useEffect(() => {
+    if (isArchiveActive && !isAuthenticated) {
+      dispatch(clearArchive());
+    }
+  }, [isArchiveActive, isAuthenticated, dispatch]);
 
   useEffect(() => {
     // Reset to page 1 when filters/search change
@@ -37,14 +50,6 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
       setError(null);
 
       try {
-        // If archive is active but user is not authenticated, show empty state
-        if (isArchiveActive && !isAuthenticated) {
-          setStudies([]);
-          setTotalPages(1);
-          setLoading(false);
-          return;
-        }
-
         const skip = (currentPage - 1) * ITEMS_PER_PAGE;
         // Fetch one extra item to check if there's a next page
         const data = await apiService.getPublicStudies({
@@ -55,14 +60,14 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
           skip,
           likedOnly: isArchiveActive && isAuthenticated,
         });
-        
+
         // If we got more than ITEMS_PER_PAGE, there's a next page
         const hasNextPage = data.length > ITEMS_PER_PAGE;
         // Only display ITEMS_PER_PAGE items
         const studiesToShow = data.slice(0, ITEMS_PER_PAGE);
-        
+
         setStudies(studiesToShow);
-        
+
         // Calculate total pages: if there's a next page, show currentPage + 1
         // Otherwise, currentPage is the last page
         if (hasNextPage) {
@@ -86,7 +91,15 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
     };
 
     fetchStudies();
-  }, [category, filter, searchQuery, isArchiveActive, isAuthenticated, currentPage, toast]);
+  }, [
+    category,
+    filter,
+    searchQuery,
+    isArchiveActive,
+    isAuthenticated,
+    currentPage,
+    toast,
+  ]);
 
   if (loading) {
     return (
@@ -98,50 +111,40 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
 
   if (error) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="text-center">
-          <p className="text-destructive mb-2 text-lg font-semibold">
-            Error loading studies
-          </p>
-          <p className="text-muted-foreground text-sm">{error}</p>
-        </div>
-      </div>
+      <EmptyState
+        variant="error"
+        title="Error loading studies"
+        description={error}
+        size="md"
+      />
     );
   }
 
   if (studies.length === 0) {
-    // Show different message for archive empty state
-    if (isArchiveActive) {
-      if (!isAuthenticated) {
-        return (
-          <div className="flex min-h-[400px] items-center justify-center">
-            <div className="text-center">
-              <p className="text-muted-foreground text-lg">
-                Please log in to view your archived studies.
-              </p>
-            </div>
-          </div>
-        );
-      }
+    // Show different message for archive empty state (only if authenticated)
+    if (isArchiveActive && isAuthenticated) {
       return (
-        <div className="flex min-h-[400px] items-center justify-center">
-          <div className="text-center">
-            <p className="text-muted-foreground text-lg">
-              Oops! You have 0 liked studies.
-            </p>
-          </div>
-        </div>
+        <EmptyState
+          variant="empty"
+          icon={<Book className="text-muted-foreground h-12 w-12" />}
+          title="No liked studies"
+          description="Studies you like will appear here. Start exploring to find studies you love!"
+          action={
+            <Button onClick={() => dispatch(clearArchive())} variant="outline">
+              Explore Studies
+            </Button>
+          }
+        />
       );
     }
 
     return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="text-center">
-          <p className="text-muted-foreground text-lg">
-            No studies found. Try adjusting your filters.
-          </p>
-        </div>
-      </div>
+      <EmptyState
+        variant="search"
+        icon={<Search className="text-muted-foreground h-12 w-12" />}
+        title="No studies found"
+        description="Try adjusting your filters or search query to find more studies."
+      />
     );
   }
 
@@ -152,7 +155,7 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
           <StudyCard key={study._id} study={study} />
         ))}
       </div>
-      
+
       {studies.length > 0 && totalPages > 1 && (
         <div className="flex justify-center pt-4">
           <Pagination
