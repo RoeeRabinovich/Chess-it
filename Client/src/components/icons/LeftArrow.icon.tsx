@@ -9,11 +9,11 @@ export const LeftArrow = (props: IconClasses) => {
       viewBox="0 0 24 24"
       className={className}
     >
+      {" "}
       <path
-        d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"
+        d="M20 11v2H8v2H6v-2H4v-2h2V9h2v2h12zM10 7H8v2h2V7zm0 0h2V5h-2v2zm0 10H8v-2h2v2zm0 0h2v2h-2v-2z"
         fill="currentColor"
-      />
+      />{" "}
     </svg>
   );
 };
-

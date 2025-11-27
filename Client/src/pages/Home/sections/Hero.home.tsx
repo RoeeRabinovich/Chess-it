@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "../../../components/ui/Button";
 import { Pawn } from "../../../components/icons/Pawn.icon";
-import { RightArrow } from "../../../components/icons/RightArrow.pixel";
+import { RightArrow } from "../../../components/icons/RightArrow.icon";
 import heroImage from "../../../assets/images/pixel-hero-image (1).png";
 import { useNavigate } from "react-router";
 
@@ -36,7 +36,7 @@ const Hero = () => {
                 onClick={() => navigate("/register")}
               >
                 Get Started
-                <RightArrow />
+                <RightArrow className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
               <Button size="lg" variant="outline">
                 Puzzles <Pawn />

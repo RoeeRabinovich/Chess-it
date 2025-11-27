@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { PublicStudy } from "../../types/study";
 import { apiService } from "../../services/api";
 import { ApiError } from "../../types/auth";
@@ -7,11 +7,17 @@ import { useToast } from "../../hooks/useToast";
 import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
 import { Modal } from "../../components/ui/Modal";
 import { Button } from "../../components/ui/Button";
+import { SearchInput } from "../../components/ui/SearchInput";
+import { Pagination } from "../../components/ui/Pagination";
+
+const ITEMS_PER_PAGE = 12;
 
 export const MyStudies = () => {
   const [studies, setStudies] = useState<PublicStudy[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [studyToDelete, setStudyToDelete] = useState<{
     id: string;
@@ -45,6 +51,33 @@ export const MyStudies = () => {
   useEffect(() => {
     fetchStudies();
   }, [fetchStudies]);
+
+  // Filter studies based on search query
+  const filteredStudies = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return studies;
+    }
+    const query = searchQuery.toLowerCase().trim();
+    return studies.filter(
+      (study) =>
+        study.studyName.toLowerCase().includes(query) ||
+        study.description.toLowerCase().includes(query) ||
+        study.category.toLowerCase().includes(query),
+    );
+  }, [studies, searchQuery]);
+
+  // Calculate pagination
+  const totalPages = Math.max(1, Math.ceil(filteredStudies.length / ITEMS_PER_PAGE));
+  const paginatedStudies = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return filteredStudies.slice(startIndex, endIndex);
+  }, [filteredStudies, currentPage]);
+
+  // Reset to page 1 when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   const handleDelete = (studyId: string) => {
     // Find the study to get its name for confirmation
@@ -133,6 +166,20 @@ export const MyStudies = () => {
           </p>
         </div>
 
+        {/* Search Input */}
+        {studies.length > 0 && (
+          <div className="mb-6">
+            <SearchInput
+              placeholder="Search your studies..."
+              value={searchQuery}
+              onChange={setSearchQuery}
+              showClearButton
+              debounceMs={300}
+              className="max-w-md"
+            />
+          </div>
+        )}
+
         {/* Studies Grid */}
         {studies.length === 0 ? (
           <div className="flex min-h-[400px] items-center justify-center">
@@ -142,15 +189,35 @@ export const MyStudies = () => {
               </p>
             </div>
           </div>
+        ) : filteredStudies.length === 0 ? (
+          <div className="flex min-h-[400px] items-center justify-center">
+            <div className="text-center">
+              <p className="text-muted-foreground text-lg">
+                No studies match your search. Try a different query.
+              </p>
+            </div>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            {studies.map((study) => (
-              <StudyCard
-                key={study._id}
-                study={study}
-                onDelete={handleDelete}
-              />
-            ))}
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              {paginatedStudies.map((study) => (
+                <StudyCard
+                  key={study._id}
+                  study={study}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+            
+            {totalPages > 1 && (
+              <div className="flex justify-center pt-4">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            )}
           </div>
         )}
       </div>

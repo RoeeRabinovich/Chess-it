@@ -101,15 +101,18 @@ export const ChessControls = ({
             >
               <Undo className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onReset}
-              aria-label="Reset study"
-              className="h-8 w-8 sm:h-9 sm:w-9"
-            >
-              <ResetIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-            </Button>
+            {/* Hide reset button in CreateStudy page */}
+            {!onCreateStudy && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onReset}
+                aria-label="Reset study"
+                className="h-8 w-8 sm:h-9 sm:w-9"
+              >
+                <ResetIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="icon"
