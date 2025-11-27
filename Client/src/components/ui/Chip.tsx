@@ -28,7 +28,7 @@ export const Chip = ({
   return (
     <Badge
       className={cn(
-        "bg-pastel-mint text-foreground border-transparent gap-1.5 pr-1.5 px-3 py-1 text-sm",
+        "bg-pastel-mint text-foreground dark:!text-[#1A1A1A] border-transparent gap-1.5 pr-1.5 px-3 py-1 text-sm",
         removable && "cursor-pointer",
         className
       )}

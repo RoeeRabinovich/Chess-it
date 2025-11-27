@@ -271,7 +271,7 @@ export const Profile = () => {
                             !!usernameError || usernameValue === user.username
                           }
                           size="sm"
-                          className="bg-pastel-mint text-foreground hover:bg-pastel-mint/80 mt-0"
+                          className="bg-pastel-mint text-foreground hover:bg-pastel-mint/80 mt-0 dark:!text-[#1A1A1A]"
                         >
                           Submit
                         </Button>
@@ -412,7 +412,7 @@ export const Profile = () => {
             <Button
               onClick={handleConfirmUsernameChange}
               disabled={isSubmitting}
-              className="bg-pastel-mint text-foreground hover:bg-pastel-mint/80"
+              className="bg-pastel-mint text-foreground hover:bg-pastel-mint/80 dark:!text-[#1A1A1A]"
             >
               {isSubmitting ? "Changing..." : "Change Username"}
             </Button>

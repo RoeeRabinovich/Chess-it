@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Crown } from "../icons/Crown.icon";
 import { Button } from "../ui/Button";
 import {
@@ -13,9 +13,11 @@ import { Menu } from "../icons/Menu.icon";
 import { ThemeToggle } from "../ui/ThemeToggle";
 import { useAuth } from "../../hooks/useAuth";
 import { Logout } from "../icons/Logout.icon";
+import { cn } from "../../lib/utils";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, logout } = useAuth();
 
@@ -59,15 +61,23 @@ const Navbar = () => {
           {/* Desktop Navigation */}
 
           <div className="hidden items-center gap-12 md:flex">
-            {navLinks.map((link) => (
-              <button
-                key={link.name}
-                onClick={() => navigate(link.path)}
-                className="text-muted-foreground hover:text-pastel-mint cursor-pointer text-sm font-medium tracking-wide transition-colors duration-200"
-              >
-                {link.name}
-              </button>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = location.pathname === link.path;
+              return (
+                <button
+                  key={link.name}
+                  onClick={() => navigate(link.path)}
+                  className={cn(
+                    "cursor-pointer text-sm font-medium tracking-wide transition-colors duration-200",
+                    isActive
+                      ? "text-pastel-mint"
+                      : "text-muted-foreground hover:text-pastel-mint",
+                  )}
+                >
+                  {link.name}
+                </button>
+              );
+            })}
           </div>
 
           {/* Desktop CTA */}
@@ -77,7 +87,12 @@ const Navbar = () => {
               <>
                 <button
                   onClick={() => navigate("/profile")}
-                  className="text-muted-foreground hover:text-pastel-mint cursor-pointer text-sm transition-colors"
+                  className={cn(
+                    "cursor-pointer text-sm transition-colors",
+                    location.pathname === "/profile"
+                      ? "text-pastel-mint"
+                      : "text-muted-foreground hover:text-pastel-mint",
+                  )}
                 >
                   Hi, {user.username}
                 </button>
@@ -100,7 +115,7 @@ const Navbar = () => {
                   Sign In
                 </Button>
                 <Button
-                  className="bg-pastel-mint text-foreground hover:bg-pastel-mint/80 text-sm transition-colors dark:!text-black"
+                  className="bg-pastel-mint text-foreground hover:bg-pastel-mint/80 text-sm transition-colors dark:!text-[#1A1A1A]"
                   onClick={() => navigate("/register")}
                 >
                   Get Started

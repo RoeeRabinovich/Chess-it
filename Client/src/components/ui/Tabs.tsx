@@ -99,7 +99,7 @@ export const Tab = ({ id, children, className, disabled }: TabProps) => {
       className={cn(
         "text-muted-foreground hover:text-foreground border-b-2 border-transparent px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
         isActive &&
-          "text-foreground border-primary",
+          "text-pastel-mint border-primary",
         className
       )}
     >
