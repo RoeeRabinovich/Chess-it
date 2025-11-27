@@ -13,6 +13,10 @@ interface PasswordRequirementsProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
+  id?: string;
+  autoComplete?: string;
+  "aria-invalid"?: string;
+  "aria-describedby"?: string;
 }
 
 const PasswordRequirements = ({
@@ -21,6 +25,10 @@ const PasswordRequirements = ({
   open,
   onOpenChange,
   children,
+  id,
+  autoComplete,
+  "aria-invalid": ariaInvalid,
+  "aria-describedby": ariaDescribedBy,
 }: PasswordRequirementsProps) => {
   const requirements: PasswordRequirement[] = [
     {
@@ -53,7 +61,16 @@ const PasswordRequirements = ({
 
   return (
     <Popover.Root open={open} onOpenChange={onOpenChange}>
-      <Popover.Trigger asChild>{children}</Popover.Trigger>
+      <Popover.Trigger asChild>
+        {React.isValidElement(children)
+          ? React.cloneElement(children, {
+              id,
+              autoComplete,
+              "aria-invalid": ariaInvalid,
+              "aria-describedby": ariaDescribedBy,
+            } as React.HTMLAttributes<HTMLElement>)
+          : children}
+      </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
           className={cn(
@@ -64,6 +81,9 @@ const PasswordRequirements = ({
           )}
           side="left"
           sideOffset={5}
+          onOpenAutoFocus={(e) => e.preventDefault()}
+          onCloseAutoFocus={(e) => e.preventDefault()}
+          tabIndex={-1}
         >
           <div className="space-y-2">
             <h4 className="font-minecraft text-foreground text-sm font-medium">

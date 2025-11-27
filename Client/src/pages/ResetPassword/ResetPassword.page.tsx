@@ -10,6 +10,7 @@ import {
 } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
+import { FormField } from "../../components/ui/FormField";
 import { useToast } from "../../hooks/useToast";
 import { Crown } from "../../components/icons/Crown.icon";
 import { resetPasswordSchema } from "../../validations/resetPassword.joi";
@@ -173,29 +174,31 @@ const ResetPassword = () => {
             className="space-y-4"
             noValidate
           >
-            <Input
+            <FormField
               label="New Password"
-              id="password"
-              type="password"
-              {...register("password")}
               error={errors.password?.message}
               required
-              placeholder="Enter your new password"
-              aria-describedby={errors.password ? "password-error" : undefined}
-            />
+              autocomplete="new-password"
+            >
+              <Input
+                type="password"
+                {...register("password")}
+                placeholder="Enter your new password"
+              />
+            </FormField>
 
-            <Input
+            <FormField
               label="Confirm Password"
-              id="confirmPassword"
-              type="password"
-              {...register("confirmPassword")}
               error={errors.confirmPassword?.message}
               required
-              placeholder="Confirm your new password"
-              aria-describedby={
-                errors.confirmPassword ? "confirmPassword-error" : undefined
-              }
-            />
+              autocomplete="new-password"
+            >
+              <Input
+                type="password"
+                {...register("confirmPassword")}
+                placeholder="Confirm your new password"
+              />
+            </FormField>
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? "Resetting..." : "Reset Password"}

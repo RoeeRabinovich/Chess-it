@@ -88,6 +88,7 @@ const Register = () => {
               label="Username"
               error={errors.username?.message}
               required
+              autocomplete="username"
             >
               <Input
                 {...register("username")}
@@ -99,6 +100,7 @@ const Register = () => {
               label="Email"
               error={errors.email?.message}
               required
+              autocomplete="email"
             >
               <Input
                 type="email"
@@ -111,6 +113,7 @@ const Register = () => {
               label="Password"
               error={errors.password?.message}
               required
+              autocomplete="new-password"
             >
               <PasswordRequirements
                 password={password || ""}
@@ -132,6 +135,7 @@ const Register = () => {
               label="Confirm Password"
               error={errors.confirmPassword?.message}
               required
+              autocomplete="new-password"
             >
               <Input
                 type="password"

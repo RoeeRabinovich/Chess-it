@@ -9,6 +9,7 @@ import {
 } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
+import { FormField } from "../../components/ui/FormField";
 import { useToast } from "../../hooks/useToast";
 import { Crown } from "../../components/icons/Crown.icon";
 import { forgotPasswordSchema } from "../../validations/forgotPassword.joi";
@@ -75,16 +76,18 @@ const ForgotPassword = () => {
             className="space-y-4"
             noValidate
           >
-            <Input
+            <FormField
               label="Email"
-              id="email"
-              type="email"
-              {...register("email")}
               error={errors.email?.message}
               required
-              placeholder="Enter your email"
-              aria-describedby={errors.email ? "email-error" : undefined}
-            />
+              autocomplete="email"
+            >
+              <Input
+                type="email"
+                {...register("email")}
+                placeholder="Enter your email"
+              />
+            </FormField>
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? "Sending..." : "Send Reset Link"}

@@ -16,6 +16,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     ref,
   ) => {
     const generatedId = React.useId();
+    // Always use provided id if available, otherwise generate one
     const inputId = id || generatedId;
     const errorId = `${inputId}-error`;
     const descriptionId = `${inputId}-description`;
@@ -54,13 +55,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               className,
             )}
             ref={ref}
-            id={inputId}
             aria-invalid={error ? "true" : "false"}
             aria-describedby={cn(
               error && errorId,
               description && descriptionId,
             )}
             {...props}
+            // id from props takes precedence (set after spread so FormField's id is used)
+            id={props.id || inputId}
           />
         </div>
         {description && !error && (

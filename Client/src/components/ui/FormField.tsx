@@ -35,11 +35,25 @@ export interface FormFieldProps {
    * HTML id for the label (for accessibility)
    */
   labelId?: string;
+  /**
+   * Autocomplete attribute value (e.g., "email", "password", "username")
+   */
+  autocomplete?: string;
 }
 
 export const FormField = React.forwardRef<HTMLDivElement, FormFieldProps>(
   (
-    { label, error, required = false, hint, children, id, className, labelId },
+    {
+      label,
+      error,
+      required = false,
+      hint,
+      children,
+      id,
+      className,
+      labelId,
+      autocomplete,
+    },
     ref,
   ) => {
     const generatedId = React.useId();
@@ -49,17 +63,23 @@ export const FormField = React.forwardRef<HTMLDivElement, FormFieldProps>(
     const labelIdFinal = labelId || `${fieldId}-label`;
 
     // Clone children to pass id and aria attributes
+    // For components that use asChild (like PasswordRequirements), the ID will be passed through
     const childrenWithProps = React.Children.map(children, (child) => {
       if (React.isValidElement(child)) {
         const existingProps = child.props as Record<string, unknown>;
         const existingAriaDescribedBy = existingProps["aria-describedby"] as
           | string
           | undefined;
+        const existingAutocomplete = existingProps.autoComplete as
+          | string
+          | undefined;
 
-        // Merge props: existing props first, then our additions (so existing props take precedence)
+        // Clone with ID and other attributes
+        // Components using asChild (like Popover.Trigger) will pass these props to their children
         return React.cloneElement(child, {
           ...existingProps,
-          id: (existingProps.id as string) || fieldId, // Only set id if not already provided
+          id: fieldId,
+          autoComplete: existingAutocomplete || autocomplete,
           "aria-invalid": error ? "true" : "false",
           "aria-describedby": cn(
             existingAriaDescribedBy,

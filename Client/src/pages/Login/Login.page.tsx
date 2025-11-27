@@ -149,6 +149,7 @@ const Login = () => {
               label="Email"
               error={errors.email?.message}
               required
+              autocomplete="email"
             >
               <Input
                 type="email"
@@ -161,6 +162,7 @@ const Login = () => {
               label="Password"
               error={errors.password?.message}
               required
+              autocomplete="current-password"
             >
               <Input
                 type="password"
