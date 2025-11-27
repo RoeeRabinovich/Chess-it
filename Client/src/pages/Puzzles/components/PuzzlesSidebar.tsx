@@ -3,6 +3,7 @@ import { usePuzzleTimer } from "../../../hooks/usePuzzleTimer";
 import { ThemeSelector } from "./ThemeSelector";
 import { Button } from "../../../components/ui/Button";
 import { RatingAnimation } from "../../../components/ui/RatingAnimation";
+import { Badge } from "../../../components/ui/Badge";
 
 interface PuzzlesSidebarProps {
   // Timer state
@@ -191,11 +192,18 @@ export const PuzzlesSidebar = ({
                     </p>
                   )}
                   {puzzleThemes.length > 0 && (
-                    <p className="text-muted-foreground">
-                      <span className="font-semibold">Themes:</span>{" "}
-                      {puzzleThemes.slice(0, 2).join(", ")}
-                      {puzzleThemes.length > 2 && "..."}
-                    </p>
+                    <div className="space-y-1">
+                      <p className="text-muted-foreground text-xs font-semibold">
+                        Themes:
+                      </p>
+                      <div className="flex flex-wrap gap-1">
+                        {puzzleThemes.map((theme) => (
+                          <Badge key={theme} variant="outline" size="sm">
+                            {theme}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </div>
               )}

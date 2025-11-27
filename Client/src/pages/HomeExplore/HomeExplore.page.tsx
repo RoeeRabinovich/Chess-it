@@ -14,7 +14,12 @@ export const HomeExplore = () => {
     <div className="bg-background min-h-screen pt-16 sm:pt-20 md:pt-24">
       <div className="container mx-auto max-w-7xl px-4 py-8 md:px-6">
         {/* Header with Search Bar */}
-        <HomeExploreHeader gameAspect={selectedAspect} />
+        <HomeExploreHeader
+          gameAspect={selectedAspect}
+          selectedFilter={selectedFilter}
+          onAspectClear={() => setSelectedAspect("All")}
+          onFilterClear={() => setSelectedFilter("All")}
+        />
 
         {/* Mobile: Show Filters Button */}
         <div className="mb-6 lg:hidden">

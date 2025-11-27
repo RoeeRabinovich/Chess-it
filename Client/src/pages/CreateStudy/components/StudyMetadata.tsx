@@ -1,3 +1,5 @@
+import { Badge } from "../../../components/ui/Badge";
+
 interface StudyMetadataProps {
   studyName?: string;
   studyCategory?: string;
@@ -28,9 +30,9 @@ export const StudyMetadata = ({
       )}
       {studyCategory && (
         <div>
-          <span className="bg-accent text-foreground font-minecraft inline-block rounded px-2 py-1 text-xs">
+          <Badge variant="outline" size="sm">
             {studyCategory}
-          </span>
+          </Badge>
         </div>
       )}
       {studyDescription && (

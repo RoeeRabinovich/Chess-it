@@ -16,9 +16,12 @@ import { Input } from "../../components/ui/Input";
 import { FormField } from "../../components/ui/FormField";
 import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
 import { Edit } from "../../components/icons/Edit.icon";
+import { Loading } from "../../components/icons/Loading.icon";
 import { Modal } from "../../components/ui/Modal";
 import { Avatar } from "../../components/ui/Avatar";
 import { Tabs, TabsList, Tab, TabContent } from "../../components/ui/Tabs";
+import { Badge } from "../../components/ui/Badge";
+import { useToast } from "../../hooks/useToast";
 import Joi from "joi";
 
 const usernameSchema = Joi.string().min(3).max(30).required().messages({
@@ -30,6 +33,7 @@ const usernameSchema = Joi.string().min(3).max(30).required().messages({
 export const Profile = () => {
   const { user: authUser } = useAuth();
   const dispatch = useAppDispatch();
+  const { toast } = useToast();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,6 +42,8 @@ export const Profile = () => {
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRequestingPasswordReset, setIsRequestingPasswordReset] =
+    useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -144,6 +150,33 @@ export const Profile = () => {
     }
   };
 
+  const handleResetPassword = async () => {
+    if (!user?.email) return;
+
+    setIsRequestingPasswordReset(true);
+    try {
+      await apiService.forgotPassword(user.email);
+      toast({
+        title: "Reset link sent",
+        description:
+          "A password reset link has been sent to your email address.",
+        variant: "success",
+      });
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to send reset email. Please try again.";
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsRequestingPasswordReset(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="bg-background min-h-screen pt-16 sm:pt-20 md:pt-24">
@@ -196,9 +229,6 @@ export const Profile = () => {
             <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle>Profile Information</CardTitle>
-                <CardDescription>
-                  Your account details and preferences
-                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Profile Avatar */}
@@ -208,18 +238,23 @@ export const Profile = () => {
                     <h2 className="text-foreground text-2xl font-semibold">
                       {user.username}
                     </h2>
-                    <p className="text-muted-foreground text-sm">{user.email}</p>
+                    <p className="text-muted-foreground text-sm">
+                      {user.email}
+                    </p>
                   </div>
                 </div>
 
                 {/* User Details */}
                 <div className="border-border grid gap-4 border-t pt-6 md:grid-cols-2">
                   <div>
+                    <label className="text-muted-foreground text-sm font-medium">
+                      Username
+                    </label>
                     {isEditingUsername ? (
-                      <div className="flex items-start gap-2">
+                      <div className="mt-1 flex items-start gap-2">
                         <div className="flex-1">
                           <FormField
-                            label="Username"
+                            label=""
                             error={usernameError || undefined}
                           >
                             <Input
@@ -256,7 +291,7 @@ export const Profile = () => {
                         </p>
                         <button
                           onClick={handleEditUsername}
-                          className="text-muted-foreground hover:text-foreground opacity-0 transition-opacity group-hover:opacity-100"
+                          className="text-muted-foreground hover:text-foreground transition-colors"
                           aria-label="Edit username"
                         >
                           <Edit className="h-4 w-4" />
@@ -269,7 +304,9 @@ export const Profile = () => {
                     <label className="text-muted-foreground text-sm font-medium">
                       Email
                     </label>
-                    <p className="text-foreground mt-1 text-base">{user.email}</p>
+                    <p className="text-foreground mt-1 text-base">
+                      {user.email}
+                    </p>
                   </div>
 
                   <div>
@@ -295,11 +332,37 @@ export const Profile = () => {
                       <label className="text-muted-foreground text-sm font-medium">
                         Role
                       </label>
-                      <p className="text-foreground mt-1 text-base capitalize">
-                        {user.role}
-                      </p>
+                      <div className="mt-1">
+                        <Badge
+                          variant={
+                            user.role === "admin" ? "destructive" : "secondary"
+                          }
+                          size="sm"
+                        >
+                          {user.role.charAt(0).toUpperCase() +
+                            user.role.slice(1)}
+                        </Badge>
+                      </div>
                     </div>
                   )}
+                </div>
+
+                {/* Reset Password Button */}
+                <div className="border-border border-t pt-4">
+                  <Button
+                    onClick={handleResetPassword}
+                    disabled={isRequestingPasswordReset}
+                    variant="outline"
+                  >
+                    {isRequestingPasswordReset ? (
+                      <>
+                        <Loading className="mr-2 h-4 w-4 animate-spin" />
+                        Sending reset link...
+                      </>
+                    ) : (
+                      "Reset Password"
+                    )}
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -309,7 +372,9 @@ export const Profile = () => {
             <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle>Statistics</CardTitle>
-                <CardDescription>Your activity and achievements</CardDescription>
+                <CardDescription>
+                  Your activity and achievements
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-muted-foreground py-8 text-center text-sm">

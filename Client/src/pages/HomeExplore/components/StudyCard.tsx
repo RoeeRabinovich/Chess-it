@@ -4,6 +4,7 @@ import { Card, CardContent, CardTitle } from "../../../components/ui/Card";
 import ChessBoard from "../../../components/ChessBoard/ChessBoard";
 import { Button } from "../../../components/ui/Button";
 import { Trash } from "../../../components/icons/Trash.icon";
+import { Badge } from "../../../components/ui/Badge";
 
 interface StudyCardProps {
   study: PublicStudy;
@@ -97,10 +98,24 @@ export const StudyCard = ({ study, onDelete }: StudyCardProps) => {
             <CardTitle className="text-foreground font-minecraft text-lg">
               {study.studyName}
             </CardTitle>
-            <div className="flex flex-wrap items-center gap-2 text-xs">
-              <span className="bg-accent text-foreground font-minecraft rounded px-2 py-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="outline" size="sm">
                 {study.category}
-              </span>
+              </Badge>
+              {(study as PublicStudy & { isPublic?: boolean }).isPublic !== undefined && (
+                <Badge
+                  variant={
+                    (study as PublicStudy & { isPublic?: boolean }).isPublic
+                      ? "default"
+                      : "secondary"
+                  }
+                  size="sm"
+                >
+                  {(study as PublicStudy & { isPublic?: boolean }).isPublic
+                    ? "Public"
+                    : "Private"}
+                </Badge>
+              )}
             </div>
             {truncatedDescription && (
               <p className="text-muted-foreground line-clamp-2 text-sm">
