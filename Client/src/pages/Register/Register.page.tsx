@@ -10,6 +10,7 @@ import {
 } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
+import { FormField } from "../../components/ui/FormField";
 import { PasswordRequirements } from "../../components/ui/PasswordRequirements";
 import { useToast } from "../../hooks/useToast";
 
@@ -83,61 +84,61 @@ const Register = () => {
             className="space-y-4"
             noValidate
           >
-            <Input
+            <FormField
               label="Username"
-              id="username"
-              {...register("username")}
               error={errors.username?.message}
               required
-              placeholder="Enter your username"
-              aria-describedby={errors.username ? "username-error" : undefined}
-            />
-
-            <Input
-              label="Email"
-              id="email"
-              type="email"
-              {...register("email")}
-              error={errors.email?.message}
-              required
-              placeholder="Enter your email"
-              aria-describedby={errors.email ? "email-error" : undefined}
-            />
-
-            <PasswordRequirements
-              password={password || ""}
-              confirmPassword={confirmPassword || ""}
-              open={showPasswordRequirements}
-              onOpenChange={setShowPasswordRequirements}
             >
               <Input
-                label="Password"
-                id="password"
-                type="password"
-                {...register("password")}
-                onFocus={() => setShowPasswordRequirements(true)}
-                onBlur={() => setShowPasswordRequirements(false)}
-                error={errors.password?.message}
-                required
-                placeholder="Create a strong password"
-                aria-describedby={
-                  errors.password ? "password-error" : "password-requirements"
-                }
+                {...register("username")}
+                placeholder="Enter your username"
               />
-            </PasswordRequirements>
+            </FormField>
 
-            <Input
+            <FormField
+              label="Email"
+              error={errors.email?.message}
+              required
+            >
+              <Input
+                type="email"
+                {...register("email")}
+                placeholder="Enter your email"
+              />
+            </FormField>
+
+            <FormField
+              label="Password"
+              error={errors.password?.message}
+              required
+            >
+              <PasswordRequirements
+                password={password || ""}
+                confirmPassword={confirmPassword || ""}
+                open={showPasswordRequirements}
+                onOpenChange={setShowPasswordRequirements}
+              >
+                <Input
+                  type="password"
+                  {...register("password")}
+                  onFocus={() => setShowPasswordRequirements(true)}
+                  onBlur={() => setShowPasswordRequirements(false)}
+                  placeholder="Create a strong password"
+                />
+              </PasswordRequirements>
+            </FormField>
+
+            <FormField
               label="Confirm Password"
-              id="confirm-password"
-              type="password"
-              {...register("confirmPassword")}
               error={errors.confirmPassword?.message}
               required
-              placeholder="Confirm your password"
-              aria-describedby={
-                errors.confirmPassword ? "confirm-password-error" : undefined
-              }
-            />
+            >
+              <Input
+                type="password"
+                {...register("confirmPassword")}
+                placeholder="Confirm your password"
+              />
+            </FormField>
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? "Creating account..." : "Register"}

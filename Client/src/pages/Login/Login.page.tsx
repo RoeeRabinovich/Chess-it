@@ -9,6 +9,7 @@ import {
 } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
+import { FormField } from "../../components/ui/FormField";
 import { useToast } from "../../hooks/useToast";
 import { useAuth } from "../../hooks/useAuth";
 import { Crown } from "../../components/icons/Crown.icon";
@@ -144,27 +145,29 @@ const Login = () => {
             className="space-y-4"
             noValidate
           >
-            <Input
+            <FormField
               label="Email"
-              id="email"
-              type="email"
-              {...register("email")}
               error={errors.email?.message}
               required
-              placeholder="Enter your email"
-              aria-describedby={errors.email ? "email-error" : undefined}
-            />
+            >
+              <Input
+                type="email"
+                {...register("email")}
+                placeholder="Enter your email"
+              />
+            </FormField>
 
-            <Input
+            <FormField
               label="Password"
-              id="password"
-              type="password"
-              {...register("password")}
               error={errors.password?.message}
               required
-              placeholder="Enter your password"
-              aria-describedby={errors.password ? "password-error" : undefined}
-            />
+            >
+              <Input
+                type="password"
+                {...register("password")}
+                placeholder="Enter your password"
+              />
+            </FormField>
 
             <div className="flex items-center justify-end">
               <Link

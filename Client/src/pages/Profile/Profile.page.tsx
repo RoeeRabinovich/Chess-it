@@ -13,6 +13,7 @@ import {
 } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
+import { FormField } from "../../components/ui/FormField";
 import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
 import { Edit } from "../../components/icons/Edit.icon";
 import { Modal } from "../../components/ui/Modal";
@@ -208,19 +209,20 @@ export const Profile = () => {
               {/* User Details */}
               <div className="border-border grid gap-4 border-t pt-6 md:grid-cols-2">
                 <div>
-                  <label className="text-muted-foreground text-sm font-medium">
-                    Username
-                  </label>
                   {isEditingUsername ? (
-                    <div className="mt-1 flex items-start gap-2">
+                    <div className="flex items-start gap-2">
                       <div className="flex-1">
-                        <Input
-                          value={usernameValue}
-                          onChange={handleUsernameChange}
+                        <FormField
+                          label="Username"
                           error={usernameError || undefined}
-                          className="w-full"
-                          autoFocus
-                        />
+                        >
+                          <Input
+                            value={usernameValue}
+                            onChange={handleUsernameChange}
+                            className="w-full"
+                            autoFocus
+                          />
+                        </FormField>
                       </div>
                       <Button
                         onClick={handleOpenConfirmModal}

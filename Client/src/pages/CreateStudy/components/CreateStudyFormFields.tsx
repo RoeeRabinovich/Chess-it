@@ -1,3 +1,6 @@
+import { FormField } from "../../../components/ui/FormField";
+import { cn } from "../../../lib/utils";
+
 interface CategorySelectProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
@@ -12,24 +15,25 @@ export const CategorySelect = ({
   disabled,
 }: CategorySelectProps) => {
   return (
-    <div className="space-y-2">
-      <label
-        htmlFor="category"
-        className="text-foreground block text-sm font-medium"
-      >
-        Category <span className="text-destructive">*</span>
-      </label>
+    <FormField label="Category" error={error} required>
       <select
-        id="category"
         name="category"
         value={value}
         onChange={onChange}
         disabled={disabled}
-        className={`border-border bg-background focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-sm focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
-          error
-            ? "border-destructive focus:border-destructive focus:ring-destructive"
-            : ""
-        }`}
+        className={cn(
+          "border-input bg-background font-minecraft h-10 w-full rounded-none border-2 border-solid px-3 py-2 text-sm",
+          "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          "shadow-[2px_2px_0px_0px_hsl(var(--foreground))]",
+          "hover:shadow-[3px_3px_0px_0px_hsl(var(--foreground))]",
+          "focus-visible:shadow-[3px_3px_0px_0px_hsl(var(--ring))]",
+          error &&
+            "border-destructive shadow-[2px_2px_0px_0px_hsl(var(--destructive))]",
+          error &&
+            "focus-visible:shadow-[3px_3px_0px_0px_hsl(var(--destructive))]",
+          "transition-all duration-200 ease-in-out",
+        )}
       >
         <option value="">Select a category</option>
         <option value="Opening">Opening</option>
@@ -37,13 +41,7 @@ export const CategorySelect = ({
         <option value="Strategy">Strategy</option>
         <option value="Tactics">Tactics</option>
       </select>
-      {error && (
-        <p className="text-destructive font-minecraft flex items-center gap-1 text-xs">
-          <span className="text-destructive">⚠</span>
-          {error}
-        </p>
-      )}
-    </div>
+    </FormField>
   );
 };
 
@@ -59,24 +57,29 @@ export const DescriptionTextarea = ({
   disabled,
 }: DescriptionTextareaProps) => {
   return (
-    <div className="space-y-2">
-      <label
-        htmlFor="description"
-        className="text-foreground block text-sm font-medium"
-      >
-        Description
-      </label>
+    <FormField
+      label="Description"
+      hint="Optional description for your study"
+    >
       <textarea
-        id="description"
         name="description"
         value={value}
         onChange={onChange}
         disabled={disabled}
         rows={3}
         placeholder="Optional description for your study..."
-        className="border-border bg-background placeholder:text-muted-foreground focus:ring-primary w-full resize-none rounded-md border px-3 py-2 text-sm focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+        className={cn(
+          "border-input bg-background font-minecraft w-full resize-none rounded-none border-2 border-solid px-3 py-2 text-sm",
+          "placeholder:text-muted-foreground",
+          "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          "shadow-[2px_2px_0px_0px_hsl(var(--foreground))]",
+          "hover:shadow-[3px_3px_0px_0px_hsl(var(--foreground))]",
+          "focus-visible:shadow-[3px_3px_0px_0px_hsl(var(--ring))]",
+          "transition-all duration-200 ease-in-out",
+        )}
       />
-    </div>
+    </FormField>
   );
 };
 
@@ -94,12 +97,9 @@ export const VisibilityRadio = ({
   disabled,
 }: VisibilityRadioProps) => {
   return (
-    <div className="space-y-2">
-      <label className="text-foreground block text-sm font-medium">
-        Visibility <span className="text-destructive">*</span>
-      </label>
+    <FormField label="Visibility" error={error} required>
       <div className="flex gap-4">
-        <label className="flex items-center gap-2">
+        <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="radio"
             name="isPublic"
@@ -108,9 +108,9 @@ export const VisibilityRadio = ({
             disabled={disabled}
             className="h-4 w-4 cursor-pointer disabled:cursor-not-allowed"
           />
-          <span className="text-sm">Public</span>
+          <span className="text-sm font-minecraft">Public</span>
         </label>
-        <label className="flex items-center gap-2">
+        <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="radio"
             name="isPublic"
@@ -119,15 +119,9 @@ export const VisibilityRadio = ({
             disabled={disabled}
             className="h-4 w-4 cursor-pointer disabled:cursor-not-allowed"
           />
-          <span className="text-sm">Private</span>
+          <span className="text-sm font-minecraft">Private</span>
         </label>
       </div>
-      {error && (
-        <p className="text-destructive font-minecraft flex items-center gap-1 text-xs">
-          <span className="text-destructive">⚠</span>
-          {error}
-        </p>
-      )}
-    </div>
+    </FormField>
   );
 };

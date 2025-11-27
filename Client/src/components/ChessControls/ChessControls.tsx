@@ -127,12 +127,14 @@ export const ChessControls = ({
             {onCreateStudy && (
               <Button
                 variant="ghost"
-                size="icon"
                 onClick={onCreateStudy}
                 aria-label="Create Study"
-                className="h-8 w-8 sm:h-9 sm:w-9"
+                className="bg-secondary h-8 gap-1.5 px-2 sm:h-9 sm:px-3"
               >
                 <Book className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span className="hidden text-xs sm:inline sm:text-sm">
+                  Create Study
+                </span>
               </Button>
             )}
             <Button

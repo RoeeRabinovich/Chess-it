@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "../../../components/ui/Button";
 import { Input } from "../../../components/ui/Input";
+import { FormField } from "../../../components/ui/FormField";
 import { Modal } from "../../../components/ui/Modal";
 import { createStudySchema } from "../../../validations/createStudy.joi";
 import { ChessGameState } from "../../../types/chess";
@@ -158,17 +159,19 @@ export const CreateStudyModal = ({
       closeButtonDisabled={isSubmitting}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <Input
+        <FormField
           label="Study Name"
-          name="studyName"
-          id="studyName"
-          value={formData.studyName}
-          onChange={handleChange}
           error={errors.studyName}
           required
-          placeholder="Enter study name"
-          disabled={isSubmitting}
-        />
+        >
+          <Input
+            name="studyName"
+            value={formData.studyName}
+            onChange={handleChange}
+            placeholder="Enter study name"
+            disabled={isSubmitting}
+          />
+        </FormField>
 
         <CategorySelect
           value={formData.category}
