@@ -1,5 +1,5 @@
 import { GameAspect } from "../../../types/study";
-import { Input } from "../../../components/ui/Input";
+import { SearchInput } from "../../../components/ui/SearchInput";
 import { Button } from "../../../components/ui/Button";
 import { useAppSelector, useAppDispatch } from "../../../store/hooks";
 import { setSearchQuery } from "../../../store/searchSlice";
@@ -22,8 +22,8 @@ export const HomeExploreHeader = ({ gameAspect }: HomeExploreHeaderProps) => {
     return `Chess ${gameAspect}`;
   };
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setSearchQuery(e.target.value));
+  const handleSearchChange = (value: string) => {
+    dispatch(setSearchQuery(value));
   };
 
   const handleArchiveToggle = () => {
@@ -36,12 +36,13 @@ export const HomeExploreHeader = ({ gameAspect }: HomeExploreHeaderProps) => {
         {getHeaderTitle()}
       </h1>
       <div className="flex max-w-md items-center gap-2">
-        <Input
-          type="search"
+        <SearchInput
           placeholder="Search a Study"
           className="flex-1"
           value={searchQuery}
           onChange={handleSearchChange}
+          showClearButton
+          showSearchIcon={false}
         />
         <Button
           variant={isArchiveActive ? "default" : "outline"}
