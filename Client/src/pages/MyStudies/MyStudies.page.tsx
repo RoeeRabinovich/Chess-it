@@ -12,6 +12,7 @@ import { SearchInput } from "../../components/ui/SearchInput";
 import { Pagination } from "../../components/ui/Pagination";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { Book } from "../../components/icons/Book.icon";
+import { Tabs, TabsList, Tab } from "../../components/ui/Tabs";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -27,6 +28,9 @@ export const MyStudies = () => {
     name: string;
   } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [activeTab, setActiveTab] = useState<"all" | "public" | "private">(
+    "all",
+  );
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -56,19 +60,38 @@ export const MyStudies = () => {
     fetchStudies();
   }, [fetchStudies]);
 
-  // Filter studies based on search query
+  // Filter studies based on tab (public/private) and search query
   const filteredStudies = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return studies;
+    let result = studies;
+
+    // Filter by tab (public/private)
+    // Note: getUserStudies returns studies with isPublic field, but PublicStudy type doesn't include it
+    if (activeTab === "public") {
+      result = result.filter(
+        (study) =>
+          (study as PublicStudy & { isPublic?: boolean }).isPublic === true,
+      );
+    } else if (activeTab === "private") {
+      result = result.filter(
+        (study) =>
+          (study as PublicStudy & { isPublic?: boolean }).isPublic === false,
+      );
     }
-    const query = searchQuery.toLowerCase().trim();
-    return studies.filter(
-      (study) =>
-        study.studyName.toLowerCase().includes(query) ||
-        study.description.toLowerCase().includes(query) ||
-        study.category.toLowerCase().includes(query),
-    );
-  }, [studies, searchQuery]);
+    // "all" tab shows all studies, no filtering needed
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      result = result.filter(
+        (study) =>
+          study.studyName.toLowerCase().includes(query) ||
+          study.description.toLowerCase().includes(query) ||
+          study.category.toLowerCase().includes(query),
+      );
+    }
+
+    return result;
+  }, [studies, activeTab, searchQuery]);
 
   // Calculate pagination
   const totalPages = Math.max(
@@ -81,10 +104,10 @@ export const MyStudies = () => {
     return filteredStudies.slice(startIndex, endIndex);
   }, [filteredStudies, currentPage]);
 
-  // Reset to page 1 when search changes
+  // Reset to page 1 when search or tab changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery]);
+  }, [searchQuery, activeTab]);
 
   const handleDelete = (studyId: string) => {
     // Find the study to get its name for confirmation
@@ -176,6 +199,22 @@ export const MyStudies = () => {
           )}
         </div>
 
+        {/* Tabs */}
+        {studies.length > 0 && (
+          <Tabs
+            value={activeTab}
+            onTabChange={(tabId) =>
+              setActiveTab(tabId as "all" | "public" | "private")
+            }
+          >
+            <TabsList>
+              <Tab id="all">All Studies</Tab>
+              <Tab id="public">Public</Tab>
+              <Tab id="private">Private</Tab>
+            </TabsList>
+          </Tabs>
+        )}
+
         {/* Search Input */}
         {studies.length > 0 && (
           <div className="mb-6">
@@ -207,7 +246,13 @@ export const MyStudies = () => {
           <EmptyState
             variant="search"
             title="No results found"
-            description="No studies match your search. Try a different query."
+            description={
+              activeTab === "all"
+                ? "No studies match your search. Try a different query."
+                : activeTab === "public"
+                  ? "You don't have any public studies matching your search."
+                  : "You don't have any private studies matching your search."
+            }
             action={
               <Button onClick={() => setSearchQuery("")} variant="outline">
                 Clear Search
