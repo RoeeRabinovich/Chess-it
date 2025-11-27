@@ -107,7 +107,7 @@ const ResetPassword = () => {
 
   if (isTokenValid === null) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-green-50 to-emerald-100 px-4">
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
             <LoadingSpinner
@@ -123,7 +123,7 @@ const ResetPassword = () => {
 
   if (isTokenValid === false) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-green-50 to-emerald-100 px-4">
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="mb-4 flex justify-center">

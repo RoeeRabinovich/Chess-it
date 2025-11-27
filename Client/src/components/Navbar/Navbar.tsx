@@ -100,7 +100,7 @@ const Navbar = () => {
                   Sign In
                 </Button>
                 <Button
-                  className="bg-pastel-mint text-foreground hover:bg-pastel-mint/80 text-sm transition-colors"
+                  className="bg-pastel-mint text-foreground hover:bg-pastel-mint/80 text-sm transition-colors dark:!text-black"
                   onClick={() => navigate("/register")}
                 >
                   Get Started

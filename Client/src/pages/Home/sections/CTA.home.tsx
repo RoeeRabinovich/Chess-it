@@ -22,7 +22,7 @@ const CTA = () => {
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button
               size="lg"
-              className="group bg-pastel-mint text-foreground hover:bg-pastel-mint/80"
+              className="group bg-pastel-mint text-foreground hover:bg-pastel-mint/80 dark:!text-black"
               onClick={() => {
                 navigate("/register");
               }}
