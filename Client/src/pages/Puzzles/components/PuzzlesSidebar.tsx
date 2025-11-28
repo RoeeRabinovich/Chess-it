@@ -4,6 +4,7 @@ import { ThemeSelector } from "./ThemeSelector";
 import { Button } from "../../../components/ui/Button";
 import { RatingAnimation } from "../../../components/ui/RatingAnimation";
 import { Badge } from "../../../components/ui/Badge";
+import { Tooltip } from "../../../components/ui/Tooltip";
 
 interface PuzzlesSidebarProps {
   // Timer state
@@ -103,16 +104,23 @@ export const PuzzlesSidebar = ({
         </div>
         <div className="mb-3">
           <div className="px-2">
-            {ratingChange !== null && ratingChange !== undefined ? (
-              <RatingAnimation
-                startValue={userRating - ratingChange}
-                change={ratingChange}
-                duration={1000}
-              />
-            ) : (
-              <div className="text-xl font-bold">{userRating}</div>
-            )}
-            <p className="text-muted-foreground text-xs">Your rating</p>
+            <Tooltip
+              content="Your puzzle solving rating. Improve by solving puzzles correctly!"
+              side="right"
+            >
+              <div>
+                {ratingChange !== null && ratingChange !== undefined ? (
+                  <RatingAnimation
+                    startValue={userRating - ratingChange}
+                    change={ratingChange}
+                    duration={1000}
+                  />
+                ) : (
+                  <div className="text-xl font-bold">{userRating}</div>
+                )}
+                <p className="text-muted-foreground text-xs">Your rating</p>
+              </div>
+            </Tooltip>
           </div>
         </div>
         {initialTurn && (
@@ -186,10 +194,15 @@ export const PuzzlesSidebar = ({
                     {formatTime(timeTaken)}
                   </p>
                   {puzzleRating !== undefined && (
-                    <p className="text-muted-foreground">
-                      <span className="font-semibold">Rating:</span>{" "}
-                      {puzzleRating}
-                    </p>
+                    <Tooltip
+                      content="Difficulty rating. Higher = harder puzzle"
+                      side="right"
+                    >
+                      <p className="text-muted-foreground cursor-default">
+                        <span className="font-semibold">Rating:</span>{" "}
+                        {puzzleRating}
+                      </p>
+                    </Tooltip>
                   )}
                   {puzzleThemes.length > 0 && (
                     <div className="space-y-1">
@@ -198,9 +211,15 @@ export const PuzzlesSidebar = ({
                       </p>
                       <div className="flex flex-wrap gap-1">
                         {puzzleThemes.map((theme) => (
-                          <Badge key={theme} variant="outline" size="sm">
-                            {theme}
-                          </Badge>
+                          <Tooltip
+                            key={theme}
+                            content={`This puzzle demonstrates ${theme.toLowerCase()} tactics`}
+                            side="top"
+                          >
+                            <Badge variant="outline" size="sm">
+                              {theme}
+                            </Badge>
+                          </Tooltip>
                         ))}
                       </div>
                     </div>

@@ -5,6 +5,7 @@ import ChessBoard from "../../../components/ChessBoard/ChessBoard";
 import { Button } from "../../../components/ui/Button";
 import { Trash } from "../../../components/icons/Trash.icon";
 import { Badge } from "../../../components/ui/Badge";
+import { Tooltip } from "../../../components/ui/Tooltip";
 
 interface StudyCardProps {
   study: PublicStudy;
@@ -72,15 +73,17 @@ export const StudyCard = ({ study, onDelete }: StudyCardProps) => {
       onClick={handleClick}
     >
       {onDelete && (
-        <Button
-          variant="destructive"
-          size="icon"
-          onClick={handleDelete}
-          className="absolute right-2 top-2 z-10 h-8 w-8"
-          aria-label="Delete study"
-        >
-          <Trash className="h-4 w-4" />
-        </Button>
+        <Tooltip content="Delete study" side="left" triggerClassName="absolute right-2 top-2 z-10">
+          <Button
+            variant="destructive"
+            size="icon"
+            onClick={handleDelete}
+            className="h-8 w-8"
+            aria-label="Delete study"
+          >
+            <Trash className="h-4 w-4" />
+          </Button>
+        </Tooltip>
       )}
       <CardContent className="flex flex-col gap-3 p-3 sm:flex-row sm:items-stretch">
         <div className="flex flex-shrink-0 justify-center sm:w-auto">
@@ -99,22 +102,36 @@ export const StudyCard = ({ study, onDelete }: StudyCardProps) => {
               {study.studyName}
             </CardTitle>
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="outline" size="sm">
-                {study.category}
-              </Badge>
-              {(study as PublicStudy & { isPublic?: boolean }).isPublic !== undefined && (
-                <Badge
-                  variant={
-                    (study as PublicStudy & { isPublic?: boolean }).isPublic
-                      ? "default"
-                      : "secondary"
-                  }
-                  size="sm"
-                >
-                  {(study as PublicStudy & { isPublic?: boolean }).isPublic
-                    ? "Public"
-                    : "Private"}
+              <Tooltip
+                content={`${study.category} studies focus on ${study.category.toLowerCase()} concepts`}
+                side="top"
+              >
+                <Badge variant="outline" size="sm">
+                  {study.category}
                 </Badge>
+              </Tooltip>
+              {(study as PublicStudy & { isPublic?: boolean }).isPublic !== undefined && (
+                <Tooltip
+                  content={
+                    (study as PublicStudy & { isPublic?: boolean }).isPublic
+                      ? "Visible to everyone"
+                      : "Only visible to you"
+                  }
+                  side="top"
+                >
+                  <Badge
+                    variant={
+                      (study as PublicStudy & { isPublic?: boolean }).isPublic
+                        ? "default"
+                        : "secondary"
+                    }
+                    size="sm"
+                  >
+                    {(study as PublicStudy & { isPublic?: boolean }).isPublic
+                      ? "Public"
+                      : "Private"}
+                  </Badge>
+                </Tooltip>
               )}
             </div>
             {truncatedDescription && (
@@ -126,10 +143,15 @@ export const StudyCard = ({ study, onDelete }: StudyCardProps) => {
           <div className="text-muted-foreground flex items-center justify-between text-xs">
             <span>by {study.createdBy?.username || "Unknown"}</span>
             <div className="flex items-center gap-3">
-              <span className="flex items-center gap-1">
-                <span>❤️</span>
-                <span>{study.likes}</span>
-              </span>
+              <Tooltip
+                content={`${study.likes} ${study.likes === 1 ? "user likes" : "users like"} this study`}
+                side="top"
+              >
+                <span className="flex items-center gap-1 cursor-default">
+                  <span>❤️</span>
+                  <span>{study.likes}</span>
+                </span>
+              </Tooltip>
               <span>{formattedDate}</span>
             </div>
           </div>

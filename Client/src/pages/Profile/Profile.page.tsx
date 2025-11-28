@@ -21,6 +21,7 @@ import { Modal } from "../../components/ui/Modal";
 import { Avatar } from "../../components/ui/Avatar";
 import { Tabs, TabsList, Tab, TabContent } from "../../components/ui/Tabs";
 import { Badge } from "../../components/ui/Badge";
+import { Tooltip } from "../../components/ui/Tooltip";
 import { useToast } from "../../hooks/useToast";
 import Joi from "joi";
 
@@ -289,13 +290,18 @@ export const Profile = () => {
                         <p className="text-foreground text-base">
                           {user.username}
                         </p>
-                        <button
-                          onClick={handleEditUsername}
-                          className="text-muted-foreground hover:text-foreground transition-colors"
-                          aria-label="Edit username"
+                        <Tooltip
+                          content="Click to edit your username"
+                          side="top"
                         >
-                          <Edit className="h-4 w-4" />
-                        </button>
+                          <button
+                            onClick={handleEditUsername}
+                            className="text-muted-foreground hover:text-foreground transition-colors"
+                            aria-label="Edit username"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                        </Tooltip>
                       </div>
                     )}
                   </div>

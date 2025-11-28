@@ -2,6 +2,7 @@ import { GameAspect } from "../../../types/study";
 import { SearchInput } from "../../../components/ui/SearchInput";
 import { Button } from "../../../components/ui/Button";
 import { Chip } from "../../../components/ui/Chip";
+import { Tooltip } from "../../../components/ui/Tooltip";
 import { useAppSelector, useAppDispatch } from "../../../store/hooks";
 import { setSearchQuery } from "../../../store/searchSlice";
 import { toggleArchive } from "../../../store/archiveSlice";
@@ -54,16 +55,21 @@ export const HomeExploreHeader = ({
             showClearButton
             showSearchIcon={false}
           />
-          <Button
-            variant={isArchiveActive ? "default" : "outline"}
-            size="default"
-            onClick={handleArchiveToggle}
-            className="shrink-0"
-            title="Archive"
+          <Tooltip
+            content={isArchiveActive ? "Show all studies" : "Show only your liked studies"}
+            side="bottom"
           >
-            <Bookmark className="h-4 w-4" />
-            <span className="hidden sm:inline">Archive</span>
-          </Button>
+            <Button
+              variant={isArchiveActive ? "default" : "outline"}
+              size="default"
+              onClick={handleArchiveToggle}
+              className="shrink-0"
+              title="Archive"
+            >
+              <Bookmark className="h-4 w-4" />
+              <span className="hidden sm:inline">Archive</span>
+            </Button>
+          </Tooltip>
         </div>
         {/* Active Filters as Chips */}
         {(gameAspect !== "All" || selectedFilter !== "All") && (
