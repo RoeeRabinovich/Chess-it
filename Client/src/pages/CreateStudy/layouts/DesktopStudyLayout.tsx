@@ -10,6 +10,7 @@ export const DesktopStudyLayout = ({
   makeMove,
   onMoveClick,
   onBranchMoveClick,
+  currentBranchContext,
   isEngineEnabled,
   isAnalyzing,
   formattedEngineLines,
@@ -139,6 +140,7 @@ export const DesktopStudyLayout = ({
             moves={gameState.moves}
             branches={gameState.branches || []}
             currentMoveIndex={gameState.currentMoveIndex}
+            currentBranchContext={currentBranchContext}
             onMoveClick={onMoveClick}
             onBranchMoveClick={onBranchMoveClick}
             opening={opening}

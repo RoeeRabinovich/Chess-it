@@ -17,6 +17,7 @@ export const MobileStudyLayout = ({
   makeMove,
   onMoveClick,
   onBranchMoveClick,
+  currentBranchContext,
   isEngineEnabled,
   isAnalyzing,
   formattedEngineLines,
@@ -192,6 +193,7 @@ export const MobileStudyLayout = ({
             moves={gameState.moves}
             branches={gameState.branches || []}
             currentMoveIndex={gameState.currentMoveIndex}
+            currentBranchContext={currentBranchContext}
             onMoveClick={onMoveClick}
             onBranchMoveClick={onBranchMoveClick}
             opening={opening}

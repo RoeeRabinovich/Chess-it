@@ -1,4 +1,4 @@
-import { ChessMove, MoveBranch } from "./chess";
+import { ChessMove, MoveBranch, BranchContext } from "./chess";
 
 export interface StudyLayoutProps {
   // Game state
@@ -10,6 +10,7 @@ export interface StudyLayoutProps {
     isFlipped: boolean;
     comments?: Map<string, string>;
   };
+  currentBranchContext?: BranchContext | null;
   makeMove: (move: ChessMove) => boolean;
   onMoveClick: (moveIndex: number) => void;
   onBranchMoveClick: (branchId: string, moveIndexInBranch: number) => void;

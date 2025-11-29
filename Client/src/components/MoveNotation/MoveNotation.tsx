@@ -1,5 +1,5 @@
 import { useMemo, useEffect, useRef } from "react";
-import { ChessMove, MoveBranch } from "../../types/chess";
+import { ChessMove, MoveBranch, BranchContext } from "../../types/chess";
 import { Comment } from "../icons/Comment.icon";
 import { Badge } from "../ui/Badge";
 
@@ -7,6 +7,7 @@ interface MoveNotationProps {
   moves: ChessMove[];
   branches?: MoveBranch[];
   currentMoveIndex: number;
+  currentBranchContext?: BranchContext | null;
   onMoveClick: (moveIndex: number) => void;
   onBranchMoveClick?: (branchId: string, moveIndexInBranch: number) => void;
   opening?: { name: string; eco: string };
@@ -17,6 +18,7 @@ export const MoveNotation = ({
   moves,
   branches = [],
   currentMoveIndex,
+  currentBranchContext = null,
   onMoveClick,
   onBranchMoveClick,
   opening,
@@ -151,34 +153,21 @@ export const MoveNotation = ({
             return (
               <div key={moveIdx} className="flex items-center gap-0.5 sm:gap-1">
                 {/* First move already has prefix (1. or 1...), subsequent moves need their own */}
-                {moveIdx === 0 ? (
-                  // First move: prefix already shown above, just show the move
-                  <div className="flex items-center gap-0.5">
-                    <button
-                      onClick={() => onBranchMoveClick?.(branch.id, moveIdx)}
-                      className="text-muted-foreground hover:text-foreground hover:bg-muted rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs"
-                    >
-                      {branchMove.move}
-                    </button>
-                    {hasBranchComment(branch.id, moveIdx) && (
-                      <Comment className="h-2.5 w-2.5 text-purple-500 sm:h-3 sm:w-3" />
-                    )}
-                  </div>
-                ) : (
-                  // Subsequent moves: white gets moveNumber., black gets ...
-                  <>
-                    {isWhiteMove && (
-                      <span className="text-muted-foreground text-[10px] font-medium sm:text-xs">
-                        {moveNumber}.
-                      </span>
-                    )}
-                    {isBlackMove && (
-                      <span className="text-muted-foreground text-[10px] sm:text-xs">...</span>
-                    )}
+                {(() => {
+                  const isActiveBranchMove =
+                    currentBranchContext?.branchId === branch.id &&
+                    currentBranchContext?.moveIndexInBranch === moveIdx;
+
+                  return moveIdx === 0 ? (
+                    // First move: prefix already shown above, just show the move
                     <div className="flex items-center gap-0.5">
                       <button
                         onClick={() => onBranchMoveClick?.(branch.id, moveIdx)}
-                        className="text-muted-foreground hover:text-foreground hover:bg-muted rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs"
+                        className={`rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs ${
+                          isActiveBranchMove
+                            ? "bg-primary text-primary-foreground"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                        }`}
                       >
                         {branchMove.move}
                       </button>
@@ -186,8 +175,35 @@ export const MoveNotation = ({
                         <Comment className="h-2.5 w-2.5 text-purple-500 sm:h-3 sm:w-3" />
                       )}
                     </div>
-                  </>
-                )}
+                  ) : (
+                    // Subsequent moves: white gets moveNumber., black gets ...
+                    <>
+                      {isWhiteMove && (
+                        <span className="text-muted-foreground text-[10px] font-medium sm:text-xs">
+                          {moveNumber}.
+                        </span>
+                      )}
+                      {isBlackMove && (
+                        <span className="text-muted-foreground text-[10px] sm:text-xs">...</span>
+                      )}
+                      <div className="flex items-center gap-0.5">
+                        <button
+                          onClick={() => onBranchMoveClick?.(branch.id, moveIdx)}
+                          className={`rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs ${
+                            isActiveBranchMove
+                              ? "bg-primary text-primary-foreground"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          {branchMove.move}
+                        </button>
+                        {hasBranchComment(branch.id, moveIdx) && (
+                          <Comment className="h-2.5 w-2.5 text-purple-500 sm:h-3 sm:w-3" />
+                        )}
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             );
           })}
@@ -241,7 +257,12 @@ export const MoveNotation = ({
                               onClick={() =>
                                 onBranchMoveClick?.(nestedBranch.id, idx)
                               }
-                              className="text-muted-foreground hover:text-foreground hover:bg-muted rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs"
+                              className={`rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs ${
+                                currentBranchContext?.branchId === nestedBranch.id &&
+                                currentBranchContext?.moveIndexInBranch === idx
+                                  ? "bg-primary text-primary-foreground"
+                                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                              }`}
                             >
                               {bm.san}
                             </button>

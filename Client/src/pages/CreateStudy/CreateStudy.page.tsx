@@ -37,6 +37,7 @@ export const CreateStudy = () => {
     canGoToNextMove,
     addComment,
     getComment,
+    currentBranchContext,
   } = useChessGame();
 
   // Engine analysis - use configurable settings
@@ -245,6 +246,7 @@ export const CreateStudy = () => {
     makeMove,
     onMoveClick: handleMoveClick,
     onBranchMoveClick: handleBranchMoveClick,
+    currentBranchContext,
     isEngineEnabled,
     isAnalyzing,
     formattedEngineLines,

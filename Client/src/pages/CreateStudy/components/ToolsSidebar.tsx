@@ -3,7 +3,7 @@ import { ChessControls } from "../../../components/ChessControls/ChessControls";
 import { EngineLines } from "../../../components/EngineLines/EngineLines";
 import { MoveComment } from "./MoveComment";
 import { StudyMetadata } from "./StudyMetadata";
-import { ChessMove, MoveBranch } from "../../../types/chess";
+import { ChessMove, MoveBranch, BranchContext } from "../../../types/chess";
 import { Button } from "../../../components/ui/Button";
 import { Heart } from "lucide-react";
 import { apiService } from "../../../services/api";
@@ -29,6 +29,7 @@ interface ToolsSidebarProps {
   moves: ChessMove[];
   branches?: MoveBranch[];
   currentMoveIndex: number;
+  currentBranchContext?: BranchContext | null;
   onMoveClick: (moveIndex: number) => void;
   onBranchMoveClick?: (branchId: string, moveIndexInBranch: number) => void;
   opening?: { name: string; eco: string };
@@ -87,6 +88,7 @@ export const ToolsSidebar = ({
   moves,
   branches,
   currentMoveIndex,
+  currentBranchContext,
   onMoveClick,
   onBranchMoveClick,
   opening,
@@ -221,6 +223,7 @@ export const ToolsSidebar = ({
           moves={moves}
           branches={branches}
           currentMoveIndex={currentMoveIndex}
+          currentBranchContext={currentBranchContext}
           onMoveClick={onMoveClick}
           onBranchMoveClick={onBranchMoveClick}
           opening={opening}

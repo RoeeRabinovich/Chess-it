@@ -161,6 +161,7 @@ export const ReviewStudy = () => {
       makeMove: (move: ChessMove) => chessGameReview.makeMove(move),
       onMoveClick: handleMoveClick,
       onBranchMoveClick: handleBranchMoveClick,
+      currentBranchContext: chessGameReview.currentBranchContext,
       // Engine disabled in review mode
       isEngineEnabled: false,
       isAnalyzing: false,
