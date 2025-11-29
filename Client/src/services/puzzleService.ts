@@ -1,8 +1,9 @@
 import axios, { AxiosError } from "axios";
+import { mockPuzzles } from "../data/mockPuzzles";
 
 // RapidAPI configuration
 const RAPIDAPI_BASE_URL = "https://chess-puzzles.p.rapidapi.com";
-const RAPIDAPI_KEY = "f4a0bf4fb8msh1dc8034ed679677p1d4ed1jsn766d960f3b32";
+const RAPIDAPI_KEY = "f4a0bf4fb8msh1dc8034ed679677p1d4ed1jsn766d960f3b32a";
 const RAPIDAPI_HOST = "chess-puzzles.p.rapidapi.com";
 
 /**
@@ -65,6 +66,7 @@ export async function getPuzzles(params: GetPuzzlesParams): Promise<Puzzle[]> {
     playerMoves = 4,
   } = params;
 
+  const requestedCount = count; // Store count for use in catch block
   let url = "";
 
   try {
@@ -226,9 +228,11 @@ export async function getPuzzles(params: GetPuzzlesParams): Promise<Puzzle[]> {
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError;
+      const statusCode = axiosError.response?.status;
+
       console.error("\n=== RapidAPI Error ===");
       console.error("Error Details:", {
-        status: axiosError.response?.status,
+        status: statusCode,
         statusText: axiosError.response?.statusText,
         message: axiosError.message,
         code: axiosError.code,
@@ -236,10 +240,23 @@ export async function getPuzzles(params: GetPuzzlesParams): Promise<Puzzle[]> {
         responseData: axiosError.response?.data,
       });
 
-      if (axiosError.response?.status === 429) {
-        throw new Error(
-          "Rate limit exceeded. Please wait a moment and try again.",
+      // Use mock puzzles for server errors (500, 502, 503, 504) and rate limiting (429)
+      if (
+        statusCode &&
+        (statusCode >= 500 ||
+          statusCode === 429 ||
+          statusCode === 504 ||
+          statusCode === 403)
+      ) {
+        console.warn("API error detected. Using mock puzzles as fallback.");
+        console.log(`Using ${mockPuzzles.length} mock puzzles`);
+
+        // Return a subset of mock puzzles based on requested count
+        const puzzlesToReturn = mockPuzzles.slice(
+          0,
+          Math.min(requestedCount, mockPuzzles.length),
         );
+        return puzzlesToReturn;
       }
 
       if (axiosError.response) {
@@ -261,7 +278,7 @@ export async function getPuzzles(params: GetPuzzlesParams): Promise<Puzzle[]> {
               : `HTTP ${axiosError.response.status}: ${axiosError.response.statusText}`;
 
         // Special handling for 400 errors
-        if (axiosError.response.status === 400) {
+        if (statusCode === 400) {
           if (
             errorMessage.includes("No Matching Puzzles") ||
             errorMessage.includes("No matching puzzles")
@@ -282,10 +299,13 @@ export async function getPuzzles(params: GetPuzzlesParams): Promise<Puzzle[]> {
           axiosError.code === "ERR_NETWORK" ||
           axiosError.message.includes("Network Error")
         ) {
-          throw new Error(
-            "Network/CORS Error: The API might not allow direct browser requests. " +
-              "This could be a CORS (Cross-Origin Resource Sharing) issue. " +
-              "You may need to make the request through a backend proxy server.",
+          // Use mock puzzles for network errors too
+          console.warn(
+            "Network error detected. Using mock puzzles as fallback.",
+          );
+          return mockPuzzles.slice(
+            0,
+            Math.min(requestedCount, mockPuzzles.length),
           );
         }
         throw new Error(
@@ -294,7 +314,9 @@ export async function getPuzzles(params: GetPuzzlesParams): Promise<Puzzle[]> {
       }
     }
     console.error("Unexpected error:", error);
-    throw error;
+    // Use mock puzzles as fallback for unexpected errors too
+    console.warn("Unexpected error. Using mock puzzles as fallback.");
+    return mockPuzzles.slice(0, Math.min(requestedCount, mockPuzzles.length));
   }
 }
 

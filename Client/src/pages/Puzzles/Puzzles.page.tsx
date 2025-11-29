@@ -182,6 +182,10 @@ export const Puzzles = () => {
       // Play computer's first move automatically after position is set
       // Use setTimeout to ensure state update is processed first
       setTimeout(() => {
+        if (!chessRef.current) {
+          chessRef.current = new Chess(currentPuzzle.fen);
+        }
+
         if (chessRef.current && currentPuzzle.moves.length > 0) {
           // Ensure chess instance has the correct position
           chessRef.current.load(currentPuzzle.fen);
@@ -192,6 +196,15 @@ export const Puzzles = () => {
           const promotion =
             firstComputerMove.length > 4 ? firstComputerMove[4] : undefined;
 
+          console.log("Playing computer's first move:", {
+            move: firstComputerMove,
+            from,
+            to,
+            promotion,
+            fen: currentPuzzle.fen,
+            chessFen: chessRef.current.fen(),
+          });
+
           try {
             const move = chessRef.current.move({
               from: from,
@@ -200,16 +213,26 @@ export const Puzzles = () => {
             });
 
             if (move) {
+              console.log("Computer move successful:", move.san);
               setPuzzlePosition(chessRef.current.fen());
               // After computer plays, next is user's move at index 1
               setCurrentMoveIndex(1);
+            } else {
+              console.error("Move returned null/undefined");
             }
           } catch (error) {
             console.error("Error playing initial computer move:", error);
             console.error("FEN:", currentPuzzle.fen);
             console.error("Move:", firstComputerMove);
+            console.error("From:", from, "To:", to);
             console.error("Chess instance FEN:", chessRef.current.fen());
+            console.error("Available moves:", chessRef.current.moves());
           }
+        } else {
+          console.error("Cannot play computer move:", {
+            hasChessRef: !!chessRef.current,
+            hasMoves: currentPuzzle.moves.length > 0,
+          });
         }
       }, 100); // Small delay to ensure position is loaded
     } else if (!currentPuzzle) {

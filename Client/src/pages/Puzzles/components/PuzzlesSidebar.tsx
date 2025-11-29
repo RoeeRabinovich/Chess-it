@@ -231,8 +231,8 @@ export const PuzzlesSidebar = ({
               {onNextPuzzle && (
                 <Button
                   onClick={onNextPuzzle}
-                  className="w-full text-xs"
-                  variant="default"
+                  className="bg-secondary w-full text-xs"
+                  variant="ghost"
                   size="sm"
                 >
                   Next Puzzle

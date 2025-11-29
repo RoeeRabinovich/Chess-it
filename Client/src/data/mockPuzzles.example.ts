@@ -18,7 +18,7 @@ export const exampleMockPuzzles: Puzzle[] = [
     id: "immortal-game-queen-sacrifice",
     rating: 1800,
     themes: ["sacrifice", "checkmate", "middlegame", "crushing"],
-    fen: "r1bk3r/pppp1ppp/2n2n2/2b1p3/2B1P2q/3P1N2/PPP2PPP/RNBQ1RK1 w - - 0 9",
+    fen: "rnb1k1nr/p2p1ppp/3B4/1p1NPN1P/6P1/3P1Q2/P1P5/q5b1 b - - 1 1",
     moves: [
       "h4h5", // Computer: Sets up the position (move before the puzzle)
       "d3d4", // Player: Find the brilliant sacrifice! (critical move)
