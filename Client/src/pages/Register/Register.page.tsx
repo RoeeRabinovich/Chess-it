@@ -144,7 +144,11 @@ const Register = () => {
               />
             </FormField>
 
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              className="bg-pastel-mint text-foreground hover:bg-pastel-mint/80 w-full dark:!text-[#1A1A1A]"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Creating account..." : "Register"}
             </Button>
           </form>

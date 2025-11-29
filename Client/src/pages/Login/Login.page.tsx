@@ -180,7 +180,11 @@ const Login = () => {
               </Link>
             </div>
 
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              className="w-full bg-pastel-mint text-foreground hover:bg-pastel-mint/80 dark:!text-[#1A1A1A]"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Signing in..." : "Sign In"}
             </Button>
           </form>

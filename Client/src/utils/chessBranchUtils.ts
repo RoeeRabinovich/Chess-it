@@ -6,7 +6,8 @@ import { replayMoves } from "./chessMoveUtils";
 export const findBranchAtStartIndex = (
   branches: MoveBranch[],
   startIndex: number,
-): MoveBranch | undefined => branches.find((branch) => branch.startIndex === startIndex);
+): MoveBranch | undefined =>
+  branches.find((branch) => branch.startIndex === startIndex);
 
 /**
  * Finds a branch that starts at the given index AND has a matching first move
