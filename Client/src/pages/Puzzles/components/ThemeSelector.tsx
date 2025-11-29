@@ -9,6 +9,7 @@ import {
 import { Button } from "../../../components/ui/Button";
 import { PUZZLE_THEMES } from "../../../constants/puzzleThemes";
 import { ChevronDown } from "lucide-react";
+import { Knight } from "../../../components/icons/Knight.icon";
 
 interface ThemeSelectorProps {
   /** Selected theme keys */
@@ -238,7 +239,13 @@ export const ThemeSelector = ({
         </div>
       )}
 
-      <Button onClick={onThemesApply} className="mt-2 w-full" variant="default">
+      <Button
+        onClick={onThemesApply}
+        className="bg-secondary mt-2 w-full text-xs"
+        variant="ghost"
+        size="sm"
+      >
+        <Knight className="h-4 w-4" />
         Set Themes
       </Button>
     </div>

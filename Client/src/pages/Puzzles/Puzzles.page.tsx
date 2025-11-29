@@ -29,7 +29,6 @@ export const Puzzles = () => {
   const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
   const [puzzleIndex, setPuzzleIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [puzzleError, setPuzzleError] = useState<string | null>(null);
 
   // Puzzle solving state
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0); // Track which move in the moves array we're on
@@ -73,22 +72,12 @@ export const Puzzles = () => {
     : null;
   // Flip when initial turn is white (because player is black and moves second)
   const isFlipped = initialPuzzleTurn === "white";
-  const [isTimerRunning, setIsTimerRunning] = useState(true);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
   // Applied themes (themes used for fetching puzzles)
-  // Default: Only select themes from "Themes" category (tactical + checkmate)
-  const [selectedThemes, setSelectedThemes] = useState<string[]>(() => {
-    return PUZZLE_THEMES.filter(
-      (theme) =>
-        theme.category === "tactical" || theme.category === "checkmate",
-    ).map((theme) => theme.key);
-  });
+  // Default: No themes selected - user must select themes before fetching puzzles
+  const [selectedThemes, setSelectedThemes] = useState<string[]>([]);
   // Pending themes (themes being selected but not yet applied)
-  const [pendingThemes, setPendingThemes] = useState<string[]>(() => {
-    return PUZZLE_THEMES.filter(
-      (theme) =>
-        theme.category === "tactical" || theme.category === "checkmate",
-    ).map((theme) => theme.key);
-  });
+  const [pendingThemes, setPendingThemes] = useState<string[]>([]);
 
   // Get user's puzzle rating
   const userRating = user?.puzzleRating ?? 600;
@@ -97,7 +86,6 @@ export const Puzzles = () => {
   const fetchPuzzles = useCallback(
     async (themes?: string[]) => {
       setIsLoading(true);
-      setPuzzleError(null);
       try {
         // Use provided themes or fall back to selectedThemes
         const themesToUse = themes || selectedThemes;
@@ -117,7 +105,6 @@ export const Puzzles = () => {
         });
 
         if (fetchedPuzzles.length === 0) {
-          setPuzzleError("No puzzles found with the selected criteria");
           toast({
             title: "No Puzzles Found",
             description: "Try adjusting your theme selection or rating.",
@@ -141,7 +128,6 @@ export const Puzzles = () => {
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Failed to fetch puzzles";
-        setPuzzleError(errorMessage);
         toast({
           title: "Error",
           description: errorMessage,
@@ -166,11 +152,7 @@ export const Puzzles = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.puzzleRating]);
 
-  // Fetch puzzles on mount only
-  useEffect(() => {
-    fetchPuzzles();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run on mount
+  // Don't fetch puzzles on mount - wait for user to select themes and press "Set Themes"
 
   // Track the initial puzzle FEN to detect when a new puzzle loads
   const initialPuzzleFenRef = useRef<string | null>(null);
@@ -230,6 +212,22 @@ export const Puzzles = () => {
           }
         }
       }, 100); // Small delay to ensure position is loaded
+    } else if (!currentPuzzle) {
+      // No puzzle loaded - stop timer and reset state
+      setIsTimerRunning(false);
+      setPuzzleStartTime(null);
+      setPuzzleCompletionTime(null);
+      setCurrentMoveIndex(0);
+      setWrongMoveSquare(null);
+      setIsPuzzleSolved(false);
+      setPositionBeforeWrongMove(null);
+      setHasWrongMove(false);
+      setRatingDeducted(false);
+      setRatingChange(null);
+      // Reset to default starting position
+      setPuzzlePosition(
+        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      );
     }
   }, [currentPuzzle]);
 
@@ -426,11 +424,13 @@ export const Puzzles = () => {
   // Move handler with validation
   const handleMove = useCallback(
     (move: MoveData): boolean => {
+      // Don't allow moves if no puzzle is loaded
+      if (!currentPuzzle) return false;
       // Prevent moves if there's a wrong move pending (user must click "Try Again" first)
       if (positionBeforeWrongMove !== null) {
         return false;
       }
-      if (!currentPuzzle || isPuzzleSolved) return false;
+      if (isPuzzleSolved) return false;
 
       const moves = currentPuzzle.moves;
       const expectedMoveUCI = moves[currentMoveIndex];
@@ -708,22 +708,9 @@ export const Puzzles = () => {
     }, 100); // Small delay to ensure position is set
   }, [puzzles, puzzleIndex]);
 
-  // Show loading or error state
+  // Show loading state only when fetching puzzles (not on initial load)
   if (isLoading) {
-    return (
-      <LoadingSpinner fullScreen size="large" text="Loading puzzles..." />
-    );
-  }
-
-  if (puzzleError && puzzles.length === 0) {
-    return (
-      <div className="bg-background flex h-screen items-center justify-center pt-16 sm:pt-20 md:pt-24">
-        <div className="text-center">
-          <p className="text-destructive mb-2 text-lg font-semibold">Error</p>
-          <p className="text-muted-foreground">{puzzleError}</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner fullScreen size="large" text="Loading puzzles..." />;
   }
 
   // Use stored completion time if puzzle is solved, otherwise calculate current elapsed time
@@ -757,7 +744,7 @@ export const Puzzles = () => {
       timeTaken={timeTaken}
       puzzleRating={currentPuzzle?.rating}
       puzzleThemes={currentPuzzle?.themes}
-      onNextPuzzle={loadNextPuzzle}
+      onNextPuzzle={currentPuzzle ? loadNextPuzzle : undefined}
       showTryAgain={positionBeforeWrongMove !== null}
       onTryAgain={handleTryAgain}
       currentUserRating={currentUserRating}
@@ -774,7 +761,11 @@ export const Puzzles = () => {
         boardScale={boardScale}
         sidebarContent={sidebarContent}
         wrongMoveSquare={wrongMoveSquare}
-        isInteractive={positionBeforeWrongMove === null && !isPuzzleSolved}
+        isInteractive={
+          currentPuzzle !== null &&
+          positionBeforeWrongMove === null &&
+          !isPuzzleSolved
+        }
         topContent={topContent}
       />
     </div>
