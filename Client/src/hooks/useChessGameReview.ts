@@ -325,21 +325,9 @@ export const useChessGameReview = ({
     makeMove,
     undoMove,
     resetGame: () => {
-      // Reset to initial study position
+      // Reset to starting position (index -1) using navigation
       try {
-        chessRef.current.reset();
-        if (
-          studyGameState.position !==
-          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-        ) {
-          chessRef.current.load(studyGameState.position);
-        }
-        setGameState((prev) => ({
-          ...prev,
-          position: chessRef.current.fen(),
-          currentMoveIndex: -1,
-        }));
-        setCurrentBranchContext(null);
+        navigateToMove(-1);
       } catch (error) {
         console.error("Error resetting game:", error);
         onNavigationError?.(

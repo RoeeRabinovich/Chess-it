@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import { ChessMove, MoveBranch } from "../../types/chess";
 import { Comment } from "../icons/Comment.icon";
 import { Badge } from "../ui/Badge";
@@ -33,6 +33,33 @@ export const MoveNotation = ({
     const commentKey = `branch-${branchId}-${moveIndexInBranch}`;
     return comments.has(commentKey) && comments.get(commentKey)?.trim() !== "";
   };
+  // Ref to store move button refs for scrolling
+  const moveRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
+  const branchMoveRefs = useRef<Map<string, Map<number, HTMLButtonElement>>>(new Map());
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to active move when currentMoveIndex changes
+  useEffect(() => {
+    // If at starting position (index -1), scroll to top
+    if (currentMoveIndex === -1 && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+      return;
+    }
+
+    // For main line moves
+    const activeMoveButton = moveRefs.current.get(currentMoveIndex);
+    if (activeMoveButton && scrollContainerRef.current) {
+      activeMoveButton.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "nearest",
+      });
+    }
+  }, [currentMoveIndex]);
+
   const formattedMovePairs = useMemo(() => {
     // Group moves into pairs (white + black)
     const pairs: Array<{
@@ -259,7 +286,7 @@ export const MoveNotation = ({
 
       <div className="mb-2 sm:mb-3 lg:mb-4">
         <h3 className="text-foreground mb-1 text-xs font-semibold sm:mb-2 sm:text-sm lg:text-lg">Moves</h3>
-        <div className="max-h-96 overflow-y-auto">
+        <div ref={scrollContainerRef} className="max-h-96 overflow-y-auto">
           <div className="space-y-0.5 text-[10px] sm:space-y-1 sm:text-xs lg:text-sm">
             {formattedMovePairs.map((pair) => (
               <div key={pair.moveNumber} className="space-y-1">
@@ -271,6 +298,13 @@ export const MoveNotation = ({
                   {pair.whiteMove && (
                     <div className="flex items-center gap-0.5">
                       <button
+                        ref={(el) => {
+                          if (el) {
+                            moveRefs.current.set(pair.whiteMove!.index, el);
+                          } else {
+                            moveRefs.current.delete(pair.whiteMove!.index);
+                          }
+                        }}
                         onClick={() => onMoveClick(pair.whiteMove!.index)}
                         className={`rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs lg:px-2 lg:text-sm ${
                           pair.whiteMove.index === currentMoveIndex
@@ -290,6 +324,13 @@ export const MoveNotation = ({
                       <span className="text-muted-foreground text-[10px] sm:text-xs lg:text-sm">...</span>
                       <div className="flex items-center gap-0.5">
                         <button
+                          ref={(el) => {
+                            if (el) {
+                              moveRefs.current.set(pair.blackMove!.index, el);
+                            } else {
+                              moveRefs.current.delete(pair.blackMove!.index);
+                            }
+                          }}
                           onClick={() => onMoveClick(pair.blackMove!.index)}
                           className={`rounded px-1 py-0.5 text-[10px] transition-colors sm:px-1.5 sm:text-xs lg:px-2 lg:text-sm ${
                             pair.blackMove.index === currentMoveIndex
