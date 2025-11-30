@@ -13,6 +13,7 @@ import { Pagination } from "../../components/ui/Pagination";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { Book } from "../../components/icons/Book.icon";
 import { Tabs, TabsList, Tab } from "../../components/ui/Tabs";
+import { EditStudyModal } from "./components/EditStudyModal";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -28,6 +29,10 @@ export const MyStudies = () => {
     name: string;
   } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [studyToEdit, setStudyToEdit] = useState<
+    (PublicStudy & { isPublic?: boolean }) | null
+  >(null);
   const [activeTab, setActiveTab] = useState<"all" | "public" | "private">(
     "all",
   );
@@ -117,6 +122,25 @@ export const MyStudies = () => {
     // Set the study to delete and show modal
     setStudyToDelete({ id: studyId, name: studyName });
     setShowDeleteModal(true);
+  };
+
+  const handleEdit = (studyId: string) => {
+    // Find the study to edit
+    const study = studies.find((s) => s._id === studyId);
+    if (study) {
+      setStudyToEdit(study as PublicStudy & { isPublic?: boolean });
+      setShowEditModal(true);
+    }
+  };
+
+  const handleEditClose = () => {
+    setShowEditModal(false);
+    setStudyToEdit(null);
+  };
+
+  const handleEditUpdate = () => {
+    // Refresh the studies list after update
+    fetchStudies();
   };
 
   const confirmDelete = async () => {
@@ -267,6 +291,7 @@ export const MyStudies = () => {
                   key={study._id}
                   study={study}
                   onDelete={handleDelete}
+                  onEdit={handleEdit}
                 />
               ))}
             </div>
@@ -320,6 +345,16 @@ export const MyStudies = () => {
           </div>
         </div>
       </Modal>
+
+      {/* Edit Study Modal */}
+      {studyToEdit && (
+        <EditStudyModal
+          isOpen={showEditModal}
+          onClose={handleEditClose}
+          study={studyToEdit}
+          onUpdate={handleEditUpdate}
+        />
+      )}
     </div>
   );
 };

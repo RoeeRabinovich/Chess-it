@@ -4,12 +4,14 @@ import { Card, CardContent, CardTitle } from "../../../components/ui/Card";
 import ChessBoard from "../../../components/ChessBoard/ChessBoard";
 import { Button } from "../../../components/ui/Button";
 import { Trash } from "../../../components/icons/Trash.icon";
+import { Edit } from "../../../components/icons/Edit.icon";
 import { Badge } from "../../../components/ui/Badge";
 import { Tooltip } from "../../../components/ui/Tooltip";
 
 interface StudyCardProps {
   study: PublicStudy;
   onDelete?: (studyId: string) => void;
+  onEdit?: (studyId: string) => void;
 }
 
 // Helper function to format date as "X time ago"
@@ -39,7 +41,7 @@ const formatDateAgo = (dateString: string): string => {
   return `${years} year${years > 1 ? "s" : ""} ago`;
 };
 
-export const StudyCard = ({ study, onDelete }: StudyCardProps) => {
+export const StudyCard = ({ study, onDelete, onEdit }: StudyCardProps) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -50,6 +52,13 @@ export const StudyCard = ({ study, onDelete }: StudyCardProps) => {
     e.stopPropagation(); // Prevent card click
     if (onDelete) {
       onDelete(study._id);
+    }
+  };
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
+    if (onEdit) {
+      onEdit(study._id);
     }
   };
 
@@ -72,18 +81,35 @@ export const StudyCard = ({ study, onDelete }: StudyCardProps) => {
       className="border-border relative cursor-pointer transition-all hover:shadow-lg"
       onClick={handleClick}
     >
-      {onDelete && (
-        <Tooltip content="Delete study" side="left" triggerClassName="absolute right-2 top-2 z-10">
-          <Button
-            variant="destructive"
-            size="icon"
-            onClick={handleDelete}
-            className="h-8 w-8"
-            aria-label="Delete study"
-          >
-            <Trash className="h-4 w-4" />
-          </Button>
-        </Tooltip>
+      {(onDelete || onEdit) && (
+        <div className="absolute right-2 top-2 z-10 flex gap-2">
+          {onEdit && (
+            <Tooltip content="Edit study" side="left">
+              <Button
+                variant="secondary"
+                size="icon"
+                onClick={handleEdit}
+                className="h-8 w-8"
+                aria-label="Edit study"
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+            </Tooltip>
+          )}
+          {onDelete && (
+            <Tooltip content="Delete study" side="left">
+              <Button
+                variant="destructive"
+                size="icon"
+                onClick={handleDelete}
+                className="h-8 w-8"
+                aria-label="Delete study"
+              >
+                <Trash className="h-4 w-4" />
+              </Button>
+            </Tooltip>
+          )}
+        </div>
       )}
       <CardContent className="flex flex-col gap-3 p-3 sm:flex-row sm:items-stretch">
         <div className="flex flex-shrink-0 justify-center sm:w-auto">
