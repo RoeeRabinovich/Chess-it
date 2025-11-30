@@ -21,12 +21,18 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, logout } = useAuth();
 
-  const navLinks = [
-    { name: "Explore", path: "/home" },
-    { name: "Puzzles", path: "/puzzles" },
-    { name: "Create Study", path: "/create-study" },
-    ...(user ? [{ name: "My Studies", path: "/my-studies" }] : []),
-  ];
+  const navLinks = user
+    ? [
+        { name: "Explore", path: "/home" },
+        { name: "Puzzles", path: "/puzzles" },
+        { name: "Create Study", path: "/create-study" },
+        { name: "My Studies", path: "/my-studies" },
+      ]
+    : [
+        { name: "Home", path: "/home" },
+        { name: "About", path: "/about" },
+        { name: "Puzzles", path: "/puzzles" },
+      ];
 
   useEffect(() => {
     const handleScroll = () => {
