@@ -120,6 +120,7 @@ export const useChessMoveManager = ({
               gameState.moves,
               matchingBranch,
               0,
+              gameState.branches, // Pass all branches for parent branch resolution
             );
             if (!success) {
               return false;
@@ -145,11 +146,28 @@ export const useChessMoveManager = ({
 
           const newMove = toChessMove(result);
           const branchId = createBranchId(gameState.currentMoveIndex);
+          
+          // If we're currently in a branch, this new branch is a child of that branch
+          const parentBranchId = currentBranchContext?.branchId;
+          
+          // Calculate startIndex: if in a branch, use the parent branch's startIndex
+          // (both branches start from the same main line position)
+          // Otherwise use the main line index
+          let startIndex = gameState.currentMoveIndex + 1;
+          if (parentBranchId) {
+            const parentBranch = gameState.branches.find((b) => b.id === parentBranchId);
+            if (parentBranch) {
+              // New branch starts from the same main line position as parent branch
+              startIndex = parentBranch.startIndex;
+            }
+          }
+          
           const newBranch: MoveBranch = {
             id: branchId,
             parentMoveIndex: gameState.currentMoveIndex,
             moves: [newMove],
-            startIndex: gameState.currentMoveIndex + 1,
+            startIndex,
+            parentBranchId, // Track parent branch if created from a branch
           };
           setGameState((prev) => ({
             ...prev,

@@ -85,6 +85,7 @@ export interface MoveBranch {
   parentMoveIndex: number; // Index of the parent move in main line
   moves: ChessMove[]; // Moves in this branch
   startIndex: number; // Starting move index in main line
+  parentBranchId?: string; // If this branch was created from another branch, the parent branch ID
 }
 
 /**

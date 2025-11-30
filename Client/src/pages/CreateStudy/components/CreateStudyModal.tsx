@@ -10,6 +10,7 @@ import { ApiError } from "../../../types/auth";
 import { useToast } from "../../../hooks/useToast";
 import { useNavigate } from "react-router-dom";
 import { ToastAction } from "../../../components/ui/Toast";
+import { RightArrow } from "../../../components/icons/RightArrow.icon";
 import {
   CategorySelect,
   DescriptionTextarea,
@@ -205,8 +206,14 @@ export const CreateStudyModal = ({
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting} className="flex-1">
+          <Button
+            type="submit"
+            size="lg"
+            disabled={isSubmitting}
+            className="group flex-1 bg-pastel-mint text-foreground hover:bg-pastel-mint/80 dark:!text-[#1A1A1A]"
+          >
             {isSubmitting ? "Creating..." : "Create Study"}
+            <RightArrow className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Button>
         </div>
       </form>

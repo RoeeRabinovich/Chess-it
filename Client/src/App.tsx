@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
+import { Routes, Route, Navigate, BrowserRouter, useLocation } from "react-router-dom";
 import Footer from "./components/Footer/Footer";
 import Navbar from "./components/Navbar/Navbar";
 import Home from "./pages/Home/Home.page";
@@ -26,83 +26,103 @@ const HomeRoute = () => {
   return user ? <HomeExplore /> : <Home />;
 };
 
+// Component to conditionally render Footer
+const ConditionalFooter = () => {
+  const location = useLocation();
+  const hideFooterPaths = ["/puzzles", "/create-study"];
+  
+  if (hideFooterPaths.includes(location.pathname)) {
+    return null;
+  }
+  
+  return <Footer />;
+};
+
+function AppContent() {
+  return (
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Navigate to="/home" />} />
+        <Route path="/home" element={<HomeRoute />} />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <ForgotPassword />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <PublicRoute>
+              <ResetPassword />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/create-study"
+          element={
+            <ProtectedRoute>
+              <CreateStudy />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/puzzles"
+          element={
+            <ProtectedRoute>
+              <Puzzles />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-studies"
+          element={
+            <ProtectedRoute>
+              <MyStudies />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/studies/:id" element={<ReviewStudy />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
+      <ConditionalFooter />
+      <Toaster />
+    </>
+  );
+}
+
 export default function App() {
   return (
     <Provider store={store}>
       <BrowserRouter>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Navigate to="/home" />} />
-          <Route path="/home" element={<HomeRoute />} />
-          <Route
-            path="/register"
-            element={
-              <PublicRoute>
-                <Register />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/forgot-password"
-            element={
-              <PublicRoute>
-                <ForgotPassword />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/reset-password"
-            element={
-              <PublicRoute>
-                <ResetPassword />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/create-study"
-            element={
-              <ProtectedRoute>
-                <CreateStudy />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/puzzles"
-            element={
-              <ProtectedRoute>
-                <Puzzles />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/my-studies"
-            element={
-              <ProtectedRoute>
-                <MyStudies />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/studies/:id" element={<ReviewStudy />} />
-          <Route path="/about" element={<About />} />
-        </Routes>
-        <Footer />
-        <Toaster />
+        <AppContent />
       </BrowserRouter>
     </Provider>
   );

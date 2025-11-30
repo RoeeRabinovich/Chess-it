@@ -30,7 +30,7 @@ export const AboutCommunity = () => {
           </div>
           <div className="text-center">
             <div className="text-foreground mb-2 text-4xl font-bold md:text-5xl">
-              10K+
+              5M+
             </div>
             <div className="text-muted-foreground text-sm md:text-base">
               Puzzles
@@ -41,4 +41,3 @@ export const AboutCommunity = () => {
     </section>
   );
 };
-

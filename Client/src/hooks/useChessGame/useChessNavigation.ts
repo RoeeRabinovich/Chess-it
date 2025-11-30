@@ -52,6 +52,7 @@ export const useChessNavigation = ({
           gameState.moves,
           branch,
           moveIndexInBranch,
+          gameState.branches, // Pass all branches for parent branch resolution
         );
         if (!success) {
           throw new Error("Failed to replay branch moves");

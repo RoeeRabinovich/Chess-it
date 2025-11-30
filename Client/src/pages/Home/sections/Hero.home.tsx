@@ -39,7 +39,7 @@ const Hero = () => {
                 <RightArrow className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
               <Button size="lg" variant="outline">
-                Puzzles <Pawn />
+                Puzzles <Pawn className="h-4 w-4" />
               </Button>
             </div>
 
@@ -58,7 +58,7 @@ const Hero = () => {
               </div>
               <div>
                 <div className="text-foreground mb-1 text-4xl font-bold">
-                  10K+
+                  5M+
                 </div>
                 <div className="text-muted-foreground text-sm">Puzzles</div>
               </div>

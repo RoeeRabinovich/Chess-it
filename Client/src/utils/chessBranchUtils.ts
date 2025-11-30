@@ -48,8 +48,33 @@ export const loadBranchPosition = (
   mainLine: ChessMove[],
   branch: MoveBranch,
   moveIndexInBranch: number,
+  allBranches: MoveBranch[] = [],
 ): boolean => {
   chess.reset();
+
+  // If this branch has a parent branch, we need to load the full path:
+  // 1. Main line up to startIndex
+  // 2. Parent branch moves (all of them)
+  // 3. This branch's moves
+  if (branch.parentBranchId) {
+    const parentBranch = allBranches.find(
+      (b) => b.id === branch.parentBranchId,
+    );
+    if (parentBranch) {
+      // Load main line to the start position
+      if (!replayMoves(chess, mainLine, branch.startIndex)) {
+        return false;
+      }
+      // Load all parent branch moves
+      if (!replayMoves(chess, parentBranch.moves, parentBranch.moves.length)) {
+        return false;
+      }
+      // Now load this branch's moves from the parent branch's end position
+      return replayMoves(chess, branch.moves, moveIndexInBranch + 1);
+    }
+  }
+
+  // Standard case: branch starts from main line
   if (!replayMoves(chess, mainLine, branch.startIndex)) {
     return false;
   }
