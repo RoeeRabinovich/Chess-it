@@ -151,6 +151,7 @@ export const handleBranchCreation = (
     moves: [newMove],
     startIndex,
     parentBranchId,
+    parentMoveIndexInBranch: currentBranchContext?.moveIndexInBranch,
   };
   setGameState((prev) => ({
     ...prev,

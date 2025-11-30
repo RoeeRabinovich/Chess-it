@@ -43,6 +43,49 @@ export const loadPositionFromMoves = (
   return replayMoves(chess, moves, targetIndex + 1);
 };
 
+/**
+ * Recursively loads all parent branches to build the full path
+ * This loads the entire chain up to and including the given branch
+ * @param stopAtMoveIndex If provided, only load parent branch up to this move index (for child branches)
+ */
+const loadBranchChain = (
+  chess: Chess,
+  mainLine: ChessMove[],
+  branch: MoveBranch,
+  allBranches: MoveBranch[],
+  stopAtMoveIndex?: number,
+): boolean => {
+  // If this branch has a parent, recursively load the parent chain first
+  if (branch.parentBranchId) {
+    const parentBranch = allBranches.find(
+      (b) => b.id === branch.parentBranchId,
+    );
+    if (parentBranch) {
+      // Recursively load parent branch chain (this will load main line + all parent moves)
+      if (!loadBranchChain(chess, mainLine, parentBranch, allBranches)) {
+        return false;
+      }
+      // After loading parent chain, we're at the end of the parent branch
+      // If stopAtMoveIndex is provided, only load up to that point
+      const movesToLoad = stopAtMoveIndex !== undefined 
+        ? stopAtMoveIndex + 1 
+        : branch.moves.length;
+      return replayMoves(chess, branch.moves, movesToLoad);
+    }
+  }
+
+  // Base case: branch starts from main line
+  // Load main line to the start position
+  if (!replayMoves(chess, mainLine, branch.startIndex)) {
+    return false;
+  }
+  // Load branch moves (up to stopAtMoveIndex if provided)
+  const movesToLoad = stopAtMoveIndex !== undefined 
+    ? stopAtMoveIndex + 1 
+    : branch.moves.length;
+  return replayMoves(chess, branch.moves, movesToLoad);
+};
+
 export const loadBranchPosition = (
   chess: Chess,
   mainLine: ChessMove[],
@@ -52,24 +95,20 @@ export const loadBranchPosition = (
 ): boolean => {
   chess.reset();
 
-  // If this branch has a parent branch, we need to load the full path:
-  // 1. Main line up to startIndex
-  // 2. Parent branch moves (all of them)
-  // 3. This branch's moves
+  // If this branch has a parent branch, we need to load the full path recursively
   if (branch.parentBranchId) {
     const parentBranch = allBranches.find(
       (b) => b.id === branch.parentBranchId,
     );
     if (parentBranch) {
-      // Load main line to the start position
-      if (!replayMoves(chess, mainLine, branch.startIndex)) {
+      // Recursively load the entire parent chain, but only load parent branch
+      // up to where this child branch was created
+      const parentStopIndex = branch.parentMoveIndexInBranch;
+      if (!loadBranchChain(chess, mainLine, parentBranch, allBranches, parentStopIndex)) {
         return false;
       }
-      // Load all parent branch moves
-      if (!replayMoves(chess, parentBranch.moves, parentBranch.moves.length)) {
-        return false;
-      }
-      // Now load this branch's moves from the parent branch's end position
+      // Now we're at the correct position (end of parent up to where child was created)
+      // Load this branch's moves up to the target index
       return replayMoves(chess, branch.moves, moveIndexInBranch + 1);
     }
   }

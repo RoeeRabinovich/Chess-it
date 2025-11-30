@@ -1,23 +1,15 @@
 import { MoveNotation } from "../../../components/MoveNotation/MoveNotation";
 import { ChessControls } from "../../../components/ChessControls/ChessControls";
-import { EngineLines } from "../../../components/EngineLines/EngineLines";
 import { MoveComment } from "./MoveComment";
-import { StudyMetadata } from "./StudyMetadata";
 import { ChessMove, MoveBranch, BranchContext } from "../../../types/chess";
-import { Button } from "../../../components/ui/Button";
-import { Heart } from "lucide-react";
-import { apiService } from "../../../services/api";
+import { StudyInfoSection } from "./StudyInfoSection";
+import { EngineLinesSection } from "./EngineLinesSection";
+import { SectionHeader } from "./SectionHeader";
 
 interface ToolsSidebarProps {
   // Engine Analysis
   isEngineEnabled: boolean;
   isAnalyzing: boolean;
-  engineLines: Array<{
-    moves: string[];
-    evaluation: number;
-    depth: number;
-    possibleMate?: string | null;
-  }>;
   formattedEngineLines: Array<{
     sanNotation: string;
     evaluation: number;
@@ -75,7 +67,6 @@ interface ToolsSidebarProps {
   // Like functionality (for review mode)
   studyId?: string;
   isLiked?: boolean;
-  likesCount?: number;
   isLiking?: boolean;
   onLike?: () => void;
   onUnlike?: () => void;
@@ -128,96 +119,32 @@ export const ToolsSidebar = ({
   onLike,
   onUnlike,
 }: ToolsSidebarProps) => {
+  const isReviewMode = !!(studyName || studyCategory || studyDescription);
+
   return (
     <div className="bg-card flex h-full max-h-full flex-col overflow-hidden p-1.5 sm:p-2 lg:p-4">
-      {/* Study Metadata (review mode) or Engine Lines (create mode) */}
-      {studyName || studyCategory || studyDescription ? (
-        // Review mode: Show study metadata
-        <>
-          <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
-            <div className="h-1.5 w-1.5 rounded-full bg-blue-500 sm:h-2 sm:w-2"></div>
-            <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
-              Study Info
-            </span>
-          </div>
-          <div className="mb-2 sm:mb-3 lg:mb-4">
-            <StudyMetadata
-              studyName={studyName}
-              studyCategory={studyCategory}
-              studyDescription={studyDescription}
-            />
-            {/* Like Button - only show in review mode for public studies */}
-            {studyId && apiService.isAuthenticated() && (
-              <div className="mt-3 px-2 sm:px-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={isLiked ? onUnlike : onLike}
-                  disabled={isLiking}
-                  className="w-full justify-center gap-2"
-                >
-                  <Heart
-                    className={`h-4 w-4 ${
-                      isLiked ? "fill-red-300 text-red-300" : ""
-                    }`}
-                  />
-                  <span className="font-minecraft text-xs sm:text-sm">
-                    {isLiked ? "Liked" : "Like"}
-                  </span>
-                </Button>
-              </div>
-            )}
-          </div>
-          <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />
-        </>
+      {isReviewMode ? (
+        <StudyInfoSection
+          studyName={studyName}
+          studyCategory={studyCategory}
+          studyDescription={studyDescription}
+          studyId={studyId}
+          isLiked={isLiked}
+          isLiking={isLiking}
+          onLike={onLike}
+          onUnlike={onUnlike}
+        />
       ) : (
-        // Create mode: Show engine lines
-        <>
-          <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
-            {isEngineEnabled && (
-              <div
-                className={`h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2 ${isAnalyzing ? "animate-pulse bg-yellow-500" : "bg-green-500"}`}
-              ></div>
-            )}
-            <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
-              Engine Lines
-            </span>
-          </div>
-          <div className="mb-2 flex min-h-[60px] flex-col sm:mb-3 sm:min-h-[80px] lg:mb-4 lg:min-h-[120px]">
-            {moves.length === 0 ? (
-              // Show placeholder only if no moves have been made
-              <div className="flex flex-1 items-center justify-center">
-                <span className="text-muted-foreground text-[10px] sm:text-xs">
-                  Make a move to see engine analysis
-                </span>
-              </div>
-            ) : (
-              // Always show EngineLines container when moves exist (even if empty during analysis)
-              <EngineLines
-                lines={formattedEngineLines.map((line) => ({
-                  moves: line.sanNotation.split(" "),
-                  evaluation: line.evaluation,
-                  depth: line.depth,
-                  mate: line.possibleMate
-                    ? parseInt(line.possibleMate)
-                    : undefined,
-                }))}
-                isAnalyzing={isAnalyzing}
-                maxLines={engineLinesCount}
-              />
-            )}
-          </div>
-          <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />
-        </>
+        <EngineLinesSection
+          isEngineEnabled={isEngineEnabled}
+          isAnalyzing={isAnalyzing}
+          formattedEngineLines={formattedEngineLines}
+          engineLinesCount={engineLinesCount}
+          movesCount={moves.length}
+        />
       )}
 
-      {/* Move History Section */}
-      <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 lg:mb-3">
-        <div className="h-1.5 w-1.5 rounded-full bg-blue-500 sm:h-2 sm:w-2"></div>
-        <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">
-          Move History
-        </span>
-      </div>
+      <SectionHeader title="Move History" />
       <div className="mb-2 flex-1 overflow-y-auto sm:mb-3 lg:mb-4">
         <MoveNotation
           moves={moves}

@@ -36,14 +36,28 @@ export const replayMoves = (
   moves: ChessMove[],
   limit: number = moves.length,
 ): boolean => {
+  if (moves.length === 0 || limit === 0) {
+    return true;
+  }
   const slice = moves.slice(0, limit);
   for (const move of slice) {
-    const result = chess.move({
-      from: move.from,
-      to: move.to,
-      promotion: move.promotion,
-    });
-    if (!result) {
+    try {
+      const result = chess.move({
+        from: move.from,
+        to: move.to,
+        promotion: move.promotion,
+      });
+      if (!result) {
+        console.error(
+          `Invalid move: ${JSON.stringify({ from: move.from, to: move.to, promotion: move.promotion })}. Current FEN: ${chess.fen()}`,
+        );
+        return false;
+      }
+    } catch (error) {
+      console.error(
+        `Error replaying move: ${JSON.stringify({ from: move.from, to: move.to, promotion: move.promotion })}. Current FEN: ${chess.fen()}`,
+        error,
+      );
       return false;
     }
   }
