@@ -31,7 +31,11 @@ const ConditionalFooter = () => {
   const location = useLocation();
   const hideFooterPaths = ["/puzzles", "/create-study"];
   
-  if (hideFooterPaths.includes(location.pathname)) {
+  // Hide footer on specific paths or review study pages (dynamic route)
+  if (
+    hideFooterPaths.includes(location.pathname) ||
+    location.pathname.startsWith("/studies/")
+  ) {
     return null;
   }
   

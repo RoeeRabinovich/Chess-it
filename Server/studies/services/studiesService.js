@@ -6,9 +6,13 @@ const {
   likeStudy,
   unlikeStudy,
   getUserLikedStudyIds,
+  updateStudy,
   deleteStudy,
 } = require("../models/studiesDataAccessService");
-const { validateCreateStudy } = require("../validations/studyValidatorService");
+const {
+  validateCreateStudy,
+  validateUpdateStudy,
+} = require("../validations/studyValidatorService");
 const { handleJoiError } = require("../../utils/errorHandler");
 
 // Service functions - performs the main logic of the application.
@@ -140,6 +144,31 @@ const getUserLikedStudyIdsService = async (userId) => {
   }
 };
 
+// Update a study
+const updateStudyService = async (userId, studyId, rawStudy) => {
+  try {
+    // Validate the study data
+    const { error } = validateUpdateStudy(rawStudy);
+    if (error) {
+      return Promise.reject(await handleJoiError(error));
+    }
+
+    // Prepare normalized study data
+    const normalizedStudy = {
+      studyName: rawStudy.studyName.trim(),
+      description: rawStudy.description?.trim() || "",
+      isPublic: rawStudy.isPublic,
+    };
+
+    // Update in database
+    const result = await updateStudy(userId, studyId, normalizedStudy);
+
+    return Promise.resolve(result);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
 // Delete a study
 const deleteStudyService = async (userId, studyId) => {
   try {
@@ -158,5 +187,6 @@ module.exports = {
   likeStudyService,
   unlikeStudyService,
   getUserLikedStudyIdsService,
+  updateStudyService,
   deleteStudyService,
 };

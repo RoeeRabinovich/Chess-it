@@ -1,4 +1,5 @@
 const createStudyValidator = require("./joi/createStudyValidator");
+const updateStudyValidator = require("./joi/updateStudyValidator");
 const config = require("config");
 
 const validator = config.get("VALIDATOR");
@@ -9,4 +10,10 @@ const validateCreateStudy = (study) => {
   }
 };
 
-module.exports = { validateCreateStudy };
+const validateUpdateStudy = (study) => {
+  if (validator === "joi") {
+    return updateStudyValidator(study);
+  }
+};
+
+module.exports = { validateCreateStudy, validateUpdateStudy };

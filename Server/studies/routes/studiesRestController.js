@@ -10,6 +10,7 @@ const {
   likeStudyService,
   unlikeStudyService,
   getUserLikedStudyIdsService,
+  updateStudyService,
   deleteStudyService,
 } = require("../services/studiesService");
 const { auth, optionalAuth } = require("../../auth/authService");
@@ -91,6 +92,19 @@ router.get("/liked/ids", auth, generalRateLimiter, async (req, res) => {
     const userId = req.user._id;
     const studyIds = await getUserLikedStudyIdsService(userId);
     res.status(200).json(studyIds);
+  } catch (error) {
+    return handleError(res, error.status || 500, error.message);
+  }
+});
+
+// Update a study
+// Must come before /:id to avoid route conflict
+router.put("/:id", auth, generalRateLimiter, async (req, res) => {
+  try {
+    const studyId = req.params.id;
+    const userId = req.user._id;
+    const study = await updateStudyService(userId, studyId, req.body);
+    res.status(200).json(study);
   } catch (error) {
     return handleError(res, error.status || 500, error.message);
   }

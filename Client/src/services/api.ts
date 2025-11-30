@@ -249,6 +249,19 @@ class ApiService {
     return response.data;
   }
 
+  // Update a study
+  async updateStudy(
+    studyId: string,
+    data: {
+      studyName: string;
+      description?: string;
+      isPublic: boolean;
+    },
+  ): Promise<Study> {
+    const response = await apiClient.put<Study>(`/studies/${studyId}`, data);
+    return response.data;
+  }
+
   // Delete a study
   async deleteStudy(studyId: string): Promise<{ success: boolean }> {
     const response = await apiClient.delete<{ success: boolean }>(

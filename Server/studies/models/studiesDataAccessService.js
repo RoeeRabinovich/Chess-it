@@ -58,7 +58,9 @@ const findStudiesByUser = async (userId) => {
     try {
       const studies = await Study.find({ createdBy: userId })
         .populate("createdBy", "username")
-        .select("studyName category description isPublic createdAt updatedAt likes gameState.position")
+        .select(
+          "studyName category description isPublic createdAt updatedAt likes gameState.position"
+        )
         .sort({ createdAt: -1 });
 
       return Promise.resolve(studies);
@@ -240,6 +242,62 @@ const getUserLikedStudyIds = async (userId) => {
   );
 };
 
+// Update a study
+const updateStudy = async (userId, studyId, updateData) => {
+  if (DB === "MONGODB") {
+    try {
+      // Check if study exists and user is the owner
+      const study = await Study.findById(studyId);
+      if (!study) {
+        const error = new Error("Study not found");
+        error.status = 404;
+        throw error;
+      }
+
+      // Verify ownership
+      const studyCreatorId = study.createdBy.toString();
+      if (studyCreatorId !== userId.toString()) {
+        const error = new Error(
+          "Access denied. You can only update your own studies."
+        );
+        error.status = 403;
+        throw error;
+      }
+
+      // Prepare update data (only allow updating studyName, description, isPublic)
+      const normalizedUpdate = {
+        studyName: updateData.studyName?.trim(),
+        description: updateData.description?.trim() || "",
+        isPublic: updateData.isPublic,
+      };
+
+      // Update the study
+      const updatedStudy = await Study.findByIdAndUpdate(
+        studyId,
+        { $set: normalizedUpdate },
+        { new: true, runValidators: true }
+      ).populate("createdBy", "username email");
+
+      if (!updatedStudy) {
+        const error = new Error("Failed to update study");
+        error.status = 400;
+        throw error;
+      }
+
+      return Promise.resolve(updatedStudy);
+    } catch (error) {
+      if (error.status) {
+        return Promise.reject(error);
+      }
+      error.status = 400;
+      return handleBadRequest("Mongoose", error);
+    }
+  }
+  return Promise.resolve(
+    "updateStudy function is not supported for this database"
+  );
+};
+
 // Delete a study
 const deleteStudy = async (userId, studyId) => {
   if (DB === "MONGODB") {
@@ -255,7 +313,9 @@ const deleteStudy = async (userId, studyId) => {
       // Verify ownership
       const studyCreatorId = study.createdBy.toString();
       if (studyCreatorId !== userId.toString()) {
-        const error = new Error("Access denied. You can only delete your own studies.");
+        const error = new Error(
+          "Access denied. You can only delete your own studies."
+        );
         error.status = 403;
         throw error;
       }
@@ -288,5 +348,6 @@ module.exports = {
   likeStudy,
   unlikeStudy,
   getUserLikedStudyIds,
+  updateStudy,
   deleteStudy,
 };
