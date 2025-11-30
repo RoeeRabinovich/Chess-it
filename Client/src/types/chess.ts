@@ -78,7 +78,53 @@ export interface VariationNode {
 }
 
 /**
- * Represents a branch/variation in the move tree
+ * Represents a move node in the tree structure.
+ * Each node contains a move and can have branches (alternative continuations from the position after this move).
+ * Branches are sequences of MoveNodes, allowing unlimited nesting.
+ */
+export interface MoveNode {
+  move: ChessMove;
+  branches: MoveNode[][]; // Alternative move sequences (branches/variations) from the position after this move
+  // Each branch is an array of MoveNodes (a sequence of moves)
+  // Each MoveNode in a branch can also have branches, allowing unlimited nesting
+}
+
+/**
+ * Path to a specific position in the move tree.
+ * Format: Array of segments, where each segment is:
+ * - For main line: just the move index [0, 1, 2, ...]
+ * - For branches: [mainIndex, branchIndex, moveIndexInBranch, branchIndex?, ...]
+ * 
+ * Examples:
+ * - [5] = main line move 5
+ * - [5, 0, 2] = move 2 in branch 0 from main line move 5
+ * - [5, 0, 2, 1, 0] = move 0 in branch 1 from move 2 in branch 0 from main line move 5
+ * 
+ * Path structure: [mainMoveIndex, branchIndex?, moveIndexInBranch?, branchIndex?, ...]
+ * - First number: always a move index in main line
+ * - Subsequent pairs: [branchIndex, moveIndexInBranch]
+ * - Can continue with more pairs for deeper nesting
+ */
+export type MovePath = number[];
+
+/**
+ * Complete state of a chess game using tree structure
+ */
+export interface ChessGameState {
+  position: string; // FEN
+  moveTree: MoveNode[]; // Main line as array of MoveNodes (each can have branches)
+  currentPath: MovePath; // Path to current position in the tree
+  isFlipped: boolean;
+  opening?: {
+    name: string;
+    eco: string;
+  };
+  comments?: Map<string, string>; // Key format: pathToString(path)
+}
+
+/**
+ * Legacy: Represents a branch/variation in the move tree (DEPRECATED - use MoveNode tree)
+ * @deprecated Use MoveNode tree structure instead
  */
 export interface MoveBranch {
   id: string;
@@ -90,19 +136,12 @@ export interface MoveBranch {
 }
 
 /**
- * Complete state of a chess game
+ * Legacy: Tracks the current position within a variation branch (DEPRECATED - use MovePath)
+ * @deprecated Use MovePath instead
  */
-export interface ChessGameState {
-  position: string; // FEN
-  moves: ChessMove[]; // Main line moves
-  branches: MoveBranch[]; // All branches/variations
-  currentMoveIndex: number;
-  isFlipped: boolean;
-  opening?: {
-    name: string;
-    eco: string;
-  };
-  comments?: Map<string, string>; // Key format: "main-{index}" or "branch-{branchId}-{index}"
+export interface BranchContext {
+  branchId: string;
+  moveIndexInBranch: number;
 }
 
 /**
@@ -147,12 +186,4 @@ export interface ProcessedEngineLine {
   depth: number;
   possibleMate?: string | null;
   multipvOrder?: number; // Preserve Stockfish's MultiPV order (1, 2, 3...)
-}
-
-/**
- * Tracks the current position within a variation branch
- */
-export interface BranchContext {
-  branchId: string;
-  moveIndexInBranch: number;
 }
