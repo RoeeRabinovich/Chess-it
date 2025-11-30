@@ -2,7 +2,7 @@ import { useEffect, useRef, RefObject } from "react";
 
 interface UseMoveNotationScrollReturn {
   moveRefs: React.MutableRefObject<Map<number, HTMLButtonElement>>;
-  scrollContainerRef: RefObject<HTMLDivElement>;
+  scrollContainerRef: RefObject<HTMLDivElement | null>;
 }
 
 export const useMoveNotationScroll = (
@@ -34,4 +34,3 @@ export const useMoveNotationScroll = (
 
   return { moveRefs, scrollContainerRef };
 };
-

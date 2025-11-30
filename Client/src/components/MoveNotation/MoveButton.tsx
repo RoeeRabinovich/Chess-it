@@ -2,7 +2,6 @@ import { Comment } from "../icons/Comment.icon";
 
 interface MoveButtonProps {
   move: string;
-  index: number;
   isActive: boolean;
   hasComment: boolean;
   onClick: () => void;
@@ -12,7 +11,6 @@ interface MoveButtonProps {
 
 export const MoveButton = ({
   move,
-  index,
   isActive,
   hasComment,
   onClick,
@@ -44,4 +42,3 @@ export const MoveButton = ({
     </div>
   );
 };
-

@@ -1,12 +1,18 @@
 import { useCallback } from "react";
-
-import type { BranchContext, ChessGameState, ChessMove } from "../../types/chess";
+import type { Chess } from "chess.js";
+import type {
+  BranchContext,
+  ChessGameState,
+  ChessMove,
+} from "../../types/chess";
 
 interface UseChessToolsParams {
   chessRef: React.MutableRefObject<Chess>;
   setGameState: React.Dispatch<React.SetStateAction<ChessGameState>>;
   createInitialState: () => ChessGameState;
-  setCurrentBranchContext: React.Dispatch<React.SetStateAction<BranchContext | null>>;
+  setCurrentBranchContext: React.Dispatch<
+    React.SetStateAction<BranchContext | null>
+  >;
 }
 
 export const useChessTools = ({
@@ -48,7 +54,9 @@ export const useChessTools = ({
     (pgn: string) => {
       try {
         chessRef.current.loadPgn(pgn);
-        const moves = chessRef.current.history({ verbose: true }) as ChessMove[];
+        const moves = chessRef.current.history({
+          verbose: true,
+        }) as ChessMove[];
         setGameState((prev) => ({
           ...prev,
           position: chessRef.current.fen(),

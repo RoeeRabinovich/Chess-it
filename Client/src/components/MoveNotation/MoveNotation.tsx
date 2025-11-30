@@ -69,7 +69,6 @@ export const MoveNotation = ({
                   {pair.whiteMove && (
                     <MoveButton
                       move={pair.whiteMove.move}
-                      index={pair.whiteMove.index}
                       isActive={pair.whiteMove.index === currentMoveIndex}
                       hasComment={hasComment(pair.whiteMove.index, comments)}
                       onClick={() => onMoveClick(pair.whiteMove!.index)}
@@ -90,7 +89,6 @@ export const MoveNotation = ({
                       </span>
                       <MoveButton
                         move={pair.blackMove.move}
-                        index={pair.blackMove.index}
                         isActive={pair.blackMove.index === currentMoveIndex}
                         hasComment={hasComment(pair.blackMove.index, comments)}
                         onClick={() => onMoveClick(pair.blackMove!.index)}
