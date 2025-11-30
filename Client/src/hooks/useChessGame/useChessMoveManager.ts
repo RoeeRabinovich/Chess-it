@@ -1,38 +1,33 @@
 import { useCallback } from "react";
-
 import type { Chess } from "chess.js";
-
 import type {
   BranchContext,
   ChessGameState,
   ChessMove,
-  MoveBranch,
 } from "../../types/chess";
-import {
-  findBranchAtStartIndex,
-  findBranchByFirstMove,
-  createBranchId,
-  loadBranchPosition,
-} from "../../utils/chessBranchUtils";
+import { findBranchByFirstMove } from "../../utils/chessBranchUtils";
 import { toChessMove, toMoveData } from "../../utils/chessMoveUtils";
+import {
+  loadPositionForMove,
+  handleBranchContinuation,
+  handleBranchNavigation,
+  handleBranchCreation,
+} from "./moveHandlers";
 
 interface UseChessMoveManagerParams {
   chessRef: React.MutableRefObject<Chess>;
   gameState: ChessGameState;
   setGameState: React.Dispatch<React.SetStateAction<ChessGameState>>;
-  getCommentKey: (moveIndex: number, branchId?: string, moveIndexInBranch?: number) => string;
-  setCurrentBranchContext: React.Dispatch<React.SetStateAction<BranchContext | null>>;
+  getCommentKey: (
+    moveIndex: number,
+    branchId?: string,
+    moveIndexInBranch?: number,
+  ) => string;
+  setCurrentBranchContext: React.Dispatch<
+    React.SetStateAction<BranchContext | null>
+  >;
   currentBranchContext: BranchContext | null;
 }
-
-const appendMoveToBranch = (
-  branches: MoveBranch[],
-  branchId: string,
-  move: ChessMove,
-): MoveBranch[] =>
-  branches.map((branch) =>
-    branch.id === branchId ? { ...branch, moves: [...branch.moves, move] } : branch,
-  );
 
 export const useChessMoveManager = ({
   chessRef,
@@ -50,63 +45,35 @@ export const useChessMoveManager = ({
           gameState.currentMoveIndex === gameState.moves.length - 1;
 
         if (!isAtEndOfMainLine) {
-          try {
-            chessRef.current.load(gameState.position);
-          } catch (error) {
-            chessRef.current.reset();
-            const movesToBranchPoint = gameState.moves.slice(
-              0,
-              gameState.currentMoveIndex + 1,
-            );
-            for (const branchMove of movesToBranchPoint) {
-              const replay = chessRef.current.move({
-                from: branchMove.from,
-                to: branchMove.to,
-                promotion: branchMove.promotion,
-              });
-              if (!replay) {
-                chessRef.current.reset();
-                return false;
-              }
-            }
+          if (!loadPositionForMove(chessRef.current, gameState)) {
+            return false;
           }
 
-          // Check if we're continuing a branch forward (already in branch and extending it)
+          // Check if we're continuing a branch forward
           const currentBranch = currentBranchContext
-            ? gameState.branches.find((b) => b.id === currentBranchContext.branchId)
+            ? gameState.branches.find(
+                (b) => b.id === currentBranchContext.branchId,
+              )
             : null;
 
           const isContinuingBranch =
             currentBranchContext &&
             currentBranch &&
-            // We're at the end of the branch, so we're extending it
-            currentBranchContext.moveIndexInBranch === currentBranch.moves.length - 1;
+            currentBranchContext.moveIndexInBranch ===
+              currentBranch.moves.length - 1;
 
           if (isContinuingBranch && currentBranchContext && currentBranch) {
-            // Continue/extend the current branch - append move
-            const result = chessRef.current.move(moveData);
-            if (!result) {
-              return false;
-            }
-
-            const newMove = toChessMove(result);
-            setGameState((prev) => ({
-              ...prev,
-              position: chessRef.current.fen(),
-              branches: appendMoveToBranch(
-                prev.branches,
-                currentBranchContext.branchId,
-                newMove,
-              ),
-            }));
-            setCurrentBranchContext({
-              branchId: currentBranchContext.branchId,
-              moveIndexInBranch: currentBranchContext.moveIndexInBranch + 1,
-            });
-            return true;
+            return handleBranchContinuation(
+              chessRef.current,
+              moveData,
+              currentBranchContext,
+              currentBranch,
+              setGameState,
+              setCurrentBranchContext,
+            );
           }
 
-          // Not continuing branch - check if this move matches an existing branch's first move
+          // Check if this move matches an existing branch's first move
           const matchingBranch = findBranchByFirstMove(
             gameState.branches,
             gameState.currentMoveIndex + 1,
@@ -114,72 +81,24 @@ export const useChessMoveManager = ({
           );
 
           if (matchingBranch) {
-            // Navigate to the existing branch (to its first move)
-            const success = loadBranchPosition(
+            return handleBranchNavigation(
               chessRef.current,
-              gameState.moves,
               matchingBranch,
-              0,
-              gameState.branches, // Pass all branches for parent branch resolution
+              gameState,
+              setGameState,
+              setCurrentBranchContext,
             );
-            if (!success) {
-              return false;
-            }
-
-            setGameState((prev) => ({
-              ...prev,
-              position: chessRef.current.fen(),
-              currentMoveIndex: matchingBranch.startIndex - 1,
-            }));
-            setCurrentBranchContext({
-              branchId: matchingBranch.id,
-              moveIndexInBranch: 0,
-            });
-            return true;
           }
 
-          // No matching branch - create a new branch
-          const result = chessRef.current.move(moveData);
-          if (!result) {
-            return false;
-          }
-
-          const newMove = toChessMove(result);
-          const branchId = createBranchId(gameState.currentMoveIndex);
-          
-          // If we're currently in a branch, this new branch is a child of that branch
-          const parentBranchId = currentBranchContext?.branchId;
-          
-          // Calculate startIndex: if in a branch, use the parent branch's startIndex
-          // (both branches start from the same main line position)
-          // Otherwise use the main line index
-          let startIndex = gameState.currentMoveIndex + 1;
-          if (parentBranchId) {
-            const parentBranch = gameState.branches.find((b) => b.id === parentBranchId);
-            if (parentBranch) {
-              // New branch starts from the same main line position as parent branch
-              startIndex = parentBranch.startIndex;
-            }
-          }
-          
-          const newBranch: MoveBranch = {
-            id: branchId,
-            parentMoveIndex: gameState.currentMoveIndex,
-            moves: [newMove],
-            startIndex,
-            parentBranchId, // Track parent branch if created from a branch
-          };
-          setGameState((prev) => ({
-            ...prev,
-            position: chessRef.current.fen(),
-            branches: [...prev.branches, newBranch],
-          }));
-          setCurrentBranchContext({
-            branchId,
-            moveIndexInBranch: 0,
-          });
-
-          return true;
+          // Create a new branch
+          return handleBranchCreation(
+            chessRef.current,
+            moveData,
+            gameState,
+            currentBranchContext,
+            setGameState,
+            setCurrentBranchContext,
+          );
         }
 
         const result = chessRef.current.move(moveData);

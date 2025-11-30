@@ -1,4 +1,10 @@
-import { Routes, Route, Navigate, BrowserRouter, useLocation } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+  BrowserRouter,
+  useLocation,
+} from "react-router-dom";
 import Footer from "./components/Footer/Footer";
 import Navbar from "./components/Navbar/Navbar";
 import Home from "./pages/Home/Home.page";
@@ -16,8 +22,8 @@ import About from "./pages/About/About.page";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { Toaster } from "./components/ui/Toaster";
-import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
-import { PublicRoute } from "./components/PublicRoute/PublicRoute";
+import { ProtectedRoute } from "./components/RouteGuard/ProtectedRoute";
+import { PublicRoute } from "./components/RouteGuard/PublicRoute";
 import { useAuth } from "./hooks/useAuth";
 
 // Component to conditionally render Home or HomeExplore
@@ -30,7 +36,7 @@ const HomeRoute = () => {
 const ConditionalFooter = () => {
   const location = useLocation();
   const hideFooterPaths = ["/puzzles", "/create-study"];
-  
+
   // Hide footer on specific paths or review study pages (dynamic route)
   if (
     hideFooterPaths.includes(location.pathname) ||
@@ -38,7 +44,7 @@ const ConditionalFooter = () => {
   ) {
     return null;
   }
-  
+
   return <Footer />;
 };
 

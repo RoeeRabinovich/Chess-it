@@ -62,7 +62,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             )}
             {...props}
             // id from props takes precedence (set after spread so FormField's id is used)
-            id={props.id || inputId}
+            id={inputId}
           />
         </div>
         {description && !error && (
