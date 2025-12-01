@@ -1,15 +1,15 @@
 import { useRef, useCallback, useMemo } from "react";
 import { Chess } from "chess.js";
-import type { ChessGameState, ChessMove, MoveData } from "../types/chess";
+import type { ChessGameState, ChessMove, MoveData, MovePath } from "../types/chess";
 import { useChessComments } from "./useChessGame/useChessComments";
-import { useChessNavigation } from "./useChessGame/useChessNavigation";
+import { useTreeChessNavigation } from "./useChessGame/treeChessNavigation";
 import { useChessTools } from "./useChessGame/useChessTools";
 import { useStudyInitialization } from "./useChessGameReview/useStudyInitialization";
 import {
   makeReviewMove,
   undoReviewMove,
 } from "./useChessGameReview/reviewMoveHandlers";
-import { createReviewNavigationWrappers } from "./useChessGameReview/reviewNavigationWrappers";
+import { getMainLineMoves } from "../utils/moveTreeUtils";
 
 interface UseChessGameReviewParams {
   studyGameState: {
@@ -40,8 +40,7 @@ export const useChessGameReview = ({
     chessRef,
   });
 
-  const { currentBranchContext, setCurrentBranchContext, getComment } =
-    useChessComments({ gameState, setGameState });
+  const { getComment } = useChessComments({ gameState, setGameState });
 
   const makeMove = useCallback(
     (move: ChessMove | MoveData): boolean => {
@@ -63,52 +62,83 @@ export const useChessGameReview = ({
     })();
   }, [gameState, setGameState]);
 
-  const navigation = useChessNavigation({
+  const navigation = useTreeChessNavigation({
     chessRef,
     gameState,
     setGameState,
-    setCurrentBranchContext,
   });
 
   const tools = useChessTools({
     chessRef,
     setGameState,
     createInitialState: () => gameState, // Use current state as initial
-    setCurrentBranchContext,
+    setCurrentBranchContext: undefined, // Not needed for tree structure
   });
 
-  const helpers = useMemo(
-    () => ({
-      canUndo: gameState.currentMoveIndex >= 0,
-      canGoToPreviousMove: gameState.currentMoveIndex >= 0,
-      canGoToNextMove: gameState.currentMoveIndex < gameState.moves.length - 1,
-    }),
-    [gameState.currentMoveIndex, gameState.moves.length],
+  const mainLineMoves = useMemo(() => {
+    return getMainLineMoves(gameState.moveTree);
+  }, [gameState.moveTree]);
+
+  const helpers = useMemo(() => {
+    const currentPath = gameState.currentPath;
+    const isAtStart = currentPath.length === 0;
+    const mainIndex = currentPath.length > 0 ? currentPath[0] : -1;
+    const isAtEnd = mainIndex >= mainLineMoves.length - 1;
+
+    return {
+      canUndo: !isAtStart,
+      canGoToPreviousMove: !isAtStart,
+      canGoToNextMove: !isAtEnd,
+    };
+  }, [gameState.currentPath, mainLineMoves.length]);
+
+  // Navigation wrappers for review mode
+  const navigateToMove = useCallback(
+    (moveIndex: number) => {
+      if (moveIndex < 0) {
+        navigation.navigateToPath([]);
+        return;
+      }
+      navigation.navigateToMainLineMove(moveIndex);
+    },
+    [navigation],
   );
 
-  const {
-    navigateToMove,
-    navigateToBranchMove,
-    goToPreviousMove,
-    goToNextMove,
-  } = useMemo(
-    () =>
-      createReviewNavigationWrappers({
-        navigation,
-        gameState,
-        onNavigationError,
-      }),
-    [navigation, gameState, onNavigationError],
+  const navigateToBranchMove = useCallback(
+    (path: MovePath) => {
+      try {
+        navigation.navigateToBranchMove(path);
+      } catch (error) {
+        onNavigationError?.("Failed to navigate to branch move.");
+      }
+    },
+    [navigation, onNavigationError],
   );
+
+  const goToPreviousMove = useCallback(() => {
+    try {
+      navigation.goToPreviousMove();
+    } catch (error) {
+      onNavigationError?.("Failed to navigate to previous move.");
+    }
+  }, [navigation, onNavigationError]);
+
+  const goToNextMove = useCallback(() => {
+    try {
+      navigation.goToNextMove();
+    } catch (error) {
+      onNavigationError?.("Failed to navigate to next move.");
+    }
+  }, [navigation, onNavigationError]);
 
   return {
     gameState,
     makeMove,
     undoMove,
     resetGame: () => {
-      // Reset to starting position (index -1) using navigation
+      // Reset to starting position using navigation
       try {
-        navigateToMove(-1);
+        navigation.navigateToPath([]);
       } catch (error) {
         console.error("Error resetting game:", error);
         onNavigationError?.(
@@ -127,6 +157,6 @@ export const useChessGameReview = ({
     canUndo: helpers.canUndo,
     canGoToPreviousMove: helpers.canGoToPreviousMove,
     canGoToNextMove: helpers.canGoToNextMove,
-    currentBranchContext,
+    currentPath: gameState.currentPath, // Return currentPath instead of currentBranchContext
   };
 };

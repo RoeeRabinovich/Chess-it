@@ -3,8 +3,11 @@ import type { MoveNode, MovePath } from "../../types/chess";
 import { Badge } from "../ui/Badge";
 import { useMoveNotationScroll } from "./useMoveNotationScroll";
 import { MoveButton } from "./MoveButton";
-import { pathToString } from "../../utils/moveTreeUtils";
-import { getMainLineMoves } from "../../utils/moveTreeUtils";
+import {
+  pathToString,
+  getMainLineMoves,
+  getAbsoluteMoveIndex,
+} from "../../utils/moveTreeUtils";
 
 interface TreeMoveNotationProps {
   moveTree: MoveNode[];
@@ -34,6 +37,7 @@ const BranchSequence = ({
   onMoveClick,
   comments,
   depth = 0,
+  moveTree,
 }: {
   branchSequence: MoveNode[];
   basePath: MovePath;
@@ -41,54 +45,158 @@ const BranchSequence = ({
   onMoveClick: (path: MovePath) => void;
   comments: Map<string, string>;
   depth?: number;
+  moveTree: MoveNode[];
 }) => {
   if (branchSequence.length === 0) return null;
 
-  // Calculate starting move number
-  // mainIndex is the move where the branch is stored
-  // The branch starts from the position AFTER mainIndex's move
-  // So the first branch move is at position mainIndex + 1
-  const mainIndex = basePath[0] ?? 0;
-  const firstBranchMoveIndex = mainIndex + 1;
-  const startMoveNumber = Math.floor(firstBranchMoveIndex / 2) + 1;
-  const isFirstMoveWhite = firstBranchMoveIndex % 2 === 0;
-
   // Calculate margin based on depth (ml-4, ml-8, ml-12, etc.)
   const marginClass = depth === 0 ? "ml-4" : depth === 1 ? "ml-8" : "ml-12";
+
+  // Helper function to render nested branches inline
+  const renderNestedBranches = (
+    branches: MoveNode[][],
+    movePath: MovePath,
+    isAlreadyInParens = false,
+  ) => {
+    if (branches.length === 0) return null;
+
+    return (
+      <>
+        {branches.map((nestedBranch, branchIdx) => {
+          const nestedBasePath: MovePath = [...movePath, branchIdx];
+          // Wrap nested branches in parentheses only if not already inside parentheses
+          // First level nested branches get parentheses, deeper ones don't (they're already inside)
+          const shouldWrapInParens = !isAlreadyInParens;
+
+          // Render nested branch moves inline
+          const nestedContent = (
+            <span className="inline-flex items-center gap-0.5 sm:gap-1">
+              {nestedBranch.map((nestedNode, nestedMoveIdx) => {
+                const nestedMovePath: MovePath = [
+                  ...nestedBasePath,
+                  nestedMoveIdx,
+                ];
+                const nestedAbsoluteIndex = getAbsoluteMoveIndex(
+                  moveTree,
+                  nestedMovePath,
+                );
+
+                if (nestedAbsoluteIndex < 0) return null;
+
+                const nestedIsBlackMove = nestedAbsoluteIndex % 2 === 1;
+                const nestedMoveNumber =
+                  Math.floor(nestedAbsoluteIndex / 2) + 1;
+                const nestedIsFirstMove = nestedMoveIdx === 0;
+                const nestedIsActive =
+                  pathToString(nestedMovePath) === pathToString(currentPath);
+                const nestedHasComment = comments.has(
+                  pathToString(nestedMovePath),
+                );
+
+                return (
+                  <span
+                    key={nestedMoveIdx}
+                    className="flex items-center gap-0.5 sm:gap-1"
+                  >
+                    {nestedIsFirstMove && !nestedIsBlackMove && (
+                      <span className="text-muted-foreground text-[10px] font-medium sm:text-xs">
+                        {nestedMoveNumber}.
+                      </span>
+                    )}
+                    {nestedIsFirstMove && nestedIsBlackMove && (
+                      <span className="text-muted-foreground text-[10px] font-medium sm:text-xs">
+                        {nestedMoveNumber}...
+                      </span>
+                    )}
+                    {!nestedIsFirstMove && !nestedIsBlackMove && (
+                      <span className="text-muted-foreground text-[10px] font-medium sm:text-xs">
+                        {nestedMoveNumber}.
+                      </span>
+                    )}
+                    {!nestedIsFirstMove && nestedIsBlackMove && (
+                      <span className="text-muted-foreground text-[10px] sm:text-xs">
+                        ...
+                      </span>
+                    )}
+                    <MoveButton
+                      move={nestedNode.move.san}
+                      isActive={nestedIsActive}
+                      hasComment={nestedHasComment}
+                      onClick={() => onMoveClick(nestedMovePath)}
+                      size="sm"
+                    />
+                    {/* Render deeper nested branches recursively - already inside parentheses */}
+                    {nestedNode.branches.length > 0 &&
+                      renderNestedBranches(
+                        nestedNode.branches,
+                        nestedMovePath,
+                        true,
+                      )}
+                  </span>
+                );
+              })}
+            </span>
+          );
+
+          return shouldWrapInParens ? (
+            <span
+              key={`${nestedBasePath.join("-")}`}
+              className="inline-flex items-center"
+            >
+              <span className="text-muted-foreground mx-0.5">(</span>
+              {nestedContent}
+              <span className="text-muted-foreground mx-0.5">)</span>
+            </span>
+          ) : (
+            <span key={`${nestedBasePath.join("-")}`}>{nestedContent}</span>
+          );
+        })}
+      </>
+    );
+  };
 
   return (
     <div
       className={`${marginClass} flex flex-wrap items-center gap-0.5 sm:gap-1`}
     >
       {branchSequence.map((node, moveIdx) => {
-        // Path format: [mainIndex, branchIndex, moveIndexInBranch]
+        // Path format: [mainIndex, branchIndex, moveIndexInBranch, ...]
         // basePath is [mainIndex, branchIndex], so we just add moveIdx
         const movePath: MovePath = [...basePath, moveIdx];
-        // Calculate the actual move index: branch starts from mainIndex + 1
-        const actualIndex = firstBranchMoveIndex + moveIdx;
-        const isBlackMove = actualIndex % 2 === 1;
-        const moveNumber = Math.floor(actualIndex / 2) + 1;
+
+        // Calculate absolute move index using the utility function
+        // This correctly accounts for all parent branch moves
+        const absoluteIndex = getAbsoluteMoveIndex(moveTree, movePath);
+
+        if (absoluteIndex < 0) {
+          // Invalid path, skip
+          return null;
+        }
+
+        const isBlackMove = absoluteIndex % 2 === 1;
+        const moveNumber = Math.floor(absoluteIndex / 2) + 1;
+        const isFirstMove = moveIdx === 0;
         const isActive = pathToString(movePath) === pathToString(currentPath);
         const hasComment = comments.has(pathToString(movePath));
 
         return (
           <span key={moveIdx} className="flex items-center gap-0.5 sm:gap-1">
-            {moveIdx === 0 && isFirstMoveWhite && (
-              <span className="text-muted-foreground text-[10px] font-medium sm:text-xs">
-                {startMoveNumber}.
-              </span>
-            )}
-            {moveIdx === 0 && !isFirstMoveWhite && (
-              <span className="text-muted-foreground text-[10px] font-medium sm:text-xs">
-                {startMoveNumber}...
-              </span>
-            )}
-            {moveIdx > 0 && !isBlackMove && (
+            {isFirstMove && !isBlackMove && (
               <span className="text-muted-foreground text-[10px] font-medium sm:text-xs">
                 {moveNumber}.
               </span>
             )}
-            {moveIdx > 0 && isBlackMove && (
+            {isFirstMove && isBlackMove && (
+              <span className="text-muted-foreground text-[10px] font-medium sm:text-xs">
+                {moveNumber}...
+              </span>
+            )}
+            {!isFirstMove && !isBlackMove && (
+              <span className="text-muted-foreground text-[10px] font-medium sm:text-xs">
+                {moveNumber}.
+              </span>
+            )}
+            {!isFirstMove && isBlackMove && (
               <span className="text-muted-foreground text-[10px] sm:text-xs">
                 ...
               </span>
@@ -100,26 +208,9 @@ const BranchSequence = ({
               onClick={() => onMoveClick(movePath)}
               size="sm"
             />
-            {/* Render nested branches inline */}
-            {node.branches.length > 0 && (
-              <>
-                {node.branches.map((nestedBranch, branchIdx) => {
-                  // For nested branches, path is: [mainIndex, branchIndex, moveIndexInBranch, nestedBranchIndex]
-                  const nestedBasePath: MovePath = [...movePath, branchIdx];
-                  return (
-                    <BranchSequence
-                      key={branchIdx}
-                      branchSequence={nestedBranch}
-                      basePath={nestedBasePath}
-                      currentPath={currentPath}
-                      onMoveClick={onMoveClick}
-                      comments={comments}
-                      depth={depth + 1}
-                    />
-                  );
-                })}
-              </>
-            )}
+            {/* Render nested branches immediately after this move, wrapped in parentheses */}
+            {node.branches.length > 0 &&
+              renderNestedBranches(node.branches, movePath)}
           </span>
         );
       })}
@@ -270,6 +361,7 @@ export const TreeMoveNotation = ({
                         currentPath={currentPath}
                         onMoveClick={onMoveClick}
                         comments={comments}
+                        moveTree={moveTree}
                       />
                     ))}
                   </div>

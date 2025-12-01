@@ -10,7 +10,8 @@ import { useChessGameReview } from "../../hooks/useChessGameReview";
 import { useOpeningDetection } from "../../hooks/useOpeningDetection";
 import { MobileStudyLayout } from "../CreateStudy/layouts/MobileStudyLayout";
 import { DesktopStudyLayout } from "../CreateStudy/layouts/DesktopStudyLayout";
-import { ChessMove } from "../../types/chess";
+import { ChessMove, MovePath } from "../../types/chess";
+import { getMainLineMoves } from "../../utils/moveTreeUtils";
 
 export const ReviewStudy = () => {
   const { id } = useParams<{ id: string }>();
@@ -57,20 +58,19 @@ export const ReviewStudy = () => {
 
   // Detect opening when moves change
   useEffect(() => {
-    if (study?.gameState?.moves) {
-      detectOpening(study.gameState.moves);
+    if (chessGameReview.gameState.moveTree) {
+      const mainLineMoves = getMainLineMoves(chessGameReview.gameState.moveTree);
+      if (mainLineMoves.length > 0) {
+        detectOpening(mainLineMoves);
+      }
     }
-  }, [study?.gameState?.moves, detectOpening]);
+  }, [chessGameReview.gameState.moveTree, detectOpening]);
 
-  // Handlers for layout
+  // Handler for layout - uses MovePath for tree structure
   const handleMoveClick = useCallback(
-    (moveIndex: number) => chessGameReview.navigateToMove(moveIndex),
-    [chessGameReview],
-  );
-
-  const handleBranchMoveClick = useCallback(
-    (branchId: string, moveIndexInBranch: number) =>
-      chessGameReview.navigateToBranchMove(branchId, moveIndexInBranch),
+    (path: MovePath) => {
+      chessGameReview.navigateToBranchMove(path);
+    },
     [chessGameReview],
   );
 
@@ -160,8 +160,7 @@ export const ReviewStudy = () => {
       gameState: chessGameReview.gameState,
       makeMove: (move: ChessMove) => chessGameReview.makeMove(move),
       onMoveClick: handleMoveClick,
-      onBranchMoveClick: handleBranchMoveClick,
-      currentBranchContext: chessGameReview.currentBranchContext,
+      currentPath: chessGameReview.currentPath,
       // Engine disabled in review mode
       isEngineEnabled: false,
       isAnalyzing: false,
@@ -211,7 +210,6 @@ export const ReviewStudy = () => {
     [
       chessGameReview,
       handleMoveClick,
-      handleBranchMoveClick,
       handleSaveComment,
       opening,
       study?.gameState?.opening,

@@ -38,7 +38,7 @@ export const useChessComments = ({
   );
 
   const getComment = useCallback(() => {
-    if (gameState.currentPath.length === 0) {
+    if (!gameState.currentPath || gameState.currentPath.length === 0) {
       return "";
     }
 

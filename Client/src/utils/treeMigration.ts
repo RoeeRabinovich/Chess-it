@@ -103,13 +103,15 @@ export const migrateTreeToBranches = (
       const branchId = `branch-${mainIndex}-${branchIdCounter++}`;
       const branchMoves = branchSequence.map((n) => n.move);
 
+      // Backend only accepts: id, parentMoveIndex, moves, startIndex
+      // parentBranchId and parentMoveIndexInBranch are not supported by backend validation
       branches.push({
         id: branchId,
         parentMoveIndex: mainIndex,
         moves: branchMoves,
         startIndex: mainIndex,
-        parentBranchId,
-        parentMoveIndexInBranch,
+        // Note: parentBranchId and parentMoveIndexInBranch are omitted because
+        // backend validation doesn't support nested branches in the old format
       });
 
       // Process nested branches recursively

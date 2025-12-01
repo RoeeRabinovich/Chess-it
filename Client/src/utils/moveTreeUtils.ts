@@ -241,6 +241,64 @@ export const getMainLineMoves = (tree: MoveNode[]): ChessMove[] => {
 };
 
 /**
+ * Calculates the absolute move index in the game sequence for a given path
+ * This counts all moves along the path (main line + all branch moves)
+ * Returns the 0-based index (0 = first move, 1 = second move, etc.)
+ */
+export const getAbsoluteMoveIndex = (
+  tree: MoveNode[],
+  path: MovePath,
+): number => {
+  if (path.length === 0) {
+    return -1; // Starting position
+  }
+
+  const mainIndex = path[0];
+  if (mainIndex < 0 || mainIndex >= tree.length) {
+    return -1;
+  }
+
+  // Start with main line moves up to and including mainIndex
+  let absoluteIndex = mainIndex;
+
+  // If we're in a branch, add the branch moves
+  if (path.length > 1) {
+    let currentNode = tree[mainIndex];
+    let pathIndex = 1;
+
+    while (pathIndex < path.length) {
+      const branchIndex = path[pathIndex];
+      const moveIndexInBranch = path[pathIndex + 1];
+
+      if (branchIndex === undefined || moveIndexInBranch === undefined) {
+        break;
+      }
+
+      // Get the branch sequence
+      if (branchIndex < 0 || branchIndex >= currentNode.branches.length) {
+        break;
+      }
+      const branchSequence = currentNode.branches[branchIndex];
+
+      // Add moves in this branch up to moveIndexInBranch (inclusive)
+      // The branch starts AFTER the current position, so we add moveIndexInBranch + 1 moves
+      absoluteIndex += moveIndexInBranch + 1;
+
+      // Update current node for deeper nesting
+      if (moveIndexInBranch >= 0 && moveIndexInBranch < branchSequence.length) {
+        currentNode = branchSequence[moveIndexInBranch];
+      } else {
+        break;
+      }
+
+      pathIndex += 2; // Move to next pair [branchIndex, moveIndex]
+    }
+  }
+
+  return absoluteIndex;
+};
+
+/**
  * Finds all branches at a specific path (alternative move sequences from that position)
  */
 export const getBranchesAtPath = (

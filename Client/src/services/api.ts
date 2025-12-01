@@ -171,11 +171,17 @@ class ApiService {
     gameState: ChessGameState;
   }): Promise<{ id: string; studyName: string }> {
     // Convert comments Map to plain object for JSON serialization
+    // Handle both Map and plain object cases
     const commentsObject: Record<string, string> = {};
     if (data.gameState.comments) {
-      data.gameState.comments.forEach((value, key) => {
-        commentsObject[key] = value;
-      });
+      if (data.gameState.comments instanceof Map) {
+        data.gameState.comments.forEach((value, key) => {
+          commentsObject[key] = value;
+        });
+      } else if (typeof data.gameState.comments === 'object') {
+        // Already an object, just copy it
+        Object.assign(commentsObject, data.gameState.comments);
+      }
     }
 
     const payload = {

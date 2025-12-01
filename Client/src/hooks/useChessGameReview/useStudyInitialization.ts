@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import type { Chess } from "chess.js";
 import type { ChessGameState, ChessMove } from "../../types/chess";
+import { migrateBranchesToTree } from "../../utils/treeMigration";
 
 interface StudyGameState {
   position: string;
@@ -50,11 +51,27 @@ export const useStudyInitialization = ({
   ChessGameState,
   React.Dispatch<React.SetStateAction<ChessGameState>>,
 ] => {
+  // Convert old structure to new tree structure
+  const moveTree = useMemo(() => {
+    return migrateBranchesToTree(
+      studyGameState.moves || [],
+      studyGameState.branches || [],
+    );
+  }, [studyGameState.moves, studyGameState.branches]);
+
+  // Calculate currentPath from currentMoveIndex
+  const currentPath = useMemo(() => {
+    const index = studyGameState.currentMoveIndex ?? -1;
+    if (index < 0) {
+      return [];
+    }
+    return [index];
+  }, [studyGameState.currentMoveIndex]);
+
   const [gameState, setGameState] = useState<ChessGameState>(() => ({
     position: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-    moves: studyGameState.moves || [],
-    branches: studyGameState.branches || [],
-    currentMoveIndex: -1,
+    moveTree: moveTree,
+    currentPath: currentPath,
     isFlipped: studyGameState.isFlipped || false,
     opening: studyGameState.opening,
     comments: commentsToMap(studyGameState.comments),
@@ -73,11 +90,12 @@ export const useStudyInitialization = ({
 
     if (!studyGameState.moves || studyGameState.moves.length === 0) {
       chessRef.current.reset();
+      const emptyTree = migrateBranchesToTree([], []);
       setGameState((prev) => ({
         ...prev,
         position: chessRef.current.fen(),
-        currentMoveIndex: -1,
-        moves: [],
+        moveTree: emptyTree,
+        currentPath: [],
       }));
       initializedRef.current = studyKey;
       return;
@@ -87,21 +105,28 @@ export const useStudyInitialization = ({
       chessRef.current.reset();
       const currentFen = chessRef.current.fen();
       const commentsMap = commentsToMap(studyGameState.comments);
+      const newMoveTree = migrateBranchesToTree(
+        studyGameState.moves,
+        studyGameState.branches || [],
+      );
+      const newCurrentPath =
+        studyGameState.currentMoveIndex >= 0
+          ? [studyGameState.currentMoveIndex]
+          : [];
 
       setGameState((prev) => {
         if (
           prev.position === currentFen &&
-          prev.currentMoveIndex === -1 &&
-          prev.moves.length === studyGameState.moves.length
+          prev.currentPath.length === newCurrentPath.length &&
+          prev.moveTree.length === newMoveTree.length
         ) {
           return prev;
         }
         return {
           ...prev,
           position: currentFen,
-          moves: studyGameState.moves,
-          branches: studyGameState.branches || [],
-          currentMoveIndex: -1,
+          moveTree: newMoveTree,
+          currentPath: newCurrentPath,
           comments: commentsMap,
         };
       });
@@ -109,11 +134,15 @@ export const useStudyInitialization = ({
     } catch (error) {
       console.error("Error initializing chess game from study:", error);
       chessRef.current.reset();
+      const fallbackTree = migrateBranchesToTree(
+        studyGameState.moves || [],
+        [],
+      );
       setGameState((prev) => ({
         ...prev,
         position: chessRef.current.fen(),
-        currentMoveIndex: -1,
-        moves: studyGameState.moves || [],
+        moveTree: fallbackTree,
+        currentPath: [],
       }));
       initializedRef.current = studyKey;
     }
