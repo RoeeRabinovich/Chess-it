@@ -49,9 +49,8 @@ export interface Study {
   } | null;
   gameState: {
     position: string;
-    moves: ChessGameState["moves"];
-    branches: ChessGameState["branches"];
-    currentMoveIndex: number;
+    moveTree: ChessGameState["moveTree"];
+    currentPath: ChessGameState["currentPath"];
     isFlipped: boolean;
     opening?: ChessGameState["opening"];
     comments?: Record<string, string>; // Plain object from backend (will be converted to Map)

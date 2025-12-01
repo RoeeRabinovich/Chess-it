@@ -19,7 +19,9 @@ interface UseStudyInitializationParams {
 /**
  * Converts comments from object to Map
  */
-const commentsToMap = (comments?: Record<string, string>): Map<string, string> => {
+const commentsToMap = (
+  comments?: Record<string, string>,
+): Map<string, string> => {
   const commentsMap = new Map<string, string>();
   if (comments) {
     Object.entries(comments).forEach(([key, value]) => {
@@ -51,9 +53,12 @@ export const useStudyInitialization = ({
   React.Dispatch<React.SetStateAction<ChessGameState>>,
 ] => {
   const [gameState, setGameState] = useState<ChessGameState>(() => ({
-    position: studyGameState.position || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+    position:
+      studyGameState.position ||
+      "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
     moveTree: studyGameState.moveTree || [],
-    currentPath: studyGameState.currentPath || [],
+    // Always start at starting position in review mode, ignore saved currentPath
+    currentPath: [],
     isFlipped: studyGameState.isFlipped || false,
     opening: studyGameState.opening,
     comments: commentsToMap(studyGameState.comments),
@@ -90,7 +95,7 @@ export const useStudyInitialization = ({
       setGameState((prev) => {
         if (
           prev.position === currentFen &&
-          prev.currentPath.length === studyGameState.currentPath.length &&
+          prev.currentPath.length === 0 &&
           prev.moveTree.length === studyGameState.moveTree.length
         ) {
           return prev;
@@ -99,7 +104,8 @@ export const useStudyInitialization = ({
           ...prev,
           position: currentFen,
           moveTree: studyGameState.moveTree,
-          currentPath: studyGameState.currentPath,
+          // Always start at starting position in review mode, ignore saved currentPath
+          currentPath: [],
           comments: commentsMap,
         };
       });
@@ -119,4 +125,3 @@ export const useStudyInitialization = ({
 
   return [gameState, setGameState];
 };
-

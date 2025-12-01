@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { apiService } from "../../services/api";
 import { Study } from "../../types/study";
@@ -36,7 +36,17 @@ export const ReviewStudy = () => {
         isFlipped: false,
       };
     }
-    return study.gameState;
+    // Ensure the gameState matches the expected structure
+    const { position, moveTree, currentPath, isFlipped, opening, comments } =
+      study.gameState;
+    return {
+      position,
+      moveTree: moveTree || [],
+      currentPath: currentPath || [],
+      isFlipped: isFlipped || false,
+      opening,
+      comments,
+    };
   }, [study?.gameState]);
 
   // Chess game state for review (only initialized when study is loaded)
@@ -58,7 +68,9 @@ export const ReviewStudy = () => {
   // Detect opening when moves change
   useEffect(() => {
     if (chessGameReview.gameState.moveTree) {
-      const mainLineMoves = getMainLineMoves(chessGameReview.gameState.moveTree);
+      const mainLineMoves = getMainLineMoves(
+        chessGameReview.gameState.moveTree,
+      );
       if (mainLineMoves.length > 0) {
         detectOpening(mainLineMoves);
       }
@@ -279,17 +291,32 @@ export const ReviewStudy = () => {
   }, [id, toast, retryCount]);
 
   // Auto-navigate to first move when study loads
+  const hasNavigatedRef = useRef(false);
+  useEffect(() => {
+    // Reset navigation flag when study changes
+    if (study) {
+      hasNavigatedRef.current = false;
+    }
+  }, [study?._id]);
+
   useEffect(() => {
     if (
       study &&
+      !hasNavigatedRef.current &&
       chessGameReview.gameState.moveTree &&
       chessGameReview.gameState.moveTree.length > 0 &&
       chessGameReview.gameState.currentPath.length === 0
     ) {
-      // Study has moves but is at starting position - navigate to first move
+      // Study has moves but is at starting position - navigate to first move of main line
       chessGameReview.navigateToMove(0);
+      hasNavigatedRef.current = true;
     }
-  }, [study, chessGameReview]);
+  }, [
+    study,
+    chessGameReview.gameState.moveTree,
+    chessGameReview.gameState.currentPath,
+    chessGameReview,
+  ]);
 
   // Loading state
   if (loading) {
