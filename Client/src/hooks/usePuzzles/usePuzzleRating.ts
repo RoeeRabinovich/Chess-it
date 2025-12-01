@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAppDispatch } from "../../store/hooks";
 import { login as loginAction } from "../../store/authSlice";
-import { apiService } from "../../services/api";
+import { userService } from "../../services/userService";
 import { useToast } from "../useToast";
 import { calculateRatingChange } from "../../utils/puzzleRatingUtils";
 import { Puzzle } from "../../services/puzzleService";
@@ -65,7 +65,7 @@ export const usePuzzleRating = ({
 
     // Update database and user object
     console.log("Updating puzzle rating to:", newRating);
-    apiService
+    userService
       .updatePuzzleRating(newRating)
       .then((updatedUser) => {
         console.log("Rating updated successfully:", updatedUser.puzzleRating);

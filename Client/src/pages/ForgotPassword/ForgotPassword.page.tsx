@@ -14,7 +14,7 @@ import { useToast } from "../../hooks/useToast";
 import { Crown } from "../../components/icons/Crown.icon";
 import { forgotPasswordSchema } from "../../validations/forgotPassword.joi";
 import { joiResolver } from "@hookform/resolvers/joi";
-import { apiService } from "../../services/api";
+import { userService } from "../../services/userService";
 import { ApiError } from "../../types/auth";
 
 interface ForgotPasswordFormData {
@@ -36,7 +36,7 @@ const ForgotPassword = () => {
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
     try {
-      await apiService.forgotPassword(data.email);
+      await userService.forgotPassword(data.email);
       toast({
         title: "Reset link sent",
         description: "Reset link has been sent.",
@@ -58,7 +58,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="bg-background flex min-h-screen items-center justify-center px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mb-4 flex justify-center">

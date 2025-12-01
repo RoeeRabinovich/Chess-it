@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { apiService } from "../../../services/api";
+import { studyService } from "../../../services/studyService";
 import { ApiError } from "../../../types/auth";
 import { useToast } from "../../../hooks/useToast";
 import { Study } from "../../../types/study";
@@ -32,7 +33,7 @@ export const useStudyLikes = ({
       if (!id || !apiService.isAuthenticated() || !study) return;
 
       try {
-        const likedIds = await apiService.getLikedStudyIds();
+        const likedIds = await studyService.getLikedStudyIds();
         setIsLiked(likedIds.includes(id));
       } catch (err) {
         // Silently fail - user might not be authenticated
@@ -52,7 +53,7 @@ export const useStudyLikes = ({
 
     setIsLiking(true);
     try {
-      await apiService.likeStudy(id);
+      await studyService.likeStudy(id);
       setIsLiked(true);
       setLikesCount((prev) => prev + 1);
       toast({
@@ -77,7 +78,7 @@ export const useStudyLikes = ({
 
     setIsLiking(true);
     try {
-      await apiService.unlikeStudy(id);
+      await studyService.unlikeStudy(id);
       setIsLiked(false);
       setLikesCount((prev) => Math.max(0, prev - 1));
       toast({

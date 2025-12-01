@@ -4,11 +4,14 @@ import { Input } from "../../../components/ui/Input";
 import { FormField } from "../../../components/ui/FormField";
 import { Modal } from "../../../components/ui/Modal";
 import { updateStudySchema } from "../../../validations/updateStudy.joi";
-import { apiService } from "../../../services/api";
+import { studyService } from "../../../services/studyService";
 import { ApiError } from "../../../types/auth";
 import { useToast } from "../../../hooks/useToast";
 import { RightArrow } from "../../../components/icons/RightArrow.icon";
-import { DescriptionTextarea, VisibilityRadio } from "../../CreateStudy/components/CreateStudyFormFields";
+import {
+  DescriptionTextarea,
+  VisibilityRadio,
+} from "../../CreateStudy/components/CreateStudyFormFields";
 import { Study } from "../../../types/study";
 
 interface EditStudyModalProps {
@@ -93,7 +96,7 @@ export const EditStudyModal = ({
     setIsSubmitting(true);
 
     try {
-      await apiService.updateStudy(study._id, {
+      await studyService.updateStudy(study._id, {
         studyName: formData.studyName,
         description: formData.description,
         isPublic: formData.isPublic,
@@ -130,11 +133,7 @@ export const EditStudyModal = ({
       closeButtonDisabled={isSubmitting}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <FormField
-          label="Study Name"
-          error={errors.studyName}
-          required
-        >
+        <FormField label="Study Name" error={errors.studyName} required>
           <Input
             name="studyName"
             value={formData.studyName}
@@ -173,7 +172,7 @@ export const EditStudyModal = ({
             type="submit"
             size="lg"
             disabled={isSubmitting}
-            className="group flex-1 bg-pastel-mint text-foreground hover:bg-pastel-mint/80 dark:!text-[#1A1A1A]"
+            className="group bg-pastel-mint text-foreground hover:bg-pastel-mint/80 flex-1 dark:!text-[#1A1A1A]"
           >
             {isSubmitting ? "Updating..." : "Update Study"}
             <RightArrow className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -183,4 +182,3 @@ export const EditStudyModal = ({
     </Modal>
   );
 };
-

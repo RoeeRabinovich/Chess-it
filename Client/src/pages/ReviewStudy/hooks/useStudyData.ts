@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { apiService } from "../../../services/api";
+import { studyService } from "../../../services/studyService";
 import { Study } from "../../../types/study";
 import { ApiError } from "../../../types/auth";
 import { useToast } from "../../../hooks/useToast";
@@ -68,7 +68,7 @@ export const useStudyData = (id: string | undefined): UseStudyDataReturn => {
       setError(null);
 
       try {
-        const studyData = await apiService.getStudyById(id);
+        const studyData = await studyService.getStudyById(id);
         setStudy(studyData);
         setError(null);
       } catch (err) {

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { GameAspect, StudyFilters, Study } from "../../../types/study";
 import { apiService } from "../../../services/api";
+import { studyService } from "../../../services/studyService";
 import { ApiError } from "../../../types/auth";
 import { StudyCard } from "./StudyCard";
 import { useToast } from "../../../hooks/useToast";
@@ -52,7 +53,7 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
       try {
         const skip = (currentPage - 1) * ITEMS_PER_PAGE;
         // Fetch one extra item to check if there's a next page
-        const data = await apiService.getPublicStudies({
+        const data = await studyService.getPublicStudies({
           category,
           filter,
           search: searchQuery,

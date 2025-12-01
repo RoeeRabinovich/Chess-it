@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { User } from "../../../types/user";
-import { apiService } from "../../../services/api";
+import { userService } from "../../../services/userService";
 import { useAppDispatch } from "../../../store/hooks";
 import { login as loginAction } from "../../../store/authSlice";
 import Joi from "joi";
@@ -105,7 +105,7 @@ export const useUsernameEditing = ({
 
     setIsSubmitting(true);
     try {
-      const updatedUser = await apiService.updateUsername(usernameValue);
+      const updatedUser = await userService.updateUsername(usernameValue);
       onUserUpdate(updatedUser);
       setIsEditingUsername(false);
       setShowConfirmModal(false);

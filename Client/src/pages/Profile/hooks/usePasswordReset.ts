@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { apiService } from "../../../services/api";
+import { userService } from "../../../services/userService";
 import { useToast } from "../../../hooks/useToast";
 
 interface UsePasswordResetReturn {
@@ -18,7 +18,7 @@ export const usePasswordReset = (): UsePasswordResetReturn => {
 
       setIsRequestingPasswordReset(true);
       try {
-        await apiService.forgotPassword(email);
+        await userService.forgotPassword(email);
         toast({
           title: "Reset link sent",
           description:

@@ -8,6 +8,7 @@ import {
   clearError,
 } from "../store/authSlice";
 import { apiService, setUnauthorizedHandler } from "../services/api";
+import { userService } from "../services/userService";
 import { LoginData, RegisterData, ApiError } from "../types";
 
 // Track if auth check has been performed globally
@@ -72,7 +73,7 @@ export const useAuth = () => {
       dispatch(setLoading(true));
       dispatch(clearError());
 
-      const response = await apiService.login(data);
+      const response = await userService.login(data);
       // Save token and user to localStorage
       if (response.token && response.user) {
         localStorage.setItem("authToken", response.token);
@@ -102,7 +103,7 @@ export const useAuth = () => {
       dispatch(setLoading(true));
       dispatch(clearError());
 
-      const response = await apiService.register(data);
+      const response = await userService.register(data);
       // Register may return token+user or just user
       if (response.token && response.user) {
         // Has token, save both

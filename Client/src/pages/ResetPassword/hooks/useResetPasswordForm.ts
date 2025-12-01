@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm, UseFormRegister, FieldErrors } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { resetPasswordSchema } from "../../../validations/resetPassword.joi";
-import { apiService } from "../../../services/api";
+import { userService } from "../../../services/userService";
 import { ApiError } from "../../../types/auth";
 import { useToast } from "../../../hooks/useToast";
 
@@ -50,7 +50,7 @@ export const useResetPasswordForm = ({
       }
 
       try {
-        await apiService.resetPassword(
+        await userService.resetPassword(
           token,
           data.password,
           data.confirmPassword,

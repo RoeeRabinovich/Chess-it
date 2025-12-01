@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createStudySchema } from "../../../validations/createStudy.joi";
 import { ChessGameState } from "../../../types/chess";
-import { apiService } from "../../../services/api";
+import { studyService } from "../../../services/studyService";
 import { ApiError } from "../../../types/auth";
 import { useToast } from "../../../hooks/useToast";
 import { ToastAction } from "../../../components/ui/Toast";
@@ -130,7 +130,7 @@ export const useCreateStudyForm = ({
         }
       }
 
-      const response = await apiService.createStudy({
+      const response = await studyService.createStudy({
         studyName: formData.studyName,
         category: formData.category as
           | "Opening"

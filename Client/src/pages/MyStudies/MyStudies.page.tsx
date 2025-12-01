@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Study } from "../../types/study";
-import { apiService } from "../../services/api";
+import { studyService } from "../../services/studyService";
 import { ApiError } from "../../types/auth";
 import { useToast } from "../../hooks/useToast";
 import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
@@ -42,7 +42,7 @@ export const MyStudies = () => {
     setError(null);
 
     try {
-      const data = await apiService.getUserStudies();
+      const data = await studyService.getUserStudies();
       setStudies(data);
     } catch (err) {
       const apiError = err as ApiError;
@@ -97,7 +97,7 @@ export const MyStudies = () => {
 
     setIsDeleting(true);
     try {
-      await apiService.deleteStudy(studyToDelete.id);
+      await studyService.deleteStudy(studyToDelete.id);
       // Remove the study from the list
       setStudies(studies.filter((s) => s._id !== studyToDelete.id));
       setShowDeleteModal(false);

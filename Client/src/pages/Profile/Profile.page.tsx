@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { apiService } from "../../services/api";
+import { userService } from "../../services/userService";
 import { User } from "../../types/user";
 import {
   Card,
@@ -48,7 +48,7 @@ export const Profile = () => {
       try {
         setLoading(true);
         setError(null);
-        const profileData = await apiService.getProfile();
+        const profileData = await userService.getProfile();
         setUser(profileData);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load profile");
