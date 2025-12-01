@@ -9,12 +9,12 @@ import { ApiError } from "../../../types/auth";
 import { useToast } from "../../../hooks/useToast";
 import { RightArrow } from "../../../components/icons/RightArrow.icon";
 import { DescriptionTextarea, VisibilityRadio } from "../../CreateStudy/components/CreateStudyFormFields";
-import { PublicStudy } from "../../../types/study";
+import { Study } from "../../../types/study";
 
 interface EditStudyModalProps {
   isOpen: boolean;
   onClose: () => void;
-  study: PublicStudy & { isPublic?: boolean };
+  study: Study;
   onUpdate: () => void;
 }
 

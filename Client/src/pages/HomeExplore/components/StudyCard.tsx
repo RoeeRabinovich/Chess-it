@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { PublicStudy } from "../../../types/study";
+import { Study } from "../../../types/study";
 import { Card, CardContent, CardTitle } from "../../../components/ui/Card";
 import ChessBoard from "../../../components/ChessBoard/ChessBoard";
 import { Button } from "../../../components/ui/Button";
@@ -9,7 +9,7 @@ import { Badge } from "../../../components/ui/Badge";
 import { Tooltip } from "../../../components/ui/Tooltip";
 
 interface StudyCardProps {
-  study: PublicStudy;
+  study: Study;
   onDelete?: (studyId: string) => void;
   onEdit?: (studyId: string) => void;
 }
@@ -82,7 +82,7 @@ export const StudyCard = ({ study, onDelete, onEdit }: StudyCardProps) => {
       onClick={handleClick}
     >
       {(onDelete || onEdit) && (
-        <div className="absolute right-2 top-2 z-10 flex gap-2">
+        <div className="absolute top-2 right-2 z-10 flex gap-2">
           {onEdit && (
             <Tooltip content="Edit study" side="left">
               <Button
@@ -136,26 +136,20 @@ export const StudyCard = ({ study, onDelete, onEdit }: StudyCardProps) => {
                   {study.category}
                 </Badge>
               </Tooltip>
-              {(study as PublicStudy & { isPublic?: boolean }).isPublic !== undefined && (
+              {study.isPublic !== undefined && (
                 <Tooltip
                   content={
-                    (study as PublicStudy & { isPublic?: boolean }).isPublic
+                    study.isPublic
                       ? "Visible to everyone"
                       : "Only visible to you"
                   }
                   side="top"
                 >
                   <Badge
-                    variant={
-                      (study as PublicStudy & { isPublic?: boolean }).isPublic
-                        ? "default"
-                        : "secondary"
-                    }
+                    variant={study.isPublic ? "default" : "secondary"}
                     size="sm"
                   >
-                    {(study as PublicStudy & { isPublic?: boolean }).isPublic
-                      ? "Public"
-                      : "Private"}
+                    {study.isPublic ? "Public" : "Private"}
                   </Badge>
                 </Tooltip>
               )}
@@ -173,7 +167,7 @@ export const StudyCard = ({ study, onDelete, onEdit }: StudyCardProps) => {
                 content={`${study.likes} ${study.likes === 1 ? "user likes" : "users like"} this study`}
                 side="top"
               >
-                <span className="flex items-center gap-1 cursor-default">
+                <span className="flex cursor-default items-center gap-1">
                   <span>❤️</span>
                   <span>{study.likes}</span>
                 </span>

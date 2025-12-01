@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { GameAspect, StudyFilters, PublicStudy } from "../../../types/study";
+import { GameAspect, StudyFilters, Study } from "../../../types/study";
 import { apiService } from "../../../services/api";
 import { ApiError } from "../../../types/auth";
 import { StudyCard } from "./StudyCard";
@@ -21,7 +21,7 @@ interface StudyCardsGridProps {
 const ITEMS_PER_PAGE = 12;
 
 export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
-  const [studies, setStudies] = useState<PublicStudy[]>([]);
+  const [studies, setStudies] = useState<Study[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);

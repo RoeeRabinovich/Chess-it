@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { AuthResponse, LoginData, RegisterData, ApiError } from "../types/auth";
 import { User } from "../types/user";
 import { ChessGameState } from "../types/chess";
-import { PublicStudy, GetPublicStudiesParams, Study } from "../types/study";
+import { GetPublicStudiesParams, Study } from "../types/study";
 
 // Create axios instance with base configuration
 const apiClient = axios.create({
@@ -207,7 +207,7 @@ class ApiService {
   // Get public studies with filters
   async getPublicStudies(
     params: GetPublicStudiesParams = {},
-  ): Promise<PublicStudy[]> {
+  ): Promise<Study[]> {
     const queryParams = new URLSearchParams();
     if (params.category) queryParams.append("category", params.category);
     if (params.filter) queryParams.append("filter", params.filter);
@@ -216,15 +216,15 @@ class ApiService {
     if (params.skip) queryParams.append("skip", params.skip.toString());
     if (params.likedOnly) queryParams.append("likedOnly", "true");
 
-    const response = await apiClient.get<PublicStudy[]>(
+    const response = await apiClient.get<Study[]>(
       `/studies/public?${queryParams.toString()}`,
     );
     return response.data;
   }
 
   // Get user's own studies
-  async getUserStudies(): Promise<PublicStudy[]> {
-    const response = await apiClient.get<PublicStudy[]>("/studies/my-studies");
+  async getUserStudies(): Promise<Study[]> {
+    const response = await apiClient.get<Study[]>("/studies/my-studies");
     return response.data;
   }
 

@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { PublicStudy } from "../../types/study";
+import { Study } from "../../types/study";
 import { apiService } from "../../services/api";
 import { ApiError } from "../../types/auth";
 import { StudyCard } from "../HomeExplore/components/StudyCard";
@@ -18,7 +18,7 @@ import { EditStudyModal } from "./components/EditStudyModal";
 const ITEMS_PER_PAGE = 12;
 
 export const MyStudies = () => {
-  const [studies, setStudies] = useState<PublicStudy[]>([]);
+  const [studies, setStudies] = useState<Study[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -30,9 +30,7 @@ export const MyStudies = () => {
   } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [studyToEdit, setStudyToEdit] = useState<
-    (PublicStudy & { isPublic?: boolean }) | null
-  >(null);
+  const [studyToEdit, setStudyToEdit] = useState<Study | null>(null);
   const [activeTab, setActiveTab] = useState<"all" | "public" | "private">(
     "all",
   );
@@ -70,17 +68,10 @@ export const MyStudies = () => {
     let result = studies;
 
     // Filter by tab (public/private)
-    // Note: getUserStudies returns studies with isPublic field, but PublicStudy type doesn't include it
     if (activeTab === "public") {
-      result = result.filter(
-        (study) =>
-          (study as PublicStudy & { isPublic?: boolean }).isPublic === true,
-      );
+      result = result.filter((study) => study.isPublic === true);
     } else if (activeTab === "private") {
-      result = result.filter(
-        (study) =>
-          (study as PublicStudy & { isPublic?: boolean }).isPublic === false,
-      );
+      result = result.filter((study) => study.isPublic === false);
     }
     // "all" tab shows all studies, no filtering needed
 
@@ -128,7 +119,7 @@ export const MyStudies = () => {
     // Find the study to edit
     const study = studies.find((s) => s._id === studyId);
     if (study) {
-      setStudyToEdit(study as PublicStudy & { isPublic?: boolean });
+      setStudyToEdit(study);
       setShowEditModal(true);
     }
   };
