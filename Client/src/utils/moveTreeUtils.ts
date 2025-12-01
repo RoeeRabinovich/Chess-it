@@ -65,6 +65,9 @@ export const getNodeAtPath = (
 /**
  * Gets all moves along a path (for replaying)
  * This replays ALL moves up to and including the path position
+ *
+ * Key insight: Branches are stored on the move node AFTER which they start.
+ * So if a branch is stored on tree[mainIndex], it starts from the position AFTER mainIndex's move.
  */
 export const getMovesAlongPath = (
   tree: MoveNode[],
@@ -76,7 +79,6 @@ export const getMovesAlongPath = (
     return moves; // At starting position
   }
 
-  // First, replay all main line moves up to (but not including) the path's main index
   const mainIndex = path[0];
   if (mainIndex < 0 || mainIndex >= tree.length) {
     return moves;
@@ -90,8 +92,12 @@ export const getMovesAlongPath = (
     return moves;
   }
 
-  // We're in a branch - the branch is stored on mainIndex (the move BEFORE the branch starts)
-  // So we replay main line moves up to and including mainIndex, then add branch moves
+  // We're in a branch
+  // Path format: [mainIndex, branchIndex, moveIndexInBranch, ...]
+  // The branch is stored on tree[mainIndex], meaning it starts AFTER mainIndex's move
+  // So we replay: all moves up to and including mainIndex, then branch moves
+
+  // Replay all main line moves up to and including mainIndex
   for (let i = 0; i <= mainIndex && i < tree.length; i++) {
     moves.push(tree[i].move);
   }
@@ -114,7 +120,7 @@ export const getMovesAlongPath = (
     }
     const branchSequence = currentNode.branches[branchIndex];
 
-    // Add all moves in the branch up to moveIndexInBranch
+    // Add all moves in the branch up to moveIndexInBranch (inclusive)
     for (let j = 0; j <= moveIndexInBranch && j < branchSequence.length; j++) {
       moves.push(branchSequence[j].move);
     }
@@ -147,7 +153,10 @@ export const loadPositionFromPath = (
 
 /**
  * Adds a move to the tree at the given path
- * If at the end of main line or a branch, extends it. Otherwise, creates a new branch.
+ *
+ * Key design: Branches are stored on the move node AFTER which they start.
+ * So if you're at move 1 (index 1) and create a branch, the branch is stored on tree[1],
+ * meaning it's an alternative continuation from the position AFTER move 1.
  */
 export const addMoveToTree = (
   tree: MoveNode[],
@@ -171,17 +180,13 @@ export const addMoveToTree = (
       tree.push(newNode);
       return { newPath: [tree.length - 1], isNewBranch: false };
     }
-    // Not at end - create a branch from the PREVIOUS move
-    // A branch from mainIndex is an alternative to mainIndex's move
-    // So it should be stored on the previous move node
-    if (mainIndex === 0) {
-      throw new Error("Cannot create branch from first move");
-    }
-    const previousNode = tree[mainIndex - 1];
+    // Not at end - create a branch from this main line move
+    // The branch is stored on mainIndex, meaning it starts AFTER mainIndex's move
+    const currentNode = tree[mainIndex];
     const newBranch: MoveNode[] = [{ move, branches: [] }];
-    previousNode.branches.push(newBranch);
-    const branchIndex = previousNode.branches.length - 1;
-    return { newPath: [mainIndex - 1, branchIndex, 0], isNewBranch: true };
+    currentNode.branches.push(newBranch);
+    const branchIndex = currentNode.branches.length - 1;
+    return { newPath: [mainIndex, branchIndex, 0], isNewBranch: true };
   }
 
   // We're in a branch - get the current node
@@ -208,7 +213,7 @@ export const addMoveToTree = (
         isNewBranch: false,
       };
     }
-    // Not at end - create a nested branch
+    // Not at end - create a nested branch from this branch move
     const newBranch: MoveNode[] = [{ move, branches: [] }];
     currentNode.branches.push(newBranch);
     const newBranchIndex = currentNode.branches.length - 1;
@@ -219,7 +224,6 @@ export const addMoveToTree = (
   }
 
   // Deeper nesting - similar logic
-  // For now, always create a new branch
   const newBranch: MoveNode[] = [{ move, branches: [] }];
   currentNode.branches.push(newBranch);
   const newBranchIndex = currentNode.branches.length - 1;

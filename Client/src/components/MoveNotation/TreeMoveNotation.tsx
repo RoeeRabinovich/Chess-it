@@ -45,32 +45,40 @@ const BranchSequence = ({
   if (branchSequence.length === 0) return null;
 
   // Calculate starting move number
+  // mainIndex is the move where the branch is stored
+  // The branch starts from the position AFTER mainIndex's move
+  // So the first branch move is at position mainIndex + 1
   const mainIndex = basePath[0] ?? 0;
-  const startMoveNumber = Math.floor(mainIndex / 2) + 1;
-  const isWhiteStart = mainIndex % 2 === 0;
+  const firstBranchMoveIndex = mainIndex + 1;
+  const startMoveNumber = Math.floor(firstBranchMoveIndex / 2) + 1;
+  const isFirstMoveWhite = firstBranchMoveIndex % 2 === 0;
+
+  // Calculate margin based on depth (ml-4, ml-8, ml-12, etc.)
+  const marginClass = depth === 0 ? "ml-4" : depth === 1 ? "ml-8" : "ml-12";
 
   return (
-    <div className={`ml-${4 + depth * 4} space-y-1`}>
+    <div
+      className={`${marginClass} flex flex-wrap items-center gap-0.5 sm:gap-1`}
+    >
       {branchSequence.map((node, moveIdx) => {
         // Path format: [mainIndex, branchIndex, moveIndexInBranch]
         // basePath is [mainIndex, branchIndex], so we just add moveIdx
         const movePath: MovePath = [...basePath, moveIdx];
-        // Calculate the actual move index: mainIndex is the move BEFORE the branch starts
-        // So branch move 0 is at position mainIndex, branch move 1 is at mainIndex + 1, etc.
-        const actualIndex = mainIndex + moveIdx;
+        // Calculate the actual move index: branch starts from mainIndex + 1
+        const actualIndex = firstBranchMoveIndex + moveIdx;
         const isBlackMove = actualIndex % 2 === 1;
         const moveNumber = Math.floor(actualIndex / 2) + 1;
         const isActive = pathToString(movePath) === pathToString(currentPath);
         const hasComment = comments.has(pathToString(movePath));
 
         return (
-          <div key={moveIdx} className="flex items-center gap-0.5 sm:gap-1">
-            {moveIdx === 0 && isWhiteStart && (
+          <span key={moveIdx} className="flex items-center gap-0.5 sm:gap-1">
+            {moveIdx === 0 && isFirstMoveWhite && (
               <span className="text-muted-foreground text-[10px] font-medium sm:text-xs">
                 {startMoveNumber}.
               </span>
             )}
-            {moveIdx === 0 && !isWhiteStart && (
+            {moveIdx === 0 && !isFirstMoveWhite && (
               <span className="text-muted-foreground text-[10px] font-medium sm:text-xs">
                 {startMoveNumber}...
               </span>
@@ -92,9 +100,9 @@ const BranchSequence = ({
               onClick={() => onMoveClick(movePath)}
               size="sm"
             />
-            {/* Render nested branches */}
+            {/* Render nested branches inline */}
             {node.branches.length > 0 && (
-              <div className="ml-4 space-y-1">
+              <>
                 {node.branches.map((nestedBranch, branchIdx) => {
                   // For nested branches, path is: [mainIndex, branchIndex, moveIndexInBranch, nestedBranchIndex]
                   const nestedBasePath: MovePath = [...movePath, branchIdx];
@@ -110,9 +118,9 @@ const BranchSequence = ({
                     />
                   );
                 })}
-              </div>
+              </>
             )}
-          </div>
+          </span>
         );
       })}
     </div>
@@ -140,6 +148,8 @@ export const TreeMoveNotation = ({
       const blackMove = mainLineMoves[i + 1] || null;
 
       // Get branches from this main line position
+      // Branches are stored on the move node AFTER which they start
+      // So branches from move i are stored on tree[i]
       const mainNode = moveTree[i];
       const branches = mainNode
         ? mainNode.branches.map((branchSequence, branchIdx) => ({
@@ -249,9 +259,9 @@ export const TreeMoveNotation = ({
                   )}
                 </div>
 
-                {/* Branches below the main line */}
+                {/* Branches below the main line - displayed inline */}
                 {pair.branches.length > 0 && (
-                  <div className="ml-4 space-y-1">
+                  <div className="ml-4 flex flex-wrap items-center gap-0.5 sm:gap-1">
                     {pair.branches.map((branch, branchIdx) => (
                       <BranchSequence
                         key={branchIdx}

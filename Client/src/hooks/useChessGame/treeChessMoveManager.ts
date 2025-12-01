@@ -28,16 +28,43 @@ export const useTreeChessMoveManager = ({
   const makeMove = useCallback(
     (move: ChessMove | { from: string; to: string; promotion?: string }) => {
       try {
-        const moveData = toMoveData(move);
+        // IMPORTANT: The chess board component has its own chess instance and executes the move
+        // before calling onMove. The move object passed here is already a valid ChessMove.
+        // We need to:
+        // 1. Load the correct position from the tree path into chessRef.current
+        // 2. Execute the move on chessRef.current to verify it's valid and get the ChessMove object
+        // 3. Add it to the tree
+        
         const currentPath = gameState.currentPath;
         
-        // CRITICAL: Ensure chess instance is at the position of the current path
-        // The chess board might have executed the move already, but we need to be
-        // at the correct position in the tree before adding the move
+        // Load the correct position from the tree path
+        // This ensures chessRef.current is at the right position
         if (!loadPositionForPath(chessRef.current, gameState)) {
-          console.error("Failed to load position for current path");
+          console.error("Failed to load position for current path", {
+            path: currentPath,
+            treeLength: gameState.moveTree.length,
+          });
           return false;
         }
+
+        // Convert move to MoveData format for execution
+        const moveData = toMoveData(move);
+        
+        // Execute the move on chessRef.current to verify it's valid
+        // This also gives us the proper ChessMove object with all metadata
+        const result = chessRef.current.move(moveData);
+        if (!result) {
+          console.error("Invalid move after loading position", {
+            move: moveData,
+            fen: chessRef.current.fen(),
+            path: currentPath,
+            turn: chessRef.current.turn(),
+          });
+          return false;
+        }
+
+        // Convert to ChessMove format
+        const newMove = toChessMove(result);
 
         // Check if we're at the end of the current path
         const isAtEnd = isAtEndOfPath(gameState.moveTree, currentPath);
@@ -46,9 +73,8 @@ export const useTreeChessMoveManager = ({
           // At the end - extend current path (main line or branch)
           return handlePathContinuation(
             chessRef.current,
-            moveData,
+            newMove,
             currentPath,
-            gameState,
             setGameState,
           );
         }
@@ -74,9 +100,8 @@ export const useTreeChessMoveManager = ({
         // Create a new branch from the current position
         return handleBranchCreation(
           chessRef.current,
-          moveData,
+          newMove,
           currentPath,
-          gameState,
           setGameState,
         );
       } catch (error) {
