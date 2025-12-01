@@ -110,7 +110,6 @@ export const ToolsSidebar = ({
   studyDescription,
   studyId,
   isLiked,
-  likesCount,
   isLiking,
   onLike,
   onUnlike,
