@@ -1,10 +1,7 @@
-import { useAuth } from "../../../hooks/useAuth";
 import { usePuzzleTimer } from "../../../hooks/usePuzzles/usePuzzleTimer";
 import { ThemeSelector } from "./ThemeSelector";
-import { Button } from "../../../components/ui/Button";
-import { RatingAnimation } from "../../../components/ui/RatingAnimation";
-import { Badge } from "../../../components/ui/Badge";
-import { Tooltip } from "../../../components/ui/Tooltip";
+import { PuzzleRatingSection } from "./PuzzleRatingSection";
+import { PuzzleTimerSection } from "./PuzzleTimerSection";
 
 interface PuzzlesSidebarProps {
   // Timer state
@@ -57,214 +54,30 @@ export const PuzzlesSidebar = ({
   currentUserRating,
   ratingChange,
 }: PuzzlesSidebarProps) => {
-  const { user } = useAuth();
-
-  // Use custom timer hook
   const { formattedTime } = usePuzzleTimer({
     isRunning: isTimerRunning,
     resetKey: puzzleKey,
   });
 
-  // Format time in seconds to MM:SS or HH:MM:SS format
-  const formatTime = (seconds: number): string => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-
-    if (hours > 0) {
-      return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-    }
-    return `${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  // Get user's puzzle rating - use currentUserRating if provided, otherwise fall back
-  const userRating = currentUserRating ?? user?.puzzleRating ?? 600;
-
-  // Extract turn from FEN (FEN format: "position w/b ..." - second part indicates turn)
-  const getTurnFromFen = (
-    fen: string | undefined,
-  ): "white" | "black" | null => {
-    if (!fen) return null;
-    const parts = fen.split(" ");
-    if (parts.length < 2) return null;
-    return parts[1] === "w" ? "white" : parts[1] === "b" ? "black" : null;
-  };
-
-  const initialTurn = getTurnFromFen(initialFen);
-
   return (
     <div className="bg-card flex h-full max-h-full flex-col overflow-x-hidden overflow-y-auto p-1 sm:p-1.5 lg:p-3">
-      {/* Desktop: Puzzle Rating & Turn (shown only on desktop) */}
-      <div className="hidden lg:block">
-        <div className="mb-2 flex items-center gap-1.5">
-          <div className="h-1.5 w-1.5 rounded-full bg-blue-500"></div>
-          <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
-            Puzzle Rating
-          </span>
-        </div>
-        <div className="mb-3">
-          <div className="px-2">
-            <Tooltip
-              content="Your puzzle solving rating. Improve by solving puzzles correctly!"
-              side="right"
-            >
-              <div>
-                {ratingChange !== null && ratingChange !== undefined ? (
-                  <RatingAnimation
-                    startValue={userRating - ratingChange}
-                    change={ratingChange}
-                    duration={1000}
-                  />
-                ) : (
-                  <div className="text-xl font-bold">{userRating}</div>
-                )}
-                <p className="text-muted-foreground text-xs">Your rating</p>
-              </div>
-            </Tooltip>
-          </div>
-        </div>
-        {initialTurn && (
-          <>
-            <div className="mb-2 flex items-center gap-1.5">
-              <div className="h-1.5 w-1.5 rounded-full bg-orange-500"></div>
-              <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
-                Turn
-              </span>
-            </div>
-            <div className="mb-3">
-              <div className="px-2">
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`h-3 w-3 shrink-0 border-2 ${
-                      initialTurn === "white"
-                        ? "border-black bg-white"
-                        : "border-white bg-black"
-                    }`}
-                  ></div>
-                  <span className="text-sm font-semibold">
-                    {initialTurn === "white" ? "White" : "Black"} to move
-                  </span>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-        <hr className="border-border/30 my-2" />
-      </div>
+      <PuzzleRatingSection
+        currentUserRating={currentUserRating}
+        ratingChange={ratingChange}
+        initialFen={initialFen}
+      />
 
-      {/* Try Again Button (shown when wrong move is made) */}
-      {showTryAgain && onTryAgain && !isPuzzleSolved && (
-        <>
-          <div className="mb-1.5">
-            <div className="px-2">
-              <Button
-                onClick={onTryAgain}
-                className="w-full text-xs"
-                variant="destructive"
-                size="sm"
-              >
-                Try Again
-              </Button>
-            </div>
-          </div>
-          <hr className="border-border/30 my-1.5" />
-        </>
-      )}
-
-      {/* Timer or Completion Section */}
-      {isPuzzleSolved ? (
-        <>
-          <div className="mb-1.5 flex items-center gap-1.5">
-            <div className="h-1.5 w-1.5 rounded-full bg-green-500"></div>
-            <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
-              Solved
-            </span>
-          </div>
-          <div className="mb-2">
-            <div className="px-2">
-              <div className="mb-1.5 text-lg font-bold text-green-600">
-                Puzzle Solved!
-              </div>
-
-              {/* Statistics */}
-              {timeTaken !== undefined && (
-                <div className="mb-2 space-y-0.5 text-xs">
-                  <p className="text-muted-foreground">
-                    <span className="font-semibold">Time:</span>{" "}
-                    {formatTime(timeTaken)}
-                  </p>
-                  {puzzleRating !== undefined && (
-                    <Tooltip
-                      content="Difficulty rating. Higher = harder puzzle"
-                      side="right"
-                    >
-                      <p className="text-muted-foreground cursor-default">
-                        <span className="font-semibold">Rating:</span>{" "}
-                        {puzzleRating}
-                      </p>
-                    </Tooltip>
-                  )}
-                  {puzzleThemes.length > 0 && (
-                    <div className="space-y-1">
-                      <p className="text-muted-foreground text-xs font-semibold">
-                        Themes:
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {puzzleThemes.map((theme) => (
-                          <Tooltip
-                            key={theme}
-                            content={`This puzzle demonstrates ${theme.toLowerCase()} tactics`}
-                            side="top"
-                          >
-                            <Badge variant="outline" size="sm">
-                              {theme}
-                            </Badge>
-                          </Tooltip>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Next Puzzle Button */}
-              {onNextPuzzle && (
-                <Button
-                  onClick={onNextPuzzle}
-                  className="bg-secondary w-full text-xs"
-                  variant="ghost"
-                  size="sm"
-                >
-                  Next Puzzle
-                </Button>
-              )}
-            </div>
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="mb-1 flex items-center gap-1.5">
-            <div
-              className={`h-1.5 w-1.5 rounded-full ${
-                isTimerRunning ? "animate-pulse bg-green-500" : "bg-gray-500"
-              }`}
-            ></div>
-            <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
-              Timer
-            </span>
-          </div>
-          <div className="mb-1.5">
-            <div className="px-2">
-              <div className="text-base font-bold sm:text-lg">
-                {formattedTime}
-              </div>
-              <p className="text-muted-foreground text-[10px] sm:text-xs">
-                {isTimerRunning ? "Solving..." : "Solved"}
-              </p>
-            </div>
-          </div>
-        </>
-      )}
+      <PuzzleTimerSection
+        isPuzzleSolved={isPuzzleSolved}
+        isTimerRunning={isTimerRunning}
+        formattedTime={formattedTime}
+        showTryAgain={showTryAgain}
+        onTryAgain={onTryAgain}
+        timeTaken={timeTaken}
+        puzzleRating={puzzleRating}
+        puzzleThemes={puzzleThemes}
+        onNextPuzzle={onNextPuzzle}
+      />
       <hr className="border-border/30 my-1.5" />
 
       {/* Theme Selector Section */}
