@@ -33,6 +33,9 @@ const moveBranchSchema = Joi.object({
   parentMoveIndex: Joi.number().integer().min(-1).required(),
   moves: Joi.array().items(chessMoveSchema).required(),
   startIndex: Joi.number().integer().min(0).required(),
+  // Optional fields for nested branches
+  parentBranchId: Joi.string().optional(),
+  parentMoveIndexInBranch: Joi.number().integer().min(0).optional(),
 });
 
 // Schema for opening information

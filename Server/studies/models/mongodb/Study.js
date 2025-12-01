@@ -25,6 +25,9 @@ const moveBranchSchema = new mongoose.Schema(
     parentMoveIndex: { type: Number, required: true },
     moves: [chessMoveSchema],
     startIndex: { type: Number, required: true },
+    // Optional fields for nested branches
+    parentBranchId: { type: String, required: false },
+    parentMoveIndexInBranch: { type: Number, required: false },
   },
   { _id: false }
 );
