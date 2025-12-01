@@ -1,6 +1,11 @@
 import { useRef, useCallback, useMemo } from "react";
 import { Chess } from "chess.js";
-import type { ChessGameState, ChessMove, MoveData, MovePath } from "../types/chess";
+import type {
+  ChessGameState,
+  ChessMove,
+  MoveData,
+  MovePath,
+} from "../types/chess";
 import { useChessComments } from "./useChessGame/useChessComments";
 import { useTreeChessNavigation } from "./useChessGame/treeChessNavigation";
 import { useChessTools } from "./useChessGame/useChessTools";
@@ -14,9 +19,8 @@ import { getMainLineMoves } from "../utils/moveTreeUtils";
 interface UseChessGameReviewParams {
   studyGameState: {
     position: string;
-    moves: ChessMove[];
-    branches: ChessGameState["branches"];
-    currentMoveIndex: number;
+    moveTree: ChessGameState["moveTree"];
+    currentPath: ChessGameState["currentPath"];
     isFlipped: boolean;
     opening?: ChessGameState["opening"];
     comments?: Record<string, string>;
@@ -72,7 +76,6 @@ export const useChessGameReview = ({
     chessRef,
     setGameState,
     createInitialState: () => gameState, // Use current state as initial
-    setCurrentBranchContext: undefined, // Not needed for tree structure
   });
 
   const mainLineMoves = useMemo(() => {
@@ -108,7 +111,7 @@ export const useChessGameReview = ({
     (path: MovePath) => {
       try {
         navigation.navigateToBranchMove(path);
-      } catch (error) {
+      } catch {
         onNavigationError?.("Failed to navigate to branch move.");
       }
     },
@@ -118,7 +121,7 @@ export const useChessGameReview = ({
   const goToPreviousMove = useCallback(() => {
     try {
       navigation.goToPreviousMove();
-    } catch (error) {
+    } catch {
       onNavigationError?.("Failed to navigate to previous move.");
     }
   }, [navigation, onNavigationError]);
@@ -126,7 +129,7 @@ export const useChessGameReview = ({
   const goToNextMove = useCallback(() => {
     try {
       navigation.goToNextMove();
-    } catch (error) {
+    } catch {
       onNavigationError?.("Failed to navigate to next move.");
     }
   }, [navigation, onNavigationError]);
@@ -141,8 +144,10 @@ export const useChessGameReview = ({
         navigation.navigateToPath([]);
       } catch (error) {
         console.error("Error resetting game:", error);
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
         onNavigationError?.(
-          "Failed to reset the game to the starting position.",
+          `Failed to reset the game to the starting position: ${errorMessage}`,
         );
       }
     },

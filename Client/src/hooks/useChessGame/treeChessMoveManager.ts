@@ -2,7 +2,6 @@ import { useCallback } from "react";
 import type { Chess } from "chess.js";
 import type { ChessGameState, ChessMove, MovePath } from "../../types/chess";
 import { toChessMove, toMoveData } from "../../utils/chessMoveUtils";
-import { addMoveToTree } from "../../utils/moveTreeUtils";
 import {
   isAtEndOfPath,
   findMatchingBranchAtPath,
@@ -34,9 +33,9 @@ export const useTreeChessMoveManager = ({
         // 1. Load the correct position from the tree path into chessRef.current
         // 2. Execute the move on chessRef.current to verify it's valid and get the ChessMove object
         // 3. Add it to the tree
-        
+
         const currentPath = gameState.currentPath;
-        
+
         // Load the correct position from the tree path
         // This ensures chessRef.current is at the right position
         if (!loadPositionForPath(chessRef.current, gameState)) {
@@ -49,7 +48,7 @@ export const useTreeChessMoveManager = ({
 
         // Convert move to MoveData format for execution
         const moveData = toMoveData(move);
-        
+
         // Execute the move on chessRef.current to verify it's valid
         // This also gives us the proper ChessMove object with all metadata
         const result = chessRef.current.move(moveData);
@@ -168,4 +167,3 @@ export const useTreeChessMoveManager = ({
     undoMove,
   };
 };
-

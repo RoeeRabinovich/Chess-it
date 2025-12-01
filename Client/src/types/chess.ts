@@ -94,12 +94,12 @@ export interface MoveNode {
  * Format: Array of segments, where each segment is:
  * - For main line: just the move index [0, 1, 2, ...]
  * - For branches: [mainIndex, branchIndex, moveIndexInBranch, branchIndex?, ...]
- * 
+ *
  * Examples:
  * - [5] = main line move 5
  * - [5, 0, 2] = move 2 in branch 0 from main line move 5
  * - [5, 0, 2, 1, 0] = move 0 in branch 1 from move 2 in branch 0 from main line move 5
- * 
+ *
  * Path structure: [mainMoveIndex, branchIndex?, moveIndexInBranch?, branchIndex?, ...]
  * - First number: always a move index in main line
  * - Subsequent pairs: [branchIndex, moveIndexInBranch]
@@ -120,28 +120,6 @@ export interface ChessGameState {
     eco: string;
   };
   comments?: Map<string, string>; // Key format: pathToString(path)
-}
-
-/**
- * Legacy: Represents a branch/variation in the move tree (DEPRECATED - use MoveNode tree)
- * @deprecated Use MoveNode tree structure instead
- */
-export interface MoveBranch {
-  id: string;
-  parentMoveIndex: number; // Index of the parent move in main line
-  moves: ChessMove[]; // Moves in this branch
-  startIndex: number; // Starting move index in main line
-  parentBranchId?: string; // If this branch was created from another branch, the parent branch ID
-  parentMoveIndexInBranch?: number; // If created from a branch, the move index in the parent branch where this branch starts
-}
-
-/**
- * Legacy: Tracks the current position within a variation branch (DEPRECATED - use MovePath)
- * @deprecated Use MovePath instead
- */
-export interface BranchContext {
-  branchId: string;
-  moveIndexInBranch: number;
 }
 
 /**

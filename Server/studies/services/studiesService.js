@@ -34,9 +34,8 @@ const createStudyService = async (userId, rawStudy) => {
       isPublic: rawStudy.isPublic,
       gameState: {
         position: rawStudy.gameState.position,
-        moves: rawStudy.gameState.moves,
-        branches: rawStudy.gameState.branches,
-        currentMoveIndex: rawStudy.gameState.currentMoveIndex,
+        moveTree: rawStudy.gameState.moveTree,
+        currentPath: rawStudy.gameState.currentPath,
         isFlipped: rawStudy.gameState.isFlipped,
         opening: rawStudy.gameState.opening,
         comments: rawStudy.gameState.comments || {},

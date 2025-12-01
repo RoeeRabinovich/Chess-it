@@ -1,5 +1,8 @@
 import { Chess } from "chess.js";
 
+type Square = string;
+type PromotionPiece = "q" | "r" | "b" | "n";
+
 /**
  * Converts UCI moves (e.g., "e2e4 e7e5") to SAN notation with move numbers (e.g., "1. e4 e5")
  */
@@ -12,7 +15,7 @@ export function convertUCIToSAN(
   try {
     const chess = new Chess(startingFen);
     const sanMoves: string[] = [];
-    
+
     // Determine starting move number based on FEN
     let moveNumber = 1;
     if (startingFen) {
@@ -27,15 +30,22 @@ export function convertUCIToSAN(
     for (let i = 0; i < uciMoves.length; i++) {
       const uciMove = uciMoves[i];
       if (!uciMove || typeof uciMove !== "string") continue;
-      
+
       // Clean the move string - remove any whitespace
       const cleanMove = uciMove.trim();
       if (cleanMove.length < 4) continue;
 
       try {
-        const from = cleanMove.substring(0, 2);
-        const to = cleanMove.substring(2, 4);
-        const promotion = cleanMove.length > 4 ? cleanMove[4].toLowerCase() : undefined;
+        const from = cleanMove.substring(0, 2) as Square;
+        const to = cleanMove.substring(2, 4) as Square;
+        const promotionChar =
+          cleanMove.length > 4 ? cleanMove[4].toLowerCase() : undefined;
+
+        // Validate promotion piece
+        const promotion: PromotionPiece | undefined =
+          promotionChar && ["q", "r", "b", "n"].includes(promotionChar)
+            ? (promotionChar as PromotionPiece)
+            : undefined;
 
         // Validate squares are valid
         if (!/^[a-h][1-8]$/.test(from) || !/^[a-h][1-8]$/.test(to)) {
@@ -45,7 +55,10 @@ export function convertUCIToSAN(
         // Check if move is legal before attempting it
         const legalMoves = chess.moves({ verbose: true });
         const isValidMove = legalMoves.some(
-          (m) => m.from === from && m.to === to && (!promotion || m.promotion === promotion)
+          (m) =>
+            m.from === from &&
+            m.to === to &&
+            (!promotion || m.promotion === promotion),
         );
 
         if (!isValidMove) {
@@ -57,9 +70,9 @@ export function convertUCIToSAN(
         const isWhiteTurn = chess.turn() === "w";
 
         const move = chess.move({
-          from: from as any,
-          to: to as any,
-          promotion: promotion as any,
+          from,
+          to,
+          promotion,
         });
 
         if (move) {
@@ -81,7 +94,12 @@ export function convertUCIToSAN(
       } catch (error) {
         // If a move fails, stop processing the rest of the line
         // This prevents cascading errors from invalid positions
-        // Silently break - the moves we've converted so far will be displayed
+        if (error instanceof Error) {
+          console.warn(
+            `Failed to convert UCI move at index ${i}: ${error.message}`,
+          );
+        }
+        // The moves we've converted so far will be displayed
         break;
       }
     }
@@ -89,7 +107,12 @@ export function convertUCIToSAN(
     return sanMoves.join(" ");
   } catch (error) {
     // If FEN is invalid or chess instance creation fails, return empty string
+    if (error instanceof Error) {
+      console.error(
+        `Failed to convert UCI to SAN: ${error.message}`,
+        startingFen ? `Starting FEN: ${startingFen}` : "",
+      );
+    }
     return "";
   }
 }
-

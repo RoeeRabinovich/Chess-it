@@ -18,19 +18,20 @@ const chessMoveSchema = new mongoose.Schema(
   { _id: false }
 );
 
-// Schema for a move branch/variation
-const moveBranchSchema = new mongoose.Schema(
-  {
-    id: { type: String, required: true },
-    parentMoveIndex: { type: Number, required: true },
-    moves: [chessMoveSchema],
-    startIndex: { type: Number, required: true },
-    // Optional fields for nested branches
-    parentBranchId: { type: String, required: false },
-    parentMoveIndexInBranch: { type: Number, required: false },
+// Schema for MoveNode (recursive tree structure)
+// Note: Mongoose doesn't support recursive schemas directly, so we use Mixed type
+// Structure validation is handled in Joi validation layer
+const moveNodeSchemaDefinition = {
+  move: chessMoveSchema,
+  branches: {
+    type: [[mongoose.Schema.Types.Mixed]], // Array of branch sequences, each sequence is an array of MoveNodes
+    default: [],
   },
-  { _id: false }
-);
+};
+
+const moveNodeSchema = new mongoose.Schema(moveNodeSchemaDefinition, {
+  _id: false,
+});
 
 // Schema for opening information
 const openingSchema = new mongoose.Schema(
@@ -77,18 +78,13 @@ const studySchema = new mongoose.Schema(
         required: true,
         default: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
       },
-      moves: {
-        type: [chessMoveSchema],
+      moveTree: {
+        type: [moveNodeSchema],
         default: [],
       },
-      branches: {
-        type: [moveBranchSchema],
+      currentPath: {
+        type: [Number], // Array of numbers: [mainIndex, branchIndex?, moveIndex?, ...]
         default: [],
-      },
-      currentMoveIndex: {
-        type: Number,
-        required: true,
-        default: -1,
       },
       isFlipped: {
         type: Boolean,

@@ -31,9 +31,8 @@ export const ReviewStudy = () => {
     if (!study?.gameState) {
       return {
         position: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-        moves: [],
-        branches: [],
-        currentMoveIndex: -1,
+        moveTree: [],
+        currentPath: [],
         isFlipped: false,
       };
     }
@@ -278,6 +277,19 @@ export const ReviewStudy = () => {
 
     fetchStudy();
   }, [id, toast, retryCount]);
+
+  // Auto-navigate to first move when study loads
+  useEffect(() => {
+    if (
+      study &&
+      chessGameReview.gameState.moveTree &&
+      chessGameReview.gameState.moveTree.length > 0 &&
+      chessGameReview.gameState.currentPath.length === 0
+    ) {
+      // Study has moves but is at starting position - navigate to first move
+      chessGameReview.navigateToMove(0);
+    }
+  }, [study, chessGameReview]);
 
   // Loading state
   if (loading) {

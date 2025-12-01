@@ -16,8 +16,6 @@ import {
   DescriptionTextarea,
   VisibilityRadio,
 } from "./CreateStudyFormFields";
-import { migrateTreeToBranches } from "../../../utils/treeMigration";
-import { pathToString } from "../../../utils/moveTreeUtils";
 
 interface CreateStudyModalProps {
   isOpen: boolean;
@@ -113,29 +111,16 @@ export const CreateStudyModal = ({
     setIsSubmitting(true);
 
     try {
-      // Convert tree structure to old format for backend compatibility
-      const { mainLine, branches } = migrateTreeToBranches(gameState.moveTree);
-      
-      // Convert comments Map to object (handle both Map and plain object)
+      // Convert comments Map to object for API
       const commentsObject: Record<string, string> = {};
       if (gameState.comments) {
         if (gameState.comments instanceof Map) {
           gameState.comments.forEach((value, key) => {
             commentsObject[key] = value;
           });
-        } else if (typeof gameState.comments === 'object') {
-          // Already an object, just copy it
+        } else if (typeof gameState.comments === "object") {
           Object.assign(commentsObject, gameState.comments);
         }
-      }
-
-      // Calculate currentMoveIndex from currentPath
-      // If currentPath is empty, we're at the start (-1)
-      // If currentPath is [mainIndex], we're at mainIndex
-      // If currentPath is in a branch, we use the mainIndex from the path
-      let currentMoveIndex = -1;
-      if (gameState.currentPath.length > 0) {
-        currentMoveIndex = gameState.currentPath[0];
       }
 
       const response = await apiService.createStudy({
@@ -149,12 +134,11 @@ export const CreateStudyModal = ({
         isPublic: formData.isPublic,
         gameState: {
           position: gameState.position,
-          moves: mainLine,
-          branches: branches,
-          currentMoveIndex: currentMoveIndex,
+          moveTree: gameState.moveTree,
+          currentPath: gameState.currentPath,
           isFlipped: gameState.isFlipped,
           opening: gameState.opening,
-          comments: Object.keys(commentsObject).length > 0 ? commentsObject : {},
+          comments: commentsObject,
         },
       });
 
@@ -196,11 +180,7 @@ export const CreateStudyModal = ({
       closeButtonDisabled={isSubmitting}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <FormField
-          label="Study Name"
-          error={errors.studyName}
-          required
-        >
+        <FormField label="Study Name" error={errors.studyName} required>
           <Input
             name="studyName"
             value={formData.studyName}
@@ -246,7 +226,7 @@ export const CreateStudyModal = ({
             type="submit"
             size="lg"
             disabled={isSubmitting}
-            className="group flex-1 bg-pastel-mint text-foreground hover:bg-pastel-mint/80 dark:!text-[#1A1A1A]"
+            className="group bg-pastel-mint text-foreground hover:bg-pastel-mint/80 flex-1 dark:!text-[#1A1A1A]"
           >
             {isSubmitting ? "Creating..." : "Create Study"}
             <RightArrow className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />

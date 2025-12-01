@@ -1,20 +1,18 @@
 import { useCallback } from "react";
 import type { Chess } from "chess.js";
-import type { ChessGameState, ChessMove } from "../../types/chess";
+import type { ChessGameState } from "../../types/chess";
 import { toChessMove } from "../../utils/chessMoveUtils";
 
 interface UseChessToolsParams {
   chessRef: React.MutableRefObject<Chess>;
   setGameState: React.Dispatch<React.SetStateAction<ChessGameState>>;
   createInitialState: () => ChessGameState;
-  setCurrentBranchContext?: () => void; // Not needed for tree, but kept for compatibility
 }
 
 export const useChessTools = ({
   chessRef,
   setGameState,
   createInitialState,
-  setCurrentBranchContext,
 }: UseChessToolsParams) => {
   const flipBoard = useCallback(() => {
     setGameState((prev) => ({
@@ -34,14 +32,13 @@ export const useChessTools = ({
           currentPath: [],
           comments: new Map<string, string>(),
         }));
-        setCurrentBranchContext?.();
         return true;
       } catch (error) {
         console.error("Invalid FEN:", error);
         return false;
       }
     },
-    [chessRef, setCurrentBranchContext, setGameState],
+    [chessRef, setGameState],
   );
 
   const loadPGN = useCallback(
@@ -60,21 +57,19 @@ export const useChessTools = ({
           currentPath: moveTree.length > 0 ? [moveTree.length - 1] : [],
           comments: new Map<string, string>(),
         }));
-        setCurrentBranchContext?.();
         return true;
       } catch (error) {
         console.error("Invalid PGN:", error);
         return false;
       }
     },
-    [chessRef, setCurrentBranchContext, setGameState],
+    [chessRef, setGameState],
   );
 
   const resetGame = useCallback(() => {
     chessRef.current.reset();
     setGameState(createInitialState());
-    setCurrentBranchContext?.();
-  }, [chessRef, createInitialState, setCurrentBranchContext, setGameState]);
+  }, [chessRef, createInitialState, setGameState]);
 
   return {
     flipBoard,

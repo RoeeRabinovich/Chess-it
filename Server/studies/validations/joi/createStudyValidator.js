@@ -27,16 +27,26 @@ const chessMoveSchema = Joi.object({
   color: Joi.string().valid("w", "b").required(),
 });
 
-// Schema for a move branch/variation
-const moveBranchSchema = Joi.object({
-  id: Joi.string().required(),
-  parentMoveIndex: Joi.number().integer().min(-1).required(),
-  moves: Joi.array().items(chessMoveSchema).required(),
-  startIndex: Joi.number().integer().min(0).required(),
-  // Optional fields for nested branches
-  parentBranchId: Joi.string().optional(),
-  parentMoveIndexInBranch: Joi.number().integer().min(0).optional(),
+// Schema for MoveNode (recursive tree structure)
+// Since Mongoose uses Mixed type for branches, we validate top-level structure only
+// Deep recursive validation happens in application code if needed
+const moveNodeSchema = Joi.object({
+  move: chessMoveSchema.required(),
+  branches: Joi.array()
+    .items(
+      Joi.array()
+        .items(Joi.object().unknown(true)) // Allow nested MoveNode objects
+        .max(100) // Limit branch sequence length
+    )
+    .max(50) // Limit number of branches per node
+    .required(),
 });
+
+// Schema for MovePath (array of numbers)
+const movePathSchema = Joi.array()
+  .items(Joi.number().integer().min(0))
+  .max(20) // Limit path depth
+  .required();
 
 // Schema for opening information
 const openingSchema = Joi.object({
@@ -47,9 +57,8 @@ const openingSchema = Joi.object({
 // Schema for gameState
 const gameStateSchema = Joi.object({
   position: Joi.string().custom(fenValidator).required(),
-  moves: Joi.array().items(chessMoveSchema).required(),
-  branches: Joi.array().items(moveBranchSchema).required(),
-  currentMoveIndex: Joi.number().integer().min(-1).required(),
+  moveTree: Joi.array().items(moveNodeSchema).required(),
+  currentPath: movePathSchema.required(),
   isFlipped: Joi.boolean().required(),
   opening: openingSchema.optional(),
   comments: Joi.object().pattern(Joi.string(), Joi.string()).optional(),
@@ -77,8 +86,8 @@ const createStudyValidator = (study) => {
     gameState: gameStateSchema
       .required()
       .custom((value, helpers) => {
-        // Ensure the study has at least one move
-        if (!value.moves || value.moves.length === 0) {
+        // Ensure the study has at least one move in the tree
+        if (!value.moveTree || value.moveTree.length === 0) {
           return helpers.error("any.custom", {
             message: "Study must contain at least one move.",
           });

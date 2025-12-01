@@ -45,7 +45,6 @@ export const useChessGame = () => {
     chessRef,
     setGameState,
     createInitialState,
-    setCurrentBranchContext: () => {}, // Not needed for tree structure
   });
 
   const helpers = useMemo(

@@ -168,7 +168,9 @@ class ApiService {
     category: "Opening" | "Endgame" | "Strategy" | "Tactics";
     description?: string;
     isPublic: boolean;
-    gameState: ChessGameState;
+    gameState: Omit<ChessGameState, "comments"> & {
+      comments?: Map<string, string> | Record<string, string>;
+    };
   }): Promise<{ id: string; studyName: string }> {
     // Convert comments Map to plain object for JSON serialization
     // Handle both Map and plain object cases
@@ -178,7 +180,7 @@ class ApiService {
         data.gameState.comments.forEach((value, key) => {
           commentsObject[key] = value;
         });
-      } else if (typeof data.gameState.comments === 'object') {
+      } else if (typeof data.gameState.comments === "object") {
         // Already an object, just copy it
         Object.assign(commentsObject, data.gameState.comments);
       }
