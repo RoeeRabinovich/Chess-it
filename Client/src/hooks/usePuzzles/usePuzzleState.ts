@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
-import { Puzzle } from "../../services/puzzleService";
-import { getPuzzles } from "../../services/puzzleService";
+import { Puzzle } from "../../services/puzzleService/puzzleService";
+import { getPuzzles } from "../../services/puzzleService/puzzleService";
 import { PUZZLE_THEMES } from "../../constants/puzzleThemes";
 import { useToast } from "../useToast";
 

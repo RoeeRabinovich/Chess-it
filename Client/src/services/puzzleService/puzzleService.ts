@@ -1,7 +1,7 @@
 import axios from "axios";
-import { buildPuzzleQueryParams } from "./puzzleService/utils/buildPuzzleQueryParams";
-import { parsePuzzleResponse } from "./puzzleService/utils/parsePuzzleResponse";
-import { handlePuzzleError } from "./puzzleService/utils/handlePuzzleError";
+import { buildPuzzleQueryParams } from "./utils/buildPuzzleQueryParams";
+import { parsePuzzleResponse } from "./utils/parsePuzzleResponse";
+import { handlePuzzleError } from "./utils/handlePuzzleError";
 
 // RapidAPI configuration
 const RAPIDAPI_KEY = "f4a0bf4fb8msh1dc8034ed679677p1d4ed1jsn766d960f3b32a";

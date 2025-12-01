@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Chess } from "chess.js";
 import { MoveData } from "../../types/chess";
-import { Puzzle } from "../../services/puzzleService";
+import { Puzzle } from "../../services/puzzleService/puzzleService";
 import { triggerConfetti } from "../../utils/confettiUtils";
 import {
   executeComputerMove,

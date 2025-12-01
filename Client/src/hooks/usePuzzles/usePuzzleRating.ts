@@ -4,7 +4,7 @@ import { login as loginAction } from "../../store/authSlice";
 import { userService } from "../../services/userService";
 import { useToast } from "../useToast";
 import { calculateRatingChange } from "../../utils/puzzleRatingUtils";
-import { Puzzle } from "../../services/puzzleService";
+import { Puzzle } from "../../services/puzzleService/puzzleService";
 
 interface UsePuzzleRatingProps {
   initialRating: number;

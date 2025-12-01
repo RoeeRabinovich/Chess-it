@@ -10,7 +10,7 @@
  * - etc.
  */
 
-import { Puzzle } from "../services/puzzleService";
+import { Puzzle } from "../services/puzzleService/puzzleService";
 
 export const mockPuzzles: Puzzle[] = [
   // 1. Immortal Game - Queen Sacrifice

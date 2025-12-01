@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Puzzle } from "../../../services/puzzleService";
+import { Puzzle } from "../../../services/puzzleService/puzzleService";
 import { Chess } from "chess.js";
 import { getTurnFromFen } from "../utils/getTurnFromFen";
 import { playComputerMove } from "../utils/playComputerMove";

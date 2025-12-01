@@ -1,5 +1,5 @@
 import { Chess } from "chess.js";
-import { Puzzle } from "../../../services/puzzleService";
+import { Puzzle } from "../../../services/puzzleService/puzzleService";
 
 /**
  * Play the first computer move from a puzzle
