@@ -10,7 +10,10 @@ const OPENING_DATABASE = {
   "e2e4 e7e5 g1f3 b8c6 f1c4 f8c5": { name: "Italian Game", eco: "C50" },
   "e2e4 c7c5": { name: "Sicilian Defense", eco: "B20" },
   "e2e4 c7c5 g1f3": { name: "Sicilian Defense", eco: "B20" },
-  "e2e4 c7c5 g1f3 d7d6": { name: "Sicilian Defense, Najdorf", eco: "B90" },
+  "e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4 g8f6 b1c3 a7a6": {
+    name: "Sicilian Defense, Najdorf",
+    eco: "B90",
+  },
   "d2d4 d7d5": { name: "Queen's Pawn Game", eco: "D00" },
   "d2d4 d7d5 c2c4": { name: "Queen's Gambit", eco: "D06" },
   "d2d4 d7d5 c2c4 e7e6": { name: "Queen's Gambit Declined", eco: "D30" },

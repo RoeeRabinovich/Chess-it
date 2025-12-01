@@ -1,7 +1,10 @@
 import type { Chess } from "chess.js";
 import type { ChessGameState, ChessMove, MoveData } from "../../types/chess";
 import { toMoveData } from "../../utils/chessMoveUtils";
-import { getMainLineMoves, getMovesAlongPath, loadPositionFromPath } from "../../utils/moveTreeUtils";
+import {
+  getMainLineMoves,
+  loadPositionFromPath,
+} from "../../utils/moveTreeUtils";
 
 interface ReviewMoveHandlersParams {
   chessRef: React.MutableRefObject<Chess>;
@@ -64,7 +67,9 @@ export const makeReviewMove = ({
       }
 
       // Load position from current path
-      if (!loadPositionFromPath(chessRef.current, gameState.moveTree, currentPath)) {
+      if (
+        !loadPositionFromPath(chessRef.current, gameState.moveTree, currentPath)
+      ) {
         onInvalidMove?.("Failed to load current position.");
         return false;
       }
@@ -99,7 +104,7 @@ export const undoReviewMove = ({
 }: ReviewMoveHandlersParams) => {
   return (): boolean => {
     const currentPath = gameState.currentPath;
-    
+
     if (currentPath.length === 0) {
       return false; // Already at start
     }
@@ -129,7 +134,9 @@ export const undoReviewMove = ({
       }
 
       // Load position from new path
-      if (!loadPositionFromPath(chessRef.current, gameState.moveTree, newPath)) {
+      if (
+        !loadPositionFromPath(chessRef.current, gameState.moveTree, newPath)
+      ) {
         return false;
       }
 
@@ -146,4 +153,3 @@ export const undoReviewMove = ({
     }
   };
 };
-

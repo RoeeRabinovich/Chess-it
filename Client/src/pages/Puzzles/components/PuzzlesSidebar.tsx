@@ -1,5 +1,5 @@
 import { useAuth } from "../../../hooks/useAuth";
-import { usePuzzleTimer } from "../../../hooks/usePuzzleTimer";
+import { usePuzzleTimer } from "../../../hooks/usePuzzles/usePuzzleTimer";
 import { ThemeSelector } from "./ThemeSelector";
 import { Button } from "../../../components/ui/Button";
 import { RatingAnimation } from "../../../components/ui/RatingAnimation";

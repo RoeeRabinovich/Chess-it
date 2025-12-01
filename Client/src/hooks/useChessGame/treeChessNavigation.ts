@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import type { Chess } from "chess.js";
 import type { ChessGameState, MovePath } from "../../types/chess";
-import { loadPositionFromPath, getMovesAlongPath } from "../../utils/moveTreeUtils";
+import { loadPositionFromPath } from "../../utils/moveTreeUtils";
 
 interface UseTreeChessNavigationParams {
   chessRef: React.MutableRefObject<Chess>;
@@ -54,7 +54,7 @@ export const useTreeChessNavigation = ({
 
   const goToPreviousMove = useCallback(() => {
     const currentPath = gameState.currentPath;
-    
+
     if (currentPath.length === 0) {
       return; // Already at start
     }
@@ -122,7 +122,7 @@ export const useTreeChessNavigation = ({
 
       // Get the branch sequence
       const branchSequence = tree[mainIndex].branches[branchIndex];
-      
+
       if (moveIndexInBranch < branchSequence.length - 1) {
         // More moves in this branch
         newPathArray[newPathArray.length - 1] = moveIndexInBranch + 1;
@@ -149,4 +149,3 @@ export const useTreeChessNavigation = ({
     goToNextMove,
   };
 };
-

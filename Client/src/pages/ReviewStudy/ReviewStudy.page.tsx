@@ -6,7 +6,7 @@ import { ApiError } from "../../types/auth";
 import { useToast } from "../../hooks/useToast";
 import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
 import { ErrorHandler } from "../../components/ErrorHandler/ErrorHandler";
-import { useChessGameReview } from "../../hooks/useChessGameReview";
+import { useChessGameReview } from "../../hooks/useChessGameReview/useChessGameReview";
 import { useOpeningDetection } from "../../hooks/useOpeningDetection";
 import { MobileStudyLayout } from "../CreateStudy/layouts/MobileStudyLayout";
 import { DesktopStudyLayout } from "../CreateStudy/layouts/DesktopStudyLayout";

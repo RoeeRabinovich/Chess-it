@@ -5,16 +5,13 @@ import type {
   ChessMove,
   MoveData,
   MovePath,
-} from "../types/chess";
-import { useChessComments } from "./useChessGame/useChessComments";
-import { useTreeChessNavigation } from "./useChessGame/treeChessNavigation";
-import { useChessTools } from "./useChessGame/useChessTools";
-import { useStudyInitialization } from "./useChessGameReview/useStudyInitialization";
-import {
-  makeReviewMove,
-  undoReviewMove,
-} from "./useChessGameReview/reviewMoveHandlers";
-import { getMainLineMoves } from "../utils/moveTreeUtils";
+} from "../../types/chess";
+import { useChessComments } from "../useChessGame/useChessComments";
+import { useTreeChessNavigation } from "../useChessGame/treeChessNavigation";
+import { useChessTools } from "../useChessGame/useChessTools";
+import { useStudyInitialization } from "./useStudyInitialization";
+import { makeReviewMove, undoReviewMove } from "./reviewMoveHandlers";
+import { getMainLineMoves } from "../../utils/moveTreeUtils";
 
 interface UseChessGameReviewParams {
   studyGameState: {

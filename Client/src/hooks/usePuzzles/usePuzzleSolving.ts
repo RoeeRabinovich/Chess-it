@@ -1,15 +1,15 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Chess } from "chess.js";
-import { MoveData } from "../types/chess";
-import { Puzzle } from "../services/puzzleService";
-import { triggerConfetti } from "../utils/confettiUtils";
+import { MoveData } from "../../types/chess";
+import { Puzzle } from "../../services/puzzleService";
+import { triggerConfetti } from "../../utils/confettiUtils";
 import {
   executeComputerMove,
   executeUserMove,
   validateMove,
   handlePuzzleCompletion,
   handleWrongMove,
-} from "../utils/puzzleMoveUtils";
+} from "../../utils/puzzleMoveUtils";
 
 interface UsePuzzleSolvingProps {
   currentPuzzle: Puzzle | null;

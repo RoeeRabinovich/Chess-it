@@ -1,8 +1,8 @@
 import { useState, useCallback } from "react";
-import { Puzzle } from "../services/puzzleService";
-import { getPuzzles } from "../services/puzzleService";
-import { PUZZLE_THEMES } from "../constants/puzzleThemes";
-import { useToast } from "./useToast";
+import { Puzzle } from "../../services/puzzleService";
+import { getPuzzles } from "../../services/puzzleService";
+import { PUZZLE_THEMES } from "../../constants/puzzleThemes";
+import { useToast } from "../useToast";
 
 interface UsePuzzleStateProps {
   userRating: number;
@@ -131,4 +131,3 @@ export const usePuzzleState = ({
     handleThemesApply,
   };
 };
-

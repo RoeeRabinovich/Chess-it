@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { useAppDispatch } from "../store/hooks";
-import { login as loginAction } from "../store/authSlice";
-import { apiService } from "../services/api";
-import { useToast } from "./useToast";
-import { calculateRatingChange } from "../utils/puzzleRatingUtils";
-import { Puzzle } from "../services/puzzleService";
+import { useAppDispatch } from "../../store/hooks";
+import { login as loginAction } from "../../store/authSlice";
+import { apiService } from "../../services/api";
+import { useToast } from "../useToast";
+import { calculateRatingChange } from "../../utils/puzzleRatingUtils";
+import { Puzzle } from "../../services/puzzleService";
 
 interface UsePuzzleRatingProps {
   initialRating: number;
@@ -106,4 +106,3 @@ export const usePuzzleRating = ({
     resetRatingState,
   };
 };
-

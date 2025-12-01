@@ -3,7 +3,7 @@ import { Chess } from "chess.js";
 import { MobileStudyLayout } from "./layouts/MobileStudyLayout";
 import { DesktopStudyLayout } from "./layouts/DesktopStudyLayout";
 import { CreateStudyModal } from "./components/CreateStudyModal";
-import { useChessGame } from "../../hooks/useChessGame";
+import { useChessGame } from "../../hooks/useChessGame/useChessGame.export";
 import { useOpeningDetection } from "../../hooks/useOpeningDetection";
 import { useStockfish } from "../../hooks/useStockfish";
 import { convertUCIToSAN } from "../../utils/chessNotation";
@@ -29,7 +29,7 @@ export const CreateStudy = () => {
     flipBoard,
     loadFEN,
     loadPGN,
-    navigateToMove,
+
     navigateToBranchMove,
     goToPreviousMove,
     goToNextMove,

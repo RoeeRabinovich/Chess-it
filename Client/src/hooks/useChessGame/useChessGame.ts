@@ -2,11 +2,11 @@ import { useMemo, useRef, useState } from "react";
 
 import { Chess } from "chess.js";
 
-import type { ChessGameState } from "../types/chess";
-import { useChessComments } from "./useChessGame/useChessComments";
-import { useTreeChessMoveManager } from "./useChessGame/treeChessMoveManager";
-import { useTreeChessNavigation } from "./useChessGame/treeChessNavigation";
-import { useChessTools } from "./useChessGame/useChessTools";
+import type { ChessGameState } from "../../types/chess";
+import { useChessComments } from "./useChessComments";
+import { useTreeChessMoveManager } from "./treeChessMoveManager";
+import { useTreeChessNavigation } from "./treeChessNavigation";
+import { useChessTools } from "./useChessTools";
 
 const createInitialState = (): ChessGameState => ({
   position: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
@@ -22,11 +22,10 @@ export const useChessGame = () => {
     createInitialState(),
   );
 
-  const {
-    addComment,
-    getComment,
-    getCommentKey,
-  } = useChessComments({ gameState, setGameState });
+  const { addComment, getComment, getCommentKey } = useChessComments({
+    gameState,
+    setGameState,
+  });
 
   const { makeMove, undoMove } = useTreeChessMoveManager({
     chessRef,
@@ -47,21 +46,19 @@ export const useChessGame = () => {
     createInitialState,
   });
 
-  const helpers = useMemo(
-    () => {
-      const currentPath = gameState.currentPath;
-      const isAtStart = currentPath.length === 0;
-      const mainLineMoves = gameState.moveTree.length;
-      const isAtEnd = currentPath.length === 1 && currentPath[0] === mainLineMoves - 1;
-      
-      return {
-        canUndo: !isAtStart,
-        canGoToPreviousMove: !isAtStart,
-        canGoToNextMove: !isAtEnd, // Simplified - could be more sophisticated
-      };
-    },
-    [gameState.currentPath, gameState.moveTree.length],
-  );
+  const helpers = useMemo(() => {
+    const currentPath = gameState.currentPath;
+    const isAtStart = currentPath.length === 0;
+    const mainLineMoves = gameState.moveTree.length;
+    const isAtEnd =
+      currentPath.length === 1 && currentPath[0] === mainLineMoves - 1;
+
+    return {
+      canUndo: !isAtStart,
+      canGoToPreviousMove: !isAtStart,
+      canGoToNextMove: !isAtEnd,
+    };
+  }, [gameState.currentPath, gameState.moveTree.length]);
 
   return {
     gameState,

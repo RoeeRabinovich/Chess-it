@@ -1,10 +1,13 @@
 import type { Chess } from "chess.js";
-import type { ChessMove, ChessGameState, MovePath, MoveData } from "../../types/chess";
-import { toChessMove } from "../../utils/chessMoveUtils";
+import type {
+  ChessMove,
+  ChessGameState,
+  MovePath,
+  MoveData,
+} from "../../types/chess";
 import {
   addMoveToTree,
   loadPositionFromPath,
-  getNodeAtPath,
   getBranchesAtPath,
 } from "../../utils/moveTreeUtils";
 
@@ -73,7 +76,7 @@ export const findMatchingBranchAtPath = (
   moveData: MoveData,
 ): MovePath | null => {
   const branches = getBranchesAtPath(tree, path);
-  
+
   for (let i = 0; i < branches.length; i++) {
     const branchSequence = branches[i];
     if (branchSequence.length > 0) {
@@ -104,9 +107,11 @@ export const handlePathContinuation = (
 ): boolean => {
   setGameState((prev) => {
     // Create a deep copy of the tree to avoid mutation issues
-    const treeCopy = JSON.parse(JSON.stringify(prev.moveTree)) as typeof prev.moveTree;
+    const treeCopy = JSON.parse(
+      JSON.stringify(prev.moveTree),
+    ) as typeof prev.moveTree;
     const { newPath } = addMoveToTree(treeCopy, currentPath, newMove);
-    
+
     return {
       ...prev,
       position: chess.fen(),
@@ -153,9 +158,11 @@ export const handleBranchCreation = (
 ): boolean => {
   setGameState((prev) => {
     // Create a deep copy to avoid mutation issues
-    const treeCopy = JSON.parse(JSON.stringify(prev.moveTree)) as typeof prev.moveTree;
+    const treeCopy = JSON.parse(
+      JSON.stringify(prev.moveTree),
+    ) as typeof prev.moveTree;
     const { newPath } = addMoveToTree(treeCopy, currentPath, newMove);
-    
+
     return {
       ...prev,
       position: chess.fen(),
@@ -179,4 +186,3 @@ export const loadPositionForPath = (
   // The gameState.position might be out of sync with the path
   return loadPositionFromPath(chess, gameState.moveTree, gameState.currentPath);
 };
-
