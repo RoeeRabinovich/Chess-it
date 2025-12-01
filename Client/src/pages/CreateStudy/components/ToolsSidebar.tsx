@@ -65,6 +65,7 @@ interface ToolsSidebarProps {
   // Like functionality (for review mode)
   studyId?: string;
   isLiked?: boolean;
+  likesCount?: number;
   isLiking?: boolean;
   onLike?: () => void;
   onUnlike?: () => void;
@@ -109,7 +110,7 @@ export const ToolsSidebar = ({
   studyDescription,
   studyId,
   isLiked,
-
+  likesCount,
   isLiking,
   onLike,
   onUnlike,

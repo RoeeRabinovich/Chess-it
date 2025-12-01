@@ -4,9 +4,9 @@ import { PuzzlesSidebar } from "./components/PuzzlesSidebar";
 import { PuzzlesTopBar } from "./components/PuzzlesTopBar";
 import { useAuth } from "../../hooks/useAuth";
 import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
-import { usePuzzleState } from "../../hooks/usePuzzleState";
-import { usePuzzleSolving } from "../../hooks/usePuzzleSolving";
-import { usePuzzleRating } from "../../hooks/usePuzzleRating";
+import { usePuzzleState } from "../../hooks/usePuzzles/usePuzzleState";
+import { usePuzzleSolving } from "../../hooks/usePuzzles/usePuzzleSolving";
+import { usePuzzleRating } from "../../hooks/usePuzzles/usePuzzleRating";
 import { Chess } from "chess.js";
 
 export const Puzzles = () => {
