@@ -64,6 +64,7 @@ export const getNodeAtPath = (
 
 /**
  * Gets all moves along a path (for replaying)
+ * This replays ALL moves up to and including the path position
  */
 export const getMovesAlongPath = (
   tree: MoveNode[],
@@ -72,28 +73,42 @@ export const getMovesAlongPath = (
   const moves: ChessMove[] = [];
 
   if (path.length === 0) {
-    return moves;
+    return moves; // At starting position
   }
 
-  // First segment: main line move
+  // First, replay all main line moves up to (but not including) the path's main index
   const mainIndex = path[0];
   if (mainIndex < 0 || mainIndex >= tree.length) {
     return moves;
   }
 
-  let currentNode = tree[mainIndex];
-  moves.push(currentNode.move);
+  // If path is just [mainIndex], we're on main line - replay all moves up to and including mainIndex
+  if (path.length === 1) {
+    for (let i = 0; i <= mainIndex && i < tree.length; i++) {
+      moves.push(tree[i].move);
+    }
+    return moves;
+  }
 
-  // Process remaining path segments in pairs
-  for (let i = 1; i < path.length; i += 2) {
-    const branchIndex = path[i];
-    const moveIndexInBranch = path[i + 1];
+  // We're in a branch - the branch is stored on mainIndex (the move BEFORE the branch starts)
+  // So we replay main line moves up to and including mainIndex, then add branch moves
+  for (let i = 0; i <= mainIndex && i < tree.length; i++) {
+    moves.push(tree[i].move);
+  }
+
+  // Now add branch moves
+  let currentNode = tree[mainIndex];
+  let pathIndex = 1;
+
+  while (pathIndex < path.length) {
+    const branchIndex = path[pathIndex];
+    const moveIndexInBranch = path[pathIndex + 1];
 
     if (branchIndex === undefined || moveIndexInBranch === undefined) {
       break;
     }
 
-    // Get all moves in the branch up to the target index
+    // Get the branch sequence
     if (branchIndex < 0 || branchIndex >= currentNode.branches.length) {
       break;
     }
@@ -110,6 +125,8 @@ export const getMovesAlongPath = (
     } else {
       break;
     }
+
+    pathIndex += 2; // Move to next pair [branchIndex, moveIndex]
   }
 
   return moves;
@@ -154,12 +171,17 @@ export const addMoveToTree = (
       tree.push(newNode);
       return { newPath: [tree.length - 1], isNewBranch: false };
     }
-    // Not at end - create a branch from this main line move
-    const currentNode = tree[mainIndex];
+    // Not at end - create a branch from the PREVIOUS move
+    // A branch from mainIndex is an alternative to mainIndex's move
+    // So it should be stored on the previous move node
+    if (mainIndex === 0) {
+      throw new Error("Cannot create branch from first move");
+    }
+    const previousNode = tree[mainIndex - 1];
     const newBranch: MoveNode[] = [{ move, branches: [] }];
-    currentNode.branches.push(newBranch);
-    const branchIndex = currentNode.branches.length - 1;
-    return { newPath: [mainIndex, branchIndex, 0], isNewBranch: true };
+    previousNode.branches.push(newBranch);
+    const branchIndex = previousNode.branches.length - 1;
+    return { newPath: [mainIndex - 1, branchIndex, 0], isNewBranch: true };
   }
 
   // We're in a branch - get the current node

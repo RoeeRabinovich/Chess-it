@@ -119,6 +119,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+
         <Route path="/studies/:id" element={<ReviewStudy />} />
         <Route path="/about" element={<About />} />
       </Routes>

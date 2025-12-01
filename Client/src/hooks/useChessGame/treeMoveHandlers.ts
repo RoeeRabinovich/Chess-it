@@ -99,21 +99,52 @@ export const handlePathContinuation = (
   chess: Chess,
   moveData: MoveData,
   currentPath: MovePath,
+  gameState: ChessGameState,
   setGameState: React.Dispatch<React.SetStateAction<ChessGameState>>,
 ): boolean => {
+  // CRITICAL: Load position from path BEFORE making the move
+  // The chess instance must be at the exact position of the current path
+  if (!loadPositionFromPath(chess, gameState.moveTree, currentPath)) {
+    console.error("Failed to load position for path continuation", {
+      path: currentPath,
+      treeLength: gameState.moveTree.length,
+    });
+    return false;
+  }
+
+  // Verify the position matches what we expect
+  const expectedFen = gameState.position;
+  const actualFen = chess.fen();
+  if (actualFen !== expectedFen) {
+    console.warn("Position mismatch after loading path", {
+      expected: expectedFen,
+      actual: actualFen,
+      path: currentPath,
+    });
+    // Use the loaded position (it's more accurate)
+  }
+
+  // Now make the move
   const result = chess.move(moveData);
   if (!result) {
+    console.error("Invalid move after loading position", {
+      move: moveData,
+      fen: chess.fen(),
+      path: currentPath,
+    });
     return false;
   }
 
   const newMove = toChessMove(result);
   setGameState((prev) => {
-    const { newPath } = addMoveToTree(prev.moveTree, currentPath, newMove);
+    // Create a deep copy of the tree to avoid mutation issues
+    const treeCopy = JSON.parse(JSON.stringify(prev.moveTree)) as typeof prev.moveTree;
+    const { newPath } = addMoveToTree(treeCopy, currentPath, newMove);
     
     return {
       ...prev,
       position: chess.fen(),
-      moveTree: [...prev.moveTree], // Trigger re-render
+      moveTree: treeCopy,
       currentPath: newPath,
     };
   });
@@ -151,21 +182,38 @@ export const handleBranchCreation = (
   chess: Chess,
   moveData: MoveData,
   currentPath: MovePath,
+  gameState: ChessGameState,
   setGameState: React.Dispatch<React.SetStateAction<ChessGameState>>,
 ): boolean => {
+  // CRITICAL: Load position from path BEFORE making the move
+  if (!loadPositionFromPath(chess, gameState.moveTree, currentPath)) {
+    console.error("Failed to load position for branch creation", {
+      path: currentPath,
+      treeLength: gameState.moveTree.length,
+    });
+    return false;
+  }
+
   const result = chess.move(moveData);
   if (!result) {
+    console.error("Invalid move for branch creation", {
+      move: moveData,
+      fen: chess.fen(),
+      path: currentPath,
+    });
     return false;
   }
 
   const newMove = toChessMove(result);
   setGameState((prev) => {
-    const { newPath, isNewBranch } = addMoveToTree(prev.moveTree, currentPath, newMove);
+    // Create a deep copy to avoid mutation issues
+    const treeCopy = JSON.parse(JSON.stringify(prev.moveTree)) as typeof prev.moveTree;
+    const { newPath, isNewBranch } = addMoveToTree(treeCopy, currentPath, newMove);
     
     return {
       ...prev,
       position: chess.fen(),
-      moveTree: [...prev.moveTree], // Trigger re-render
+      moveTree: treeCopy,
       currentPath: newPath,
     };
   });
@@ -175,16 +223,14 @@ export const handleBranchCreation = (
 
 /**
  * Loads the chess position for the current path
+ * This ensures the chess instance matches the tree state
  */
 export const loadPositionForPath = (
   chess: Chess,
   gameState: ChessGameState,
 ): boolean => {
-  try {
-    chess.load(gameState.position);
-    return true;
-  } catch {
-    return loadPositionFromPath(chess, gameState.moveTree, gameState.currentPath);
-  }
+  // Always load from the tree path to ensure consistency
+  // The gameState.position might be out of sync with the path
+  return loadPositionFromPath(chess, gameState.moveTree, gameState.currentPath);
 };
 

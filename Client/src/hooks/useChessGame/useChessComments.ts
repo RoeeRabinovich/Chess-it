@@ -1,11 +1,7 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 
-import type { BranchContext, ChessGameState } from "../../types/chess";
-import {
-  buildBranchCommentKey,
-  buildMainCommentKey,
-  resolveCommentKey,
-} from "../../utils/chessCommentUtils";
+import type { ChessGameState, MovePath } from "../../types/chess";
+import { pathToString } from "../../utils/moveTreeUtils";
 
 interface UseChessCommentsParams {
   gameState: ChessGameState;
@@ -16,23 +12,15 @@ export const useChessComments = ({
   gameState,
   setGameState,
 }: UseChessCommentsParams) => {
-  const [currentBranchContext, setCurrentBranchContext] = useState<BranchContext | null>(null);
-
-  const getCommentKey = useCallback(
-    (moveIndex: number, branchId?: string, moveIndexInBranch?: number) => {
-      if (branchId !== undefined && moveIndexInBranch !== undefined) {
-        return buildBranchCommentKey(branchId, moveIndexInBranch);
-      }
-      return buildMainCommentKey(moveIndex);
-    },
-    [],
-  );
+  const getCommentKey = useCallback((path: MovePath) => {
+    return pathToString(path);
+  }, []);
 
   const addComment = useCallback(
     (comment: string) => {
       setGameState((prev) => {
         const comments = new Map(prev.comments ?? new Map());
-        const key = resolveCommentKey(prev.currentMoveIndex, currentBranchContext);
+        const key = pathToString(prev.currentPath);
 
         if (comment.trim() === "") {
           comments.delete(key);
@@ -46,22 +34,20 @@ export const useChessComments = ({
         };
       });
     },
-    [currentBranchContext, setGameState],
+    [setGameState],
   );
 
   const getComment = useCallback(() => {
-    if (gameState.currentMoveIndex < 0 && !currentBranchContext) {
+    if (gameState.currentPath.length === 0) {
       return "";
     }
 
     const comments = gameState.comments ?? new Map();
-    const key = resolveCommentKey(gameState.currentMoveIndex, currentBranchContext);
+    const key = pathToString(gameState.currentPath);
     return comments.get(key) ?? "";
-  }, [currentBranchContext, gameState.comments, gameState.currentMoveIndex]);
+  }, [gameState.comments, gameState.currentPath]);
 
   return {
-    currentBranchContext,
-    setCurrentBranchContext,
     addComment,
     getComment,
     getCommentKey,

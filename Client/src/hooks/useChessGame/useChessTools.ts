@@ -1,18 +1,13 @@
 import { useCallback } from "react";
 import type { Chess } from "chess.js";
-import type {
-  BranchContext,
-  ChessGameState,
-  ChessMove,
-} from "../../types/chess";
+import type { ChessGameState, ChessMove } from "../../types/chess";
+import { toChessMove } from "../../utils/chessMoveUtils";
 
 interface UseChessToolsParams {
   chessRef: React.MutableRefObject<Chess>;
   setGameState: React.Dispatch<React.SetStateAction<ChessGameState>>;
   createInitialState: () => ChessGameState;
-  setCurrentBranchContext: React.Dispatch<
-    React.SetStateAction<BranchContext | null>
-  >;
+  setCurrentBranchContext?: () => void; // Not needed for tree, but kept for compatibility
 }
 
 export const useChessTools = ({
@@ -35,12 +30,11 @@ export const useChessTools = ({
         setGameState((prev) => ({
           ...prev,
           position: fen,
-          moves: [],
-          branches: [],
-          currentMoveIndex: -1,
+          moveTree: [],
+          currentPath: [],
           comments: new Map<string, string>(),
         }));
-        setCurrentBranchContext(null);
+        setCurrentBranchContext?.();
         return true;
       } catch (error) {
         console.error("Invalid FEN:", error);
@@ -54,18 +48,19 @@ export const useChessTools = ({
     (pgn: string) => {
       try {
         chessRef.current.loadPgn(pgn);
-        const moves = chessRef.current.history({
-          verbose: true,
-        }) as ChessMove[];
+        const history = chessRef.current.history({ verbose: true });
+        const moveTree = history.map((move) => ({
+          move: toChessMove(move),
+          branches: [],
+        }));
         setGameState((prev) => ({
           ...prev,
           position: chessRef.current.fen(),
-          moves,
-          branches: [],
-          currentMoveIndex: moves.length - 1,
+          moveTree,
+          currentPath: moveTree.length > 0 ? [moveTree.length - 1] : [],
           comments: new Map<string, string>(),
         }));
-        setCurrentBranchContext(null);
+        setCurrentBranchContext?.();
         return true;
       } catch (error) {
         console.error("Invalid PGN:", error);
@@ -78,7 +73,7 @@ export const useChessTools = ({
   const resetGame = useCallback(() => {
     chessRef.current.reset();
     setGameState(createInitialState());
-    setCurrentBranchContext(null);
+    setCurrentBranchContext?.();
   }, [chessRef, createInitialState, setCurrentBranchContext, setGameState]);
 
   return {

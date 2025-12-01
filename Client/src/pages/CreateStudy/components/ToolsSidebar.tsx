@@ -1,10 +1,11 @@
-import { MoveNotation } from "../../../components/MoveNotation/MoveNotation";
+import { TreeMoveNotation } from "../../../components/MoveNotation/TreeMoveNotation";
 import { ChessControls } from "../../../components/ChessControls/ChessControls";
 import { MoveComment } from "./MoveComment";
-import { ChessMove, MoveBranch, BranchContext } from "../../../types/chess";
+import { MovePath } from "../../../types/chess";
 import { StudyInfoSection } from "./StudyInfoSection";
 import { EngineLinesSection } from "./EngineLinesSection";
 import { SectionHeader } from "./SectionHeader";
+import { getMainLineMoves } from "../../../utils/moveTreeUtils";
 
 interface ToolsSidebarProps {
   // Engine Analysis
@@ -18,12 +19,9 @@ interface ToolsSidebarProps {
   }>;
 
   // Move History
-  moves: ChessMove[];
-  branches?: MoveBranch[];
-  currentMoveIndex: number;
-  currentBranchContext?: BranchContext | null;
-  onMoveClick: (moveIndex: number) => void;
-  onBranchMoveClick?: (branchId: string, moveIndexInBranch: number) => void;
+  moveTree: import("../../../types/chess").MoveNode[];
+  currentPath: MovePath;
+  onMoveClick: (path: MovePath) => void;
   opening?: { name: string; eco: string };
 
   // Game Controls
@@ -76,12 +74,9 @@ export const ToolsSidebar = ({
   isEngineEnabled,
   isAnalyzing,
   formattedEngineLines,
-  moves,
-  branches,
-  currentMoveIndex,
-  currentBranchContext,
+  moveTree,
+  currentPath,
   onMoveClick,
-  onBranchMoveClick,
   opening,
   onFlipBoard,
   onUndo,
@@ -140,19 +135,16 @@ export const ToolsSidebar = ({
           isAnalyzing={isAnalyzing}
           formattedEngineLines={formattedEngineLines}
           engineLinesCount={engineLinesCount}
-          movesCount={moves.length}
+          movesCount={getMainLineMoves(moveTree).length}
         />
       )}
 
       <SectionHeader title="Move History" />
       <div className="mb-2 flex-1 overflow-y-auto sm:mb-3 lg:mb-4">
-        <MoveNotation
-          moves={moves}
-          branches={branches}
-          currentMoveIndex={currentMoveIndex}
-          currentBranchContext={currentBranchContext}
+        <TreeMoveNotation
+          moveTree={moveTree}
+          currentPath={currentPath}
           onMoveClick={onMoveClick}
-          onBranchMoveClick={onBranchMoveClick}
           opening={opening}
           comments={comments}
         />

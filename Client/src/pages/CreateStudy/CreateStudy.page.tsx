@@ -7,6 +7,7 @@ import { useChessGame } from "../../hooks/useChessGame";
 import { useOpeningDetection } from "../../hooks/useOpeningDetection";
 import { useStockfish } from "../../hooks/useStockfish";
 import { convertUCIToSAN } from "../../utils/chessNotation";
+import { getMainLineMoves } from "../../utils/moveTreeUtils";
 
 export const CreateStudy = () => {
   // Engine settings state
@@ -37,10 +38,14 @@ export const CreateStudy = () => {
     canGoToNextMove,
     addComment,
     getComment,
-    currentBranchContext,
+    currentPath,
   } = useChessGame();
 
   // Engine analysis - use configurable settings
+  const mainLineMoves = useMemo(() => {
+    return getMainLineMoves(gameState.moveTree);
+  }, [gameState.moveTree]);
+
   const {
     isEngineEnabled,
     isAnalyzing,
@@ -51,7 +56,7 @@ export const CreateStudy = () => {
     evaluationPosition,
   } = useStockfish(
     gameState.position,
-    gameState.moves.length,
+    mainLineMoves.length,
     engineDepth,
     400,
     engineLinesCount,
@@ -164,8 +169,10 @@ export const CreateStudy = () => {
 
   // Detect opening when moves change
   useEffect(() => {
-    detectOpening(gameState.moves);
-  }, [gameState.moves, detectOpening]);
+    if (mainLineMoves.length > 0) {
+      detectOpening(mainLineMoves);
+    }
+  }, [mainLineMoves, detectOpening]);
 
   const formattedEngineLines = useMemo(() => {
     // Determine whose turn it is to negate evaluations if needed
@@ -203,12 +210,7 @@ export const CreateStudy = () => {
   }, [engineLines, gameState.position]);
 
   const handleMoveClick = useCallback(
-    (moveIndex: number) => navigateToMove(moveIndex),
-    [navigateToMove],
-  );
-  const handleBranchMoveClick = useCallback(
-    (branchId: string, moveIndexInBranch: number) =>
-      navigateToBranchMove(branchId, moveIndexInBranch),
+    (path: number[]) => navigateToBranchMove(path),
     [navigateToBranchMove],
   );
 
@@ -245,8 +247,7 @@ export const CreateStudy = () => {
     gameState,
     makeMove,
     onMoveClick: handleMoveClick,
-    onBranchMoveClick: handleBranchMoveClick,
-    currentBranchContext,
+    currentPath,
     isEngineEnabled,
     isAnalyzing,
     formattedEngineLines,

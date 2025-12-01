@@ -30,23 +30,31 @@ export const useTreeChessMoveManager = ({
       try {
         const moveData = toMoveData(move);
         const currentPath = gameState.currentPath;
+        
+        // CRITICAL: Ensure chess instance is at the position of the current path
+        // The chess board might have executed the move already, but we need to be
+        // at the correct position in the tree before adding the move
+        if (!loadPositionForPath(chessRef.current, gameState)) {
+          console.error("Failed to load position for current path");
+          return false;
+        }
+
+        // Check if we're at the end of the current path
         const isAtEnd = isAtEndOfPath(gameState.moveTree, currentPath);
 
         if (isAtEnd) {
-          // At the end - extend current path
+          // At the end - extend current path (main line or branch)
           return handlePathContinuation(
             chessRef.current,
             moveData,
             currentPath,
+            gameState,
             setGameState,
           );
         }
 
-        // Not at the end - need to check for branch continuation or creation
-        if (!loadPositionForPath(chessRef.current, gameState)) {
-          return false;
-        }
-
+        // Not at the end - we're in the middle of a sequence
+        // This means user is trying to create a branch
         // Check if this move matches an existing branch's first move
         const matchingPath = findMatchingBranchAtPath(
           gameState.moveTree,
@@ -63,11 +71,12 @@ export const useTreeChessMoveManager = ({
           );
         }
 
-        // Create a new branch
+        // Create a new branch from the current position
         return handleBranchCreation(
           chessRef.current,
           moveData,
           currentPath,
+          gameState,
           setGameState,
         );
       } catch (error) {

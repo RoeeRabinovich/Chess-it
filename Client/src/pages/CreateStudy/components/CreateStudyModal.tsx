@@ -83,7 +83,8 @@ export const CreateStudyModal = ({
     setErrors({});
 
     // Check if study has any moves
-    if (!gameState.moves || gameState.moves.length === 0) {
+    const mainLineMoves = gameState.moveTree.map((node) => node.move);
+    if (!mainLineMoves || mainLineMoves.length === 0) {
       toast({
         title: "Cannot Create Study",
         description: "Please add at least one move before creating a study.",

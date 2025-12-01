@@ -4,15 +4,14 @@ import { Chess } from "chess.js";
 
 import type { ChessGameState } from "../types/chess";
 import { useChessComments } from "./useChessGame/useChessComments";
-import { useChessMoveManager } from "./useChessGame/useChessMoveManager";
-import { useChessNavigation } from "./useChessGame/useChessNavigation";
+import { useTreeChessMoveManager } from "./useChessGame/treeChessMoveManager";
+import { useTreeChessNavigation } from "./useChessGame/treeChessNavigation";
 import { useChessTools } from "./useChessGame/useChessTools";
 
 const createInitialState = (): ChessGameState => ({
   position: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-  moves: [],
-  branches: [],
-  currentMoveIndex: -1,
+  moveTree: [],
+  currentPath: [],
   isFlipped: false,
   comments: new Map<string, string>(),
 });
@@ -24,43 +23,45 @@ export const useChessGame = () => {
   );
 
   const {
-    currentBranchContext,
-    setCurrentBranchContext,
     addComment,
     getComment,
     getCommentKey,
   } = useChessComments({ gameState, setGameState });
 
-  const { makeMove, undoMove } = useChessMoveManager({
+  const { makeMove, undoMove } = useTreeChessMoveManager({
     chessRef,
     gameState,
     setGameState,
     getCommentKey,
-    setCurrentBranchContext,
-    currentBranchContext,
   });
 
-  const navigation = useChessNavigation({
+  const navigation = useTreeChessNavigation({
     chessRef,
     gameState,
     setGameState,
-    setCurrentBranchContext,
   });
 
   const tools = useChessTools({
     chessRef,
     setGameState,
     createInitialState,
-    setCurrentBranchContext,
+    setCurrentBranchContext: () => {}, // Not needed for tree structure
   });
 
   const helpers = useMemo(
-    () => ({
-      canUndo: gameState.currentMoveIndex >= 0,
-      canGoToPreviousMove: gameState.currentMoveIndex >= 0,
-      canGoToNextMove: gameState.currentMoveIndex < gameState.moves.length - 1,
-    }),
-    [gameState.currentMoveIndex, gameState.moves.length],
+    () => {
+      const currentPath = gameState.currentPath;
+      const isAtStart = currentPath.length === 0;
+      const mainLineMoves = gameState.moveTree.length;
+      const isAtEnd = currentPath.length === 1 && currentPath[0] === mainLineMoves - 1;
+      
+      return {
+        canUndo: !isAtStart,
+        canGoToPreviousMove: !isAtStart,
+        canGoToNextMove: !isAtEnd, // Simplified - could be more sophisticated
+      };
+    },
+    [gameState.currentPath, gameState.moveTree.length],
   );
 
   return {
@@ -71,7 +72,7 @@ export const useChessGame = () => {
     flipBoard: tools.flipBoard,
     loadFEN: tools.loadFEN,
     loadPGN: tools.loadPGN,
-    navigateToMove: navigation.navigateToMove,
+    navigateToMove: navigation.navigateToMainLineMove,
     navigateToBranchMove: navigation.navigateToBranchMove,
     goToPreviousMove: navigation.goToPreviousMove,
     goToNextMove: navigation.goToNextMove,
@@ -80,6 +81,6 @@ export const useChessGame = () => {
     canUndo: helpers.canUndo,
     canGoToPreviousMove: helpers.canGoToPreviousMove,
     canGoToNextMove: helpers.canGoToNextMove,
-    currentBranchContext,
+    currentPath: gameState.currentPath, // Return path instead of branch context
   };
 };

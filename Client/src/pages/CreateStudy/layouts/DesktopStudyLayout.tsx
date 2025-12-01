@@ -9,8 +9,7 @@ export const DesktopStudyLayout = ({
   gameState,
   makeMove,
   onMoveClick,
-  onBranchMoveClick,
-  currentBranchContext,
+  currentPath,
   isEngineEnabled,
   isAnalyzing,
   formattedEngineLines,
@@ -135,14 +134,10 @@ export const DesktopStudyLayout = ({
           <ToolsSidebar
             isEngineEnabled={isEngineEnabled}
             isAnalyzing={isAnalyzing}
-            engineLines={[]} // Not used in desktop sidebar
             formattedEngineLines={formattedEngineLines}
-            moves={gameState.moves}
-            branches={gameState.branches || []}
-            currentMoveIndex={gameState.currentMoveIndex}
-            currentBranchContext={currentBranchContext}
+            moveTree={gameState.moveTree}
+            currentPath={currentPath}
             onMoveClick={onMoveClick}
-            onBranchMoveClick={onBranchMoveClick}
             opening={opening}
             onFlipBoard={onFlipBoard}
             onUndo={onUndo}
@@ -166,7 +161,7 @@ export const DesktopStudyLayout = ({
             onBoardScaleChange={onBoardScaleChange}
             currentMoveComment={currentMoveComment}
             onSaveComment={onSaveComment}
-            canComment={gameState.currentMoveIndex >= 0}
+            canComment={currentPath.length > 0}
             comments={gameState.comments}
             readOnlyComments={readOnlyComments}
             onCreateStudy={onCreateStudy}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { EvaluationBar } from "../../../components/EvaluationBar/EvaluationBar";
 import { EngineLines } from "../../../components/EngineLines/EngineLines";
-import { MoveNotation } from "../../../components/MoveNotation/MoveNotation";
+import { TreeMoveNotation } from "../../../components/MoveNotation/TreeMoveNotation";
 import { ChessControls } from "../../../components/ChessControls/ChessControls";
 import { MoveComment } from "../components/MoveComment";
 import { StudyMetadata } from "../components/StudyMetadata";
@@ -11,13 +11,13 @@ import { ChessMove } from "../../../types/chess";
 import { Button } from "../../../components/ui/Button";
 import { Heart } from "lucide-react";
 import { apiService } from "../../../services/api";
+import { getMainLineMoves } from "../../../utils/moveTreeUtils";
 
 export const MobileStudyLayout = ({
   gameState,
   makeMove,
   onMoveClick,
-  onBranchMoveClick,
-  currentBranchContext,
+  currentPath,
   isEngineEnabled,
   isAnalyzing,
   formattedEngineLines,
@@ -114,7 +114,7 @@ export const MobileStudyLayout = ({
         </div>
       ) : (
         // Create mode: Show engine lines
-        gameState.moves.length > 0 && (
+        getMainLineMoves(gameState.moveTree).length > 0 && (
           <div className="border-border bg-card w-full max-w-screen border-b py-1.5 sm:py-2">
             <div className="mb-1.5 flex items-center gap-1.5 px-2 sm:px-3">
               {isEngineEnabled && (
@@ -189,13 +189,10 @@ export const MobileStudyLayout = ({
           </span>
         </div>
         <div className="max-h-[150px] overflow-y-auto sm:max-h-[200px]">
-          <MoveNotation
-            moves={gameState.moves}
-            branches={gameState.branches || []}
-            currentMoveIndex={gameState.currentMoveIndex}
-            currentBranchContext={currentBranchContext}
+          <TreeMoveNotation
+            moveTree={gameState.moveTree}
+            currentPath={currentPath}
             onMoveClick={onMoveClick}
-            onBranchMoveClick={onBranchMoveClick}
             opening={opening}
             comments={gameState.comments}
           />
@@ -206,7 +203,7 @@ export const MobileStudyLayout = ({
       <MoveComment
         currentMoveComment={currentMoveComment}
         onSaveComment={onSaveComment}
-        canComment={gameState.currentMoveIndex >= 0}
+        canComment={currentPath.length > 0}
         readOnly={readOnlyComments}
       />
 

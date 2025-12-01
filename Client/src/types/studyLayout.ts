@@ -1,19 +1,11 @@
-import { ChessMove, MoveBranch, BranchContext } from "./chess";
+import { ChessGameState, MovePath } from "./chess";
 
 export interface StudyLayoutProps {
   // Game state
-  gameState: {
-    position: string;
-    moves: ChessMove[];
-    branches: MoveBranch[];
-    currentMoveIndex: number;
-    isFlipped: boolean;
-    comments?: Map<string, string>;
-  };
-  currentBranchContext?: BranchContext | null;
-  makeMove: (move: ChessMove) => boolean;
-  onMoveClick: (moveIndex: number) => void;
-  onBranchMoveClick: (branchId: string, moveIndexInBranch: number) => void;
+  gameState: ChessGameState;
+  currentPath: MovePath;
+  makeMove: (move: import("./chess").ChessMove) => boolean;
+  onMoveClick: (path: MovePath) => void;
 
   // Engine state
   isEngineEnabled: boolean;
