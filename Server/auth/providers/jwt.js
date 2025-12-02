@@ -20,7 +20,7 @@ const verifyAuthToken = (token) => {
     const userData = jwt.verify(token, key);
     return userData;
   } catch (error) {
-    throw new Error("Invalid token");
+    throw new Error(error.message || "Invalid token");
   }
 };
 

@@ -7,7 +7,7 @@ const tokenGenerator = config.get("TOKEN_GENERATOR");
 const auth = (req, res, next) => {
   if (tokenGenerator === "jwt") {
     try {
-      let tokenFromClient =
+      const tokenFromClient =
         req.headers["x-auth-token"] ||
         req.headers["authorization"]?.replace("Bearer ", "");
 
@@ -42,7 +42,7 @@ const auth = (req, res, next) => {
 const optionalAuth = (req, res, next) => {
   if (tokenGenerator === "jwt") {
     try {
-      let tokenFromClient =
+      const tokenFromClient =
         req.headers["x-auth-token"] ||
         req.headers["authorization"]?.replace("Bearer ", "");
 
@@ -54,8 +54,9 @@ const optionalAuth = (req, res, next) => {
         // If token is invalid, continue without req.user (don't throw error)
       }
       return next();
-    } catch (error) {
+    } catch {
       // If token verification fails, continue without req.user
+
       return next();
     }
   }

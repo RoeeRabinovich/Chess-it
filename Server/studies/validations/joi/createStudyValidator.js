@@ -7,7 +7,7 @@ const fenValidator = (value, helpers) => {
     const chess = new Chess();
     chess.load(value);
     return value;
-  } catch (error) {
+  } catch {
     return helpers.error("any.invalid", { message: "Invalid FEN string" });
   }
 };
