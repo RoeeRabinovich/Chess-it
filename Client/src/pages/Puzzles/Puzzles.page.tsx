@@ -108,11 +108,6 @@ export const Puzzles = () => {
       loadNextPuzzle,
     });
 
-  // Show loading state only when fetching puzzles
-  if (isLoading) {
-    return <LoadingSpinner fullScreen size="large" text="Loading puzzles..." />;
-  }
-
   // Use stored completion time if puzzle is solved, otherwise calculate current elapsed time
   const timeTaken =
     puzzleCompletionTime !== null
@@ -120,6 +115,11 @@ export const Puzzles = () => {
       : puzzleStartTime
         ? Math.floor((Date.now() - puzzleStartTime) / 1000)
         : undefined;
+
+  // Show loading state only when fetching puzzles
+  if (isLoading) {
+    return <LoadingSpinner fullScreen size="large" text="Loading puzzles..." />;
+  }
 
   // Top content (Rating & Turn) - shown above board on mobile/tablet
   const topContent = (

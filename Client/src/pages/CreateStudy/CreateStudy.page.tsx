@@ -10,8 +10,8 @@ import { useEvaluationDisplay } from "./hooks/useEvaluationDisplay";
 import { useFormattedEngineLines } from "./hooks/useFormattedEngineLines";
 
 export const CreateStudy = () => {
-  // Engine settings state
-  const [engineEnabled, setEngineEnabled] = useState(true);
+  // Engine settings state - lazy load: start with engine disabled
+  const [engineEnabled, setEngineEnabled] = useState(false);
   const [engineLinesCount, setEngineLinesCount] = useState(3);
   const [engineDepth, setEngineDepth] = useState(12);
   const [analysisMode, setAnalysisMode] = useState<"quick" | "deep">("quick");
@@ -81,6 +81,13 @@ export const CreateStudy = () => {
       detectOpening(mainLineMoves);
     }
   }, [mainLineMoves, detectOpening]);
+
+  // Lazy load: Auto-enable engine when user makes their first move
+  useEffect(() => {
+    if (mainLineMoves.length > 0 && !engineEnabled) {
+      setEngineEnabled(true);
+    }
+  }, [mainLineMoves.length, engineEnabled]);
 
   const formattedEngineLines = useFormattedEngineLines({
     engineLines,
