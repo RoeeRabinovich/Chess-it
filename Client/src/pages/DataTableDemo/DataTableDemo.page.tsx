@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   DataTable,
   DataTableColumn,
@@ -65,6 +65,8 @@ const mockUsers: DemoUser[] = [
 export const DataTableDemo = () => {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(3); // Small page size for demo
   const [sortState, setSortState] = useState<SortState>({
     column: null,
     direction: null,
@@ -148,6 +150,28 @@ export const DataTableDemo = () => {
     return result;
   }, [searchQuery, sortState, columns]);
 
+  // Paginate the filtered and sorted data
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filteredAndSortedData.slice(startIndex, endIndex);
+  }, [filteredAndSortedData, currentPage, pageSize]);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredAndSortedData.length / pageSize) || 1;
+
+  // Reset to page 1 when search or filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, sortState]);
+
+  // Adjust current page if it's out of bounds
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
   return (
     <div className="container mx-auto p-6">
       <div className="mb-6">
@@ -167,7 +191,7 @@ export const DataTableDemo = () => {
       </div>
 
       <DataTable
-        data={filteredAndSortedData}
+        data={paginatedData}
         columns={columns}
         rowIdKey="_id"
         loading={loading}
@@ -185,6 +209,18 @@ export const DataTableDemo = () => {
             setSortState({ column, direction });
             console.log("Sort changed:", { column, direction });
           },
+        }}
+        pagination={{
+          currentPage,
+          totalPages,
+          pageSize,
+          totalItems: filteredAndSortedData.length,
+          onPageChange: setCurrentPage,
+          onPageSizeChange: (newSize) => {
+            setPageSize(newSize);
+            setCurrentPage(1); // Reset to first page when page size changes
+          },
+          showPageSizeSelector: true,
         }}
         onRowClick={(row) => {
           console.log("Row clicked:", row);

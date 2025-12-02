@@ -6,7 +6,7 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground hover:bg-primary/90 dark:bg-pastel-mint dark:!text-[#1A1A1A] dark:hover:bg-pastel-mint/80",
+          "bg-pastel-mint text-primary-foreground hover:bg-pastel-mint/90 dark:bg-pastel-mint dark:!text-[#1A1A1A] dark:hover:bg-pastel-mint/80",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:

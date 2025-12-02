@@ -6,6 +6,7 @@ import { DataTableRow } from "./DataTableRow";
 import { DataTableLoading } from "./DataTableLoading";
 import { DataTableEmpty } from "./DataTableEmpty";
 import { DataTableToolbar } from "./DataTableToolbar";
+import { DataTablePagination } from "./DataTablePagination";
 
 /**
  * DataTable Component
@@ -23,8 +24,7 @@ export function DataTable<T extends Record<string, unknown>>({
   columns,
   rowIdKey,
   loading = false,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  pagination: _pagination,
+  pagination,
   search,
   sorting,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -119,6 +119,17 @@ export function DataTable<T extends Record<string, unknown>>({
               </tbody>
             </table>
           </div>
+          {pagination && (
+            <DataTablePagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              pageSize={pagination.pageSize}
+              totalItems={pagination.totalItems}
+              onPageChange={pagination.onPageChange}
+              onPageSizeChange={pagination.onPageSizeChange}
+              showPageSizeSelector={pagination.showPageSizeSelector}
+            />
+          )}
         </div>
       )}
     </div>

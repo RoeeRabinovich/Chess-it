@@ -17,6 +17,7 @@ export { DataTableCell } from "./DataTableCell";
 export { DataTableLoading } from "./DataTableLoading";
 export { DataTableEmpty } from "./DataTableEmpty";
 export { DataTableToolbar } from "./DataTableToolbar";
+export { DataTablePagination } from "./DataTablePagination";
 export { sortData, getValueFromRow } from "./utils";
 
 export type {
