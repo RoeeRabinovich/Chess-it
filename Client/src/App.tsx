@@ -19,6 +19,7 @@ import { Puzzles } from "./pages/Puzzles/Puzzles.page";
 import { Profile } from "./pages/Profile/Profile.page";
 import { MyStudies } from "./pages/MyStudies/MyStudies.page";
 import About from "./pages/About/About.page";
+import { DataTableDemo } from "./pages/DataTableDemo/DataTableDemo.page";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { Toaster } from "./components/ui/Toaster";
@@ -122,6 +123,7 @@ function AppContent() {
 
         <Route path="/studies/:id" element={<ReviewStudy />} />
         <Route path="/about" element={<About />} />
+        <Route path="/datatable-demo" element={<DataTableDemo />} />
       </Routes>
       <ConditionalFooter />
       <Toaster />

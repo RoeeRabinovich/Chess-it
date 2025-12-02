@@ -1,0 +1,53 @@
+import { DataTableColumn } from "../../types";
+import { cn } from "../../lib/utils";
+import { DataTableCell } from "./DataTableCell";
+
+export interface DataTableRowProps<T> {
+  row: T;
+  rowIndex: number;
+  columns: DataTableColumn<T>[];
+  getCellValue: (row: T, accessor: keyof T | ((row: T) => unknown)) => unknown;
+  onRowClick?: (row: T) => void;
+  hoverable?: boolean;
+  striped?: boolean;
+}
+
+/**
+ * DataTable Row Component
+ * Renders a single table row with cells
+ */
+export function DataTableRow<T extends Record<string, unknown>>({
+  row,
+  rowIndex,
+  columns,
+  getCellValue,
+  onRowClick,
+  hoverable = true,
+  striped = false,
+}: DataTableRowProps<T>) {
+  return (
+    <tr
+      onClick={() => onRowClick?.(row)}
+      className={cn(
+        "border-border border-b transition-colors",
+        hoverable && "hover:bg-muted/50 cursor-pointer",
+        striped && rowIndex % 2 === 0 && "bg-muted/30",
+        onRowClick && "cursor-pointer",
+      )}
+    >
+      {columns.map((column, colIndex) => {
+        const value = getCellValue(row, column.accessor);
+        return (
+          <DataTableCell
+            key={colIndex}
+            value={value}
+            row={row}
+            column={column}
+          />
+        );
+      })}
+    </tr>
+  );
+}
+
+DataTableRow.displayName = "DataTableRow";
