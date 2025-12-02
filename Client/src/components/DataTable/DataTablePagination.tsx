@@ -1,4 +1,3 @@
-import * as React from "react";
 import { Pagination } from "../ui/Pagination";
 import { DataTablePaginationProps } from "../../types";
 import { cn } from "../../lib/utils";

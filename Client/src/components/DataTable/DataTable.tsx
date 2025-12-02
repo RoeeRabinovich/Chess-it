@@ -27,8 +27,7 @@ export function DataTable<T extends Record<string, unknown>>({
   pagination,
   search,
   sorting,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  selection: _selection,
+  selection,
   emptyMessage = "No data available",
   emptyComponent,
   loadingComponent,
@@ -99,6 +98,8 @@ export function DataTable<T extends Record<string, unknown>>({
                 sortState={sorting?.state}
                 onSort={sorting?.onSort}
                 getColumnKey={getColumnKey}
+                selection={selection}
+                allRowIds={data.map((row) => getRowId(row))}
               />
               <tbody>
                 {data.map((row, rowIndex) => {
@@ -113,6 +114,8 @@ export function DataTable<T extends Record<string, unknown>>({
                       onRowClick={onRowClick}
                       hoverable={hoverable}
                       striped={striped}
+                      selection={selection}
+                      rowId={rowId}
                     />
                   );
                 })}

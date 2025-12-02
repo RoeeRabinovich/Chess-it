@@ -6,7 +6,16 @@ import {
   getColumnKey,
 } from "../../components/DataTable";
 import { Badge } from "../../components/ui/Badge";
+import { Button } from "../../components/ui/Button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../../components/ui/Dropdown-menu";
 import { sortData, filterData } from "../../components/DataTable/utils";
+import { MoreVertical, Edit, Trash, Eye } from "lucide-react";
 
 // Mock data type for demo
 interface DemoUser extends Record<string, unknown> {
@@ -67,6 +76,7 @@ export const DataTableDemo = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(3); // Small page size for demo
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [sortState, setSortState] = useState<SortState>({
     column: null,
     direction: null,
@@ -116,6 +126,67 @@ export const DataTableDemo = () => {
             month: "short",
             day: "numeric",
           });
+        },
+      },
+      {
+        header: "Actions",
+        accessor: "_id",
+        cellClassName: "text-center",
+        render: (_value, row) => {
+          const user = row as DemoUser;
+          return (
+            <div className="flex items-center justify-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                    <span className="sr-only">Open menu</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      alert(`View user: ${user.username}`);
+                    }}
+                  >
+                    <Eye className="mr-2 h-4 w-4" />
+                    View Details
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      alert(`Edit user: ${user.username}`);
+                    }}
+                  >
+                    <Edit className="mr-2 h-4 w-4" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (confirm(`Delete user ${user.username}?`)) {
+                        alert(`User ${user.username} deleted`);
+                      }
+                    }}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash className="mr-2 h-4 w-4" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          );
         },
       },
     ],
@@ -222,6 +293,11 @@ export const DataTableDemo = () => {
           },
           showPageSizeSelector: true,
         }}
+        selection={{
+          selectedIds: selectedUserIds,
+          onSelectionChange: setSelectedUserIds,
+          selectable: true,
+        }}
         onRowClick={(row) => {
           console.log("Row clicked:", row);
           alert(`Clicked on user: ${row.username}`);
@@ -229,7 +305,7 @@ export const DataTableDemo = () => {
         emptyMessage="No users found"
       />
 
-      <div className="text-muted-foreground mt-4 flex gap-4 text-sm">
+      <div className="text-muted-foreground mt-4 flex flex-wrap gap-4 text-sm">
         {searchQuery && (
           <div>
             Showing <strong>{filteredAndSortedData.length}</strong> of{" "}
@@ -241,6 +317,12 @@ export const DataTableDemo = () => {
           <div>
             Sorted by: <strong>{sortState.column}</strong> (
             {sortState.direction === "asc" ? "Ascending" : "Descending"})
+          </div>
+        )}
+        {selectedUserIds.length > 0 && (
+          <div>
+            <strong>{selectedUserIds.length}</strong>{" "}
+            {selectedUserIds.length === 1 ? "user" : "users"} selected
           </div>
         )}
       </div>
