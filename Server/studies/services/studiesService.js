@@ -46,6 +46,21 @@ const createStudyService = async (userId, rawStudy) => {
     // Save to database
     const result = await createStudy(normalizedStudy);
 
+    // Increment user's studiesCreated count
+    const User = require("../../users/models/mongodb/User");
+    try {
+      await User.findByIdAndUpdate(userId, {
+        $inc: { studiesCreated: 1 },
+      });
+    } catch (userUpdateError) {
+      // Log error but don't fail study creation
+      console.error(
+        `Failed to increment studiesCreated for user ${userId}:`,
+        userUpdateError
+      );
+      // Continue - study creation was successful
+    }
+
     return Promise.resolve(result);
   } catch (error) {
     return Promise.reject(error);

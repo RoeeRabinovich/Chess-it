@@ -15,7 +15,8 @@ import {
   DropdownMenuTrigger,
 } from "../../components/ui/Dropdown-menu";
 import { sortData, filterData } from "../../components/DataTable/utils";
-import { MoreVertical, Edit, Trash, Eye } from "lucide-react";
+import { MoreVertical, Edit, Trash } from "lucide-react";
+import { UserDetailsModal } from "./components/UserDetailsModal";
 import { DeleteSelectedModal } from "./components/DeleteSelectedModal";
 
 // Mock data type for demo
@@ -91,6 +92,8 @@ export const DataTableDemo = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [users, setUsers] = useState<DemoUser[]>(mockUsers);
+  const [selectedUser, setSelectedUser] = useState<DemoUser | null>(null);
+  const [isUserDetailsModalOpen, setIsUserDetailsModalOpen] = useState(false);
 
   // Column definitions
   const columns: DataTableColumn<DemoUser>[] = useMemo(
@@ -174,16 +177,8 @@ export const DataTableDemo = () => {
                   <DropdownMenuItem
                     onClick={(e) => {
                       e.stopPropagation();
-                      alert(`View user: ${user.username}`);
-                    }}
-                  >
-                    <Eye className="mr-2 h-4 w-4" />
-                    View Details
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      alert(`Edit user: ${user.username}`);
+                      setSelectedUser(user);
+                      setIsUserDetailsModalOpen(true);
                     }}
                   >
                     <Edit className="mr-2 h-4 w-4" />
@@ -403,6 +398,41 @@ export const DataTableDemo = () => {
         adminUsernames={adminUsers.map((user) => user.username)}
         isDeleting={isDeleting}
         onConfirm={handleDeleteSelected}
+      />
+
+      <UserDetailsModal
+        isOpen={isUserDetailsModalOpen}
+        onClose={() => {
+          setIsUserDetailsModalOpen(false);
+          setSelectedUser(null);
+        }}
+        user={selectedUser}
+        onUsernameUpdate={async (userId, newUsername) => {
+          // Update user in the list
+          setUsers((prevUsers) =>
+            prevUsers.map((u) =>
+              u._id === userId ? { ...u, username: newUsername } : u,
+            ),
+          );
+          // In production, this would be an API call
+          console.log("Username updated:", userId, newUsername);
+        }}
+        onRoleUpdate={async (userId, newRole) => {
+          // Update user in the list
+          setUsers((prevUsers) =>
+            prevUsers.map((u) =>
+              u._id === userId ? { ...u, role: newRole } : u,
+            ),
+          );
+          // In production, this would be an API call
+          console.log("Role updated:", userId, newRole);
+        }}
+        onPasswordReset={async (userId, email) => {
+          // In production, this would call the API to send password reset email
+          console.log("Password reset requested for:", userId, email);
+          // Simulate API call
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        }}
       />
 
       <div className="text-muted-foreground mt-4 flex flex-wrap gap-4 text-sm">
