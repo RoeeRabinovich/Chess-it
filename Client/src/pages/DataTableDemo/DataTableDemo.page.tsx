@@ -16,6 +16,7 @@ import {
 } from "../../components/ui/Dropdown-menu";
 import { sortData, filterData } from "../../components/DataTable/utils";
 import { MoreVertical, Edit, Trash, Eye } from "lucide-react";
+import { DeleteSelectedModal } from "./components/DeleteSelectedModal";
 
 // Mock data type for demo
 interface DemoUser extends Record<string, unknown> {
@@ -81,6 +82,9 @@ export const DataTableDemo = () => {
     column: null,
     direction: null,
   });
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [users, setUsers] = useState<DemoUser[]>(mockUsers);
 
   // Column definitions
   const columns: DataTableColumn<DemoUser>[] = useMemo(
@@ -195,10 +199,70 @@ export const DataTableDemo = () => {
     [],
   );
 
+  // Get selected users and separate admin from non-admin
+  const { adminUsers, nonAdminUsers } = useMemo(() => {
+    const selected = users.filter((user) => selectedUserIds.includes(user._id));
+    const admins = selected.filter((user) => user.role === "admin");
+    const nonAdmins = selected.filter((user) => user.role !== "admin");
+    return {
+      adminUsers: admins,
+      nonAdminUsers: nonAdmins,
+    };
+  }, [selectedUserIds, users]);
+
+  // Get selected usernames for the delete modal (only non-admin users)
+  const selectedUsernames = useMemo(() => {
+    return nonAdminUsers.map((user) => user.username);
+  }, [nonAdminUsers]);
+
+  // Handle delete selected users (only non-admin users)
+  const handleDeleteSelected = async () => {
+    // Only delete non-admin users
+    const nonAdminUserIds = nonAdminUsers.map((user) => user._id);
+
+    if (nonAdminUserIds.length === 0) {
+      setIsDeleteModalOpen(false);
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Remove only non-admin selected users from the list
+      setUsers((prevUsers) =>
+        prevUsers.filter((user) => !nonAdminUserIds.includes(user._id)),
+      );
+
+      // Clear selection
+      setSelectedUserIds([]);
+
+      // Close modal
+      setIsDeleteModalOpen(false);
+
+      // Reset to page 1 if current page is empty
+      const remainingCount = users.length - nonAdminUserIds.length;
+      if (
+        remainingCount > 0 &&
+        currentPage > Math.ceil(remainingCount / pageSize)
+      ) {
+        setCurrentPage(Math.ceil(remainingCount / pageSize));
+      } else if (remainingCount === 0) {
+        setCurrentPage(1);
+      }
+    } catch (error) {
+      console.error("Error deleting users:", error);
+      alert("Failed to delete users. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   // Filter and sort data
   const filteredAndSortedData = useMemo(() => {
     // First, filter the data
-    let result = filterData(mockUsers, columns, searchQuery);
+    let result = filterData(users, columns, searchQuery);
 
     // Then, sort the filtered data
     if (sortState.column && sortState.direction) {
@@ -221,7 +285,7 @@ export const DataTableDemo = () => {
     }
 
     return result;
-  }, [searchQuery, sortState, columns]);
+  }, [searchQuery, sortState, columns, users]);
 
   // Paginate the filtered and sorted data
   const paginatedData = useMemo(() => {
@@ -305,13 +369,34 @@ export const DataTableDemo = () => {
           alert(`Clicked on user: ${row.username}`);
         }}
         emptyMessage="No users found"
+      >
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={() => setIsDeleteModalOpen(true)}
+          disabled={selectedUserIds.length === 0}
+          className="ml-auto"
+        >
+          <Trash className="mr-2 h-4 w-4" />
+          Delete Selected{" "}
+          {selectedUserIds.length > 0 && `(${selectedUserIds.length})`}
+        </Button>
+      </DataTable>
+
+      <DeleteSelectedModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        usernames={selectedUsernames}
+        adminUsernames={adminUsers.map((user) => user.username)}
+        isDeleting={isDeleting}
+        onConfirm={handleDeleteSelected}
       />
 
       <div className="text-muted-foreground mt-4 flex flex-wrap gap-4 text-sm">
         {searchQuery && (
           <div>
             Showing <strong>{filteredAndSortedData.length}</strong> of{" "}
-            <strong>{mockUsers.length}</strong> users
+            <strong>{users.length}</strong> users
             {searchQuery && ` matching "${searchQuery}"`}
           </div>
         )}

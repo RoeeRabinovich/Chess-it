@@ -64,9 +64,25 @@ export function DataTableRow<T extends Record<string, unknown>>({
     onRowClick?.(row);
   };
 
+  const handleRowKeyDown = (e: React.KeyboardEvent<HTMLTableRowElement>) => {
+    if (onRowClick && (e.key === "Enter" || e.key === " ")) {
+      e.preventDefault();
+      const target = e.target as HTMLElement;
+      // Don't trigger if focus is on interactive element
+      if (
+        !target.closest('input[type="checkbox"]') &&
+        !target.closest('button') &&
+        !target.closest('[role="menuitem"]')
+      ) {
+        onRowClick(row);
+      }
+    }
+  };
+
   return (
     <tr
       onClick={handleRowClick}
+      onKeyDown={handleRowKeyDown}
       className={cn(
         "border-border border-b transition-colors",
         hoverable && "hover:bg-muted/50 cursor-pointer",
@@ -74,6 +90,9 @@ export function DataTableRow<T extends Record<string, unknown>>({
         onRowClick && "cursor-pointer",
         isSelected && "bg-accent/20",
       )}
+      tabIndex={onRowClick ? 0 : undefined}
+      role={onRowClick ? "button" : undefined}
+      aria-label={onRowClick ? `Row ${rowIndex + 1}` : undefined}
     >
       {isSelectable && (
         <td className="w-12 px-4 py-3" onClick={(e) => e.stopPropagation()}>

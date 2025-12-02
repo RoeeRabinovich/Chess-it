@@ -142,7 +142,14 @@ export function DataTableHeader<T extends Record<string, unknown>>({
                 minWidth: column.minWidth,
               }}
               onClick={() => handleSort(column, index)}
+              onKeyDown={(e) => {
+                if (isSortable && (e.key === "Enter" || e.key === " ")) {
+                  e.preventDefault();
+                  handleSort(column, index);
+                }
+              }}
               role={isSortable ? "button" : undefined}
+              tabIndex={isSortable ? 0 : undefined}
               aria-sort={
                 isSorted
                   ? sortDirection === "asc"
@@ -150,6 +157,11 @@ export function DataTableHeader<T extends Record<string, unknown>>({
                     : sortDirection === "desc"
                       ? "descending"
                       : "none"
+                  : undefined
+              }
+              aria-label={
+                isSortable
+                  ? `Sort by ${column.header}${isSorted ? ` (${sortDirection === "asc" ? "ascending" : "descending"})` : ""}`
                   : undefined
               }
             >

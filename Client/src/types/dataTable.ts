@@ -156,5 +156,8 @@ export interface DataTableProps<T> {
 
   /** Mobile card render function */
   renderMobileCard?: (row: T) => React.ReactNode;
+
+  /** Children (for toolbar actions, etc.) */
+  children?: React.ReactNode;
 }
 

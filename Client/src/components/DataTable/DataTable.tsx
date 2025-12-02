@@ -39,6 +39,7 @@ export function DataTable<T extends Record<string, unknown>>({
   containerClassName,
   responsive = true,
   renderMobileCard,
+  children,
 }: DataTableProps<T>) {
   // Get row ID helper function
   const getRowId = React.useCallback(
@@ -85,7 +86,9 @@ export function DataTable<T extends Record<string, unknown>>({
   if (loading) {
     return (
       <div className={cn("w-full", containerClassName)}>
-        {search && <DataTableToolbar search={search} />}
+        {search && (
+          <DataTableToolbar search={search}>{children}</DataTableToolbar>
+        )}
         <DataTableLoading
           customComponent={loadingComponent}
           message="Loading data..."
@@ -97,7 +100,9 @@ export function DataTable<T extends Record<string, unknown>>({
   // Basic table structure (will be enhanced in next steps)
   return (
     <div className={cn("w-full", containerClassName)}>
-      {search && <DataTableToolbar search={search} />}
+      {search && (
+        <DataTableToolbar search={search}>{children}</DataTableToolbar>
+      )}
       {data.length === 0 ? (
         <DataTableEmpty
           customComponent={emptyComponent}
