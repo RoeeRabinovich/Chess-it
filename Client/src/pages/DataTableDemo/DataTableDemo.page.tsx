@@ -25,6 +25,7 @@ interface DemoUser extends Record<string, unknown> {
   email: string;
   role: "admin" | "user";
   puzzleRating: number;
+  studiesCreated: number;
   createdAt: string;
 }
 
@@ -36,6 +37,7 @@ const mockUsers: DemoUser[] = [
     email: "chessmaster@example.com",
     role: "admin",
     puzzleRating: 1850,
+    studiesCreated: 12,
     createdAt: "2024-01-15T10:30:00Z",
   },
   {
@@ -44,6 +46,7 @@ const mockUsers: DemoUser[] = [
     email: "pawnpusher@example.com",
     role: "user",
     puzzleRating: 1200,
+    studiesCreated: 5,
     createdAt: "2024-02-20T14:15:00Z",
   },
   {
@@ -52,6 +55,7 @@ const mockUsers: DemoUser[] = [
     email: "knightrider@example.com",
     role: "user",
     puzzleRating: 1450,
+    studiesCreated: 8,
     createdAt: "2024-03-10T09:00:00Z",
   },
   {
@@ -60,6 +64,7 @@ const mockUsers: DemoUser[] = [
     email: "queenbee@example.com",
     role: "user",
     puzzleRating: 1650,
+    studiesCreated: 15,
     createdAt: "2024-01-05T16:45:00Z",
   },
   {
@@ -68,6 +73,7 @@ const mockUsers: DemoUser[] = [
     email: "rookstar@example.com",
     role: "user",
     puzzleRating: 1100,
+    studiesCreated: 3,
     createdAt: "2024-04-01T11:20:00Z",
   },
 ];
@@ -119,6 +125,13 @@ export const DataTableDemo = () => {
         render: (value) => (
           <span className="font-semibold">{String(value)}</span>
         ),
+      },
+      {
+        header: "Studies Created",
+        accessor: "studiesCreated",
+        sortable: true,
+        visible: (breakpoint) => breakpoint !== "mobile", // Hide on mobile
+        render: (value) => <span className="font-medium">{String(value)}</span>,
       },
       {
         header: "Join Date",

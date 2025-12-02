@@ -7,4 +7,5 @@ export interface User {
   role: "admin" | "user";
   createdAt: string;
   puzzleRating?: number;
+  studiesCreated?: number;
 }

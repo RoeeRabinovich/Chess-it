@@ -20,6 +20,7 @@ const getUserProfile = async (userId) => {
         "email",
         "createdAt",
         "puzzleRating",
+        "studiesCreated",
       ]);
       return Promise.resolve(userData);
     } catch (error) {
@@ -56,6 +57,7 @@ const updateUsername = async (userId, newUsername) => {
         "email",
         "createdAt",
         "puzzleRating",
+        "studiesCreated",
       ]);
       return Promise.resolve(userData);
     } catch (error) {
@@ -86,6 +88,7 @@ const updatePuzzleRating = async (userId, newRating) => {
         "email",
         "createdAt",
         "puzzleRating",
+        "studiesCreated",
       ]);
       return Promise.resolve(userData);
     } catch (error) {

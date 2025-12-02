@@ -42,6 +42,11 @@ const userSchema = new mongoose.Schema(
       default: 600,
       min: 0,
     },
+    studiesCreated: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
   },
   {
     timestamps: true,
