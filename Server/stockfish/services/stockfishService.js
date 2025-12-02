@@ -41,7 +41,6 @@ class StockfishService {
           this.isReady = true;
         });
       });
-
     } catch (error) {
       console.error("❌ Failed to initialize Stockfish:", error);
       this.isReady = true; // Allow requests but mock mode
@@ -101,7 +100,6 @@ class StockfishService {
           }
         }
 
-
         // Update main analysis (use line 1 - best line)
         // IMPORTANT: MultiPV 1 evaluation is the position evaluation BEFORE any moves
         // Other MultiPV lines show evaluation AFTER their first move
@@ -139,8 +137,6 @@ class StockfishService {
     if (message.startsWith("bestmove")) {
       if (this.currentAnalysis && this.currentAnalysis.resolve) {
         // Extract the best move from the bestmove message for verification
-        const bestMoveMatch = message.match(/bestmove (\S+)/);
-        const bestMove = bestMoveMatch ? bestMoveMatch[1] : "(none)";
 
         const finalDepth = this.currentAnalysis.depth;
         const requestedMultipv = this.currentAnalysis.requestedMultipv || 1;
@@ -158,7 +154,6 @@ class StockfishService {
           })
           .sort((a, b) => a.multipv - b.multipv); // Ensure MultiPV order is preserved
 
-
         // If we don't have all requested lines at final depth, log a warning
         if (validLines.length < requestedMultipv) {
           console.warn(
@@ -173,7 +168,6 @@ class StockfishService {
               .join(", ")}`
           );
         }
-
 
         // IMPORTANT: The evaluation in MultiPV lines is AFTER the first move is played
         // MultiPV 1 evaluation is the position evaluation (before any move)
@@ -216,7 +210,6 @@ class StockfishService {
     const analysisTime = isDeepMode ? 8000 : null; // 8 seconds for deep mode
     const maxTimeout = isDeepMode ? 12000 : 30000; // 12s for deep, 30s for quick
     const targetDepth = isDeepMode ? 99 : depth; // For deep mode, search as deep as possible
-
 
     // Create new analysis promise
     return new Promise((resolve, reject) => {
