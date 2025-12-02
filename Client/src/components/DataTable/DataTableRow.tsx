@@ -1,3 +1,4 @@
+import * as React from "react";
 import { DataTableColumn } from "../../types";
 import { cn } from "../../lib/utils";
 import { DataTableCell } from "./DataTableCell";

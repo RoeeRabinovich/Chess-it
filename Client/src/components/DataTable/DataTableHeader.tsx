@@ -1,3 +1,4 @@
+import * as React from "react";
 import { DataTableColumn, SortState } from "../../types";
 import { cn } from "../../lib/utils";
 import { ChevronUp, ChevronDown } from "lucide-react";
@@ -81,6 +82,19 @@ export function DataTableHeader<T extends Record<string, unknown>>({
     }
   };
 
+  // Filter columns based on visibility
+  const visibleColumns = React.useMemo(() => {
+    return columns.filter((col) => {
+      if (col.visible === false) return false;
+      if (typeof col.visible === "function") {
+        // For now, show all columns in table view
+        // Mobile card view will handle its own filtering
+        return true;
+      }
+      return true;
+    });
+  }, [columns]);
+
   return (
     <thead>
       <tr>
@@ -98,11 +112,19 @@ export function DataTableHeader<T extends Record<string, unknown>>({
             />
           </th>
         )}
-        {columns.map((column, index) => {
+        {visibleColumns.map((column, index) => {
           const columnKey = getColumnKey(column, index);
           const isSorted = sortState?.column === columnKey;
           const sortDirection = isSorted ? sortState.direction : null;
           const isSortable = column.sortable && !!onSort;
+
+          // Determine column visibility
+          const isVisible = column.visible !== false;
+          const visibilityClass = typeof column.visible === "function"
+            ? "" // Function-based visibility handled by CSS or logic
+            : column.visible === false
+              ? "hidden"
+              : "";
 
           return (
             <th
@@ -110,6 +132,9 @@ export function DataTableHeader<T extends Record<string, unknown>>({
               className={cn(
                 "border-border bg-muted border-b-2 px-4 py-3 text-left text-sm font-semibold",
                 isSortable && "hover:bg-muted/80 cursor-pointer select-none",
+                visibilityClass,
+                // Hide less important columns on mobile
+                typeof column.visible === "function" && "hidden sm:table-cell",
                 column.headerClassName,
               )}
               style={{

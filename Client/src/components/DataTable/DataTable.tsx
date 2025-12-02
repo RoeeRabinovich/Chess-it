@@ -7,6 +7,7 @@ import { DataTableLoading } from "./DataTableLoading";
 import { DataTableEmpty } from "./DataTableEmpty";
 import { DataTableToolbar } from "./DataTableToolbar";
 import { DataTablePagination } from "./DataTablePagination";
+import { DataTableMobileCard } from "./DataTableMobileCard";
 
 /**
  * DataTable Component
@@ -36,10 +37,8 @@ export function DataTable<T extends Record<string, unknown>>({
   striped = false,
   className,
   containerClassName,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  responsive: _responsive,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  renderMobileCard: _renderMobileCard,
+  responsive = true,
+  renderMobileCard,
 }: DataTableProps<T>) {
   // Get row ID helper function
   const getRowId = React.useCallback(
@@ -67,6 +66,21 @@ export function DataTable<T extends Record<string, unknown>>({
     [],
   );
 
+  // Detect mobile screen size (using Tailwind's sm breakpoint: 640px)
+  const [isMobile, setIsMobile] = React.useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth < 640;
+  });
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   // Render loading state
   if (loading) {
     return (
@@ -89,10 +103,48 @@ export function DataTable<T extends Record<string, unknown>>({
           customComponent={emptyComponent}
           message={emptyMessage}
         />
+      ) : responsive && isMobile ? (
+        // Mobile card view
+        <div className={cn("space-y-3", className)}>
+          {renderMobileCard
+            ? // Custom mobile card render function
+              data.map((row) => {
+                const rowId = getRowId(row);
+                return <div key={rowId}>{renderMobileCard(row)}</div>;
+              })
+            : // Default mobile card component
+              data.map((row) => {
+                const rowId = getRowId(row);
+                return (
+                  <DataTableMobileCard
+                    key={rowId}
+                    row={row}
+                    columns={columns}
+                    rowId={rowId}
+                    onRowClick={onRowClick}
+                    selection={selection}
+                  />
+                );
+              })}
+          {pagination && (
+            <div className="mt-4">
+              <DataTablePagination
+                currentPage={pagination.currentPage}
+                totalPages={pagination.totalPages}
+                pageSize={pagination.pageSize}
+                totalItems={pagination.totalItems}
+                onPageChange={pagination.onPageChange}
+                onPageSizeChange={pagination.onPageSizeChange}
+                showPageSizeSelector={pagination.showPageSizeSelector}
+              />
+            </div>
+          )}
+        </div>
       ) : (
+        // Desktop table view
         <div className={cn("bg-card rounded-lg border shadow-sm", className)}>
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
+          <div className="-mx-1 overflow-x-auto sm:mx-0">
+            <table className="w-full min-w-[640px] border-collapse">
               <DataTableHeader
                 columns={columns}
                 sortState={sorting?.state}

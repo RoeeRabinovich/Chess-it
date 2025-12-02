@@ -20,9 +20,20 @@ export function DataTableCell<T extends Record<string, unknown>>({
     ? column.render(value, row, column)
     : String(value ?? "");
 
+  // Determine column visibility
+  const visibilityClass = typeof column.visible === "function"
+    ? "hidden sm:table-cell" // Hide on mobile if function-based
+    : column.visible === false
+      ? "hidden"
+      : "";
+
   return (
     <td
-      className={cn("text-foreground px-4 py-3 text-sm", column.cellClassName)}
+      className={cn(
+        "text-foreground px-4 py-3 text-sm",
+        visibilityClass,
+        column.cellClassName,
+      )}
     >
       {cellContent}
     </td>

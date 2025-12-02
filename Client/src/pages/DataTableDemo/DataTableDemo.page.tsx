@@ -94,6 +94,7 @@ export const DataTableDemo = () => {
         header: "Email",
         accessor: "email",
         sortable: true,
+        visible: (breakpoint) => breakpoint !== "mobile", // Hide on mobile
       },
       {
         header: "Role",
@@ -119,6 +120,7 @@ export const DataTableDemo = () => {
         header: "Join Date",
         accessor: "createdAt",
         sortable: true,
+        visible: (breakpoint) => breakpoint !== "mobile", // Hide on mobile
         render: (value) => {
           const date = new Date(String(value));
           return date.toLocaleDateString("en-US", {
@@ -244,7 +246,7 @@ export const DataTableDemo = () => {
   }, [currentPage, totalPages]);
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto mt-10 p-6">
       <div className="mb-6">
         <h1 className="mb-2 text-3xl font-bold">DataTable Demo</h1>
         <p className="text-muted-foreground">

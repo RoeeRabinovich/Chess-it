@@ -29,13 +29,13 @@ export function DataTableToolbar({
   return (
     <div
       className={cn(
-        "border-border bg-card mb-4 flex items-center justify-between gap-4 rounded-lg border px-4 py-3 shadow-sm",
+        "border-border bg-card mb-4 flex flex-col items-stretch gap-3 rounded-lg border px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between",
         className,
       )}
     >
       <div className="flex flex-1 items-center gap-4">
         {search && (
-          <div className="max-w-sm flex-1">
+          <div className="w-full flex-1 sm:max-w-sm">
             <SearchInput
               value={search.value}
               onChange={search.onChange}

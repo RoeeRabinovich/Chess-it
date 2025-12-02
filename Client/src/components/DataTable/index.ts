@@ -18,6 +18,7 @@ export { DataTableLoading } from "./DataTableLoading";
 export { DataTableEmpty } from "./DataTableEmpty";
 export { DataTableToolbar } from "./DataTableToolbar";
 export { DataTablePagination } from "./DataTablePagination";
+export { DataTableMobileCard } from "./DataTableMobileCard";
 export { sortData, getValueFromRow } from "./utils";
 
 export type {
