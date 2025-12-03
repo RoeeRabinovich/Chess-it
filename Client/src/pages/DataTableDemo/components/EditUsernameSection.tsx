@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Button } from "../../../components/ui/Button";
 import { Input } from "../../../components/ui/Input";
-import { DemoUser } from "../types";
+import { User } from "../../../types/user";
 
 interface EditUsernameSectionProps {
-  user: DemoUser;
+  user: User;
   onUsernameUpdate?: (userId: string, newUsername: string) => Promise<void>;
 }
 
@@ -94,4 +94,3 @@ export const EditUsernameSection = ({
     </div>
   );
 };
-

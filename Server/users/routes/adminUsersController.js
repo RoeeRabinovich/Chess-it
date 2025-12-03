@@ -14,43 +14,33 @@ const {
 const { generalRateLimiter } = require("../../middlewares/rateLimiter");
 
 // Get all users with pagination and search (admin only)
-router.get(
-  "/users",
-  adminAuth,
-  generalRateLimiter,
-  async (req, res) => {
-    try {
-      const page = parseInt(req.query.page) || 1;
-      const pageSize = parseInt(req.query.pageSize) || 10;
-      const search = req.query.search || "";
+router.get("/", adminAuth, generalRateLimiter, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const search = req.query.search || "";
 
-      const result = await getAllUsersService(page, pageSize, search);
-      res.status(200).json(result);
-    } catch (error) {
-      return handleError(res, error.status || 500, error.message);
-    }
+    const result = await getAllUsersService(page, pageSize, search);
+    res.status(200).json(result);
+  } catch (error) {
+    return handleError(res, error.status || 500, error.message);
   }
-);
+});
 
 // Get user by ID (admin only)
-router.get(
-  "/users/:id",
-  adminAuth,
-  generalRateLimiter,
-  async (req, res) => {
-    try {
-      const { id } = req.params;
-      const user = await getUserByIdService(id);
-      res.status(200).json(user);
-    } catch (error) {
-      return handleError(res, error.status || 500, error.message);
-    }
+router.get("/:id", adminAuth, generalRateLimiter, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await getUserByIdService(id);
+    res.status(200).json(user);
+  } catch (error) {
+    return handleError(res, error.status || 500, error.message);
   }
-);
+});
 
 // Update user username (admin only)
 router.patch(
-  "/users/:id/username",
+  "/:id/username",
   adminAuth,
   generalRateLimiter,
   async (req, res) => {
@@ -71,30 +61,25 @@ router.patch(
 );
 
 // Update user role (admin only)
-router.patch(
-  "/users/:id/role",
-  adminAuth,
-  generalRateLimiter,
-  async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { isAdmin } = req.body;
+router.patch("/:id/role", adminAuth, generalRateLimiter, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isAdmin } = req.body;
 
-      if (typeof isAdmin !== "boolean") {
-        return handleError(res, 400, "isAdmin must be a boolean");
-      }
-
-      const user = await updateUserRoleService(id, isAdmin);
-      res.status(200).json(user);
-    } catch (error) {
-      return handleError(res, error.status || 500, error.message);
+    if (typeof isAdmin !== "boolean") {
+      return handleError(res, 400, "isAdmin must be a boolean");
     }
+
+    const user = await updateUserRoleService(id, isAdmin);
+    res.status(200).json(user);
+  } catch (error) {
+    return handleError(res, error.status || 500, error.message);
   }
-);
+});
 
 // Admin-initiated password reset (admin only)
 router.post(
-  "/users/:id/reset-password",
+  "/:id/reset-password",
   adminAuth,
   generalRateLimiter,
   async (req, res) => {
@@ -111,20 +96,14 @@ router.post(
 );
 
 // Delete user (admin only)
-router.delete(
-  "/users/:id",
-  adminAuth,
-  generalRateLimiter,
-  async (req, res) => {
-    try {
-      const { id } = req.params;
-      const result = await deleteUserService(id);
-      res.status(200).json(result);
-    } catch (error) {
-      return handleError(res, error.status || 500, error.message);
-    }
+router.delete("/:id", adminAuth, generalRateLimiter, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await deleteUserService(id);
+    res.status(200).json(result);
+  } catch (error) {
+    return handleError(res, error.status || 500, error.message);
   }
-);
+});
 
 module.exports = router;
-

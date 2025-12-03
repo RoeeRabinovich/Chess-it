@@ -23,6 +23,7 @@ import { DataTableDemo } from "./pages/DataTableDemo/DataTableDemo.page";
 import { AdminLayout } from "./pages/Admin/layouts/AdminLayout";
 import { AdminDashboard } from "./pages/Admin/Dashboard/Dashboard.page";
 import { AdminUsers } from "./pages/Admin/Users/Users.page";
+import { AdminStudies } from "./pages/Admin/Studies/Studies.page";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { Toaster } from "./components/ui/Toaster";
@@ -140,24 +141,7 @@ function AppContent() {
         >
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
-          <Route
-            path="studies"
-            element={
-              <div className="space-y-6">
-                <div>
-                  <h1 className="text-3xl font-bold">Study Management</h1>
-                  <p className="text-muted-foreground mt-2">
-                    Manage studies, visibility, and metadata
-                  </p>
-                </div>
-                <div className="bg-card rounded-lg border p-8 text-center">
-                  <p className="text-muted-foreground">
-                    Study management coming soon...
-                  </p>
-                </div>
-              </div>
-            }
-          />
+          <Route path="studies" element={<AdminStudies />} />
         </Route>
       </Routes>
       <ConditionalFooter />

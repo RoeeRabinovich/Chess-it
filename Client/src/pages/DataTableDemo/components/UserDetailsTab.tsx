@@ -1,9 +1,9 @@
 import { Badge } from "../../../components/ui/Badge";
 import { Avatar } from "../../../components/ui/Avatar";
-import { DemoUser } from "../types";
+import { User } from "../../../types/user";
 
 interface UserDetailsTabProps {
-  user: DemoUser;
+  user: User;
   formatDate: (dateString: string) => string;
 }
 
@@ -18,9 +18,15 @@ export const UserDetailsTab = ({ user, formatDate }: UserDetailsTabProps) => {
               {user.username}
             </h3>
             <Badge
-              variant={user.role === "admin" ? "default" : "secondary"}
+              variant={
+                user.isAdmin === true || user.role === "admin"
+                  ? "default"
+                  : "secondary"
+              }
             >
-              {user.role.toUpperCase()}
+              {user.isAdmin === true || user.role === "admin"
+                ? "ADMIN"
+                : "USER"}
             </Badge>
           </div>
           <p className="text-muted-foreground text-sm">{user.email}</p>
@@ -47,9 +53,15 @@ export const UserDetailsTab = ({ user, formatDate }: UserDetailsTabProps) => {
             </label>
             <div className="mt-1">
               <Badge
-                variant={user.role === "admin" ? "default" : "secondary"}
+                variant={
+                  user.isAdmin === true || user.role === "admin"
+                    ? "default"
+                    : "secondary"
+                }
               >
-                {user.role.toUpperCase()}
+                {user.isAdmin === true || user.role === "admin"
+                  ? "ADMIN"
+                  : "USER"}
               </Badge>
             </div>
           </div>
@@ -73,13 +85,10 @@ export const UserDetailsTab = ({ user, formatDate }: UserDetailsTabProps) => {
             <label className="text-muted-foreground text-sm font-medium">
               Join Date
             </label>
-            <p className="text-foreground mt-1">
-              {formatDate(user.createdAt)}
-            </p>
+            <p className="text-foreground mt-1">{formatDate(user.createdAt)}</p>
           </div>
         </div>
       </div>
     </div>
   );
 };
-

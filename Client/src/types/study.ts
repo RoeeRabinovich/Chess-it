@@ -17,7 +17,7 @@ export interface GetPublicStudiesParams {
  * For list views, gameState only contains position
  * For full study review, gameState contains complete moveTree and currentPath
  */
-export interface Study {
+export interface Study extends Record<string, unknown> {
   _id: string;
   studyName: string;
   category: "Opening" | "Endgame" | "Strategy" | "Tactics";
