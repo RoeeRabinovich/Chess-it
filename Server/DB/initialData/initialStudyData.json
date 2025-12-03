@@ -1,8 +1,8 @@
 [
   {
-    "studyName": "Ruy Lopez Opening - Main Line",
+    "studyName": "Ruy Lopez – Morphy Defense",
     "category": "Opening",
-    "description": "A comprehensive study of the Ruy Lopez, one of the oldest and most respected openings in chess.",
+    "description": "Classic Ruy Lopez development focusing on flexible piece placement and kingside safety.",
     "isPublic": true,
     "gameState": {
       "position": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
@@ -14,7 +14,7 @@
             "san": "e4",
             "lan": "e2e4",
             "before": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-            "after": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+            "after": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
             "flags": "b",
             "piece": "p",
             "color": "w"
@@ -27,8 +27,8 @@
             "to": "e5",
             "san": "e5",
             "lan": "e7e5",
-            "before": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
-            "after": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+            "before": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+            "after": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
             "flags": "b",
             "piece": "p",
             "color": "b"
@@ -41,7 +41,7 @@
             "to": "f3",
             "san": "Nf3",
             "lan": "g1f3",
-            "before": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+            "before": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
             "after": "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
             "flags": "n",
             "piece": "n",
@@ -75,61 +75,195 @@
             "piece": "b",
             "color": "w"
           },
-          "branches": [
-            [
-              {
-                "move": {
-                  "from": "a7",
-                  "to": "a6",
-                  "san": "a6",
-                  "lan": "a7a6",
-                  "before": "r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3",
-                  "after": "r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4",
-                  "flags": "n",
-                  "piece": "p",
-                  "color": "b"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "b5",
-                  "to": "a4",
-                  "san": "Ba4",
-                  "lan": "b5a4",
-                  "before": "r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4",
-                  "after": "r1bqkbnr/1ppp1ppp/p1n5/4p3/B3P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 4",
-                  "flags": "n",
-                  "piece": "b",
-                  "color": "w"
-                },
-                "branches": []
-              }
-            ]
-          ]
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "a7",
+            "to": "a6",
+            "san": "a6",
+            "lan": "a7a6",
+            "before": "r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3",
+            "after": "r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4",
+            "flags": "n",
+            "piece": "p",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "b5",
+            "to": "a4",
+            "san": "Ba4",
+            "lan": "b5a4",
+            "before": "r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4",
+            "after": "r1bqkbnr/1ppp1ppp/p1n5/4p3/B3P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 4",
+            "flags": "n",
+            "piece": "b",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "g8",
+            "to": "f6",
+            "san": "Nf6",
+            "lan": "g8f6",
+            "before": "r1bqkbnr/1ppp1ppp/p1n5/4p3/B3P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 4",
+            "after": "r1bqkb1r/1ppp1ppp/p1n2n2/4p3/B3P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 2 5",
+            "flags": "n",
+            "piece": "n",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e1",
+            "to": "g1",
+            "san": "O-O",
+            "lan": "e1g1",
+            "before": "r1bqkb1r/1ppp1ppp/p1n2n2/4p3/B3P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 2 5",
+            "after": "r1bqkb1r/1ppp1ppp/p1n2n2/4p3/B3P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 3 5",
+            "flags": "k",
+            "piece": "k",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f8",
+            "to": "e7",
+            "san": "Be7",
+            "lan": "f8e7",
+            "before": "r1bqkb1r/1ppp1ppp/p1n2n2/4p3/B3P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 3 5",
+            "after": "r1bqk2r/1pppbppp/p1n2n2/4p3/B3P3/5N2/PPPP1PPP/RNBQ1RK1 w kq - 4 6",
+            "flags": "n",
+            "piece": "b",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f1",
+            "to": "e1",
+            "san": "Re1",
+            "lan": "f1e1",
+            "before": "r1bqk2r/1pppbppp/p1n2n2/4p3/B3P3/5N2/PPPP1PPP/RNBQ1RK1 w kq - 4 6",
+            "after": "r1bqk2r/1pppbppp/p1n2n2/4p3/B3P3/5N2/PPPP1PPP/RNBQR1K1 b kq - 5 6",
+            "flags": "n",
+            "piece": "r",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "b7",
+            "to": "b5",
+            "san": "b5",
+            "lan": "b7b5",
+            "before": "r1bqk2r/1pppbppp/p1n2n2/4p3/B3P3/5N2/PPPP1PPP/RNBQR1K1 b kq - 5 6",
+            "after": "r1bqk2r/2ppbppp/p1n2n2/1p2p3/B3P3/5N2/PPPP1PPP/RNBQR1K1 w kq - 0 7",
+            "flags": "b",
+            "piece": "p",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "a4",
+            "to": "b3",
+            "san": "Bb3",
+            "lan": "a4b3",
+            "before": "r1bqk2r/2ppbppp/p1n2n2/1p2p3/B3P3/5N2/PPPP1PPP/RNBQR1K1 w kq - 0 7",
+            "after": "r1bqk2r/2ppbppp/p1n2n2/1p2p3/4P3/1B3N2/PPPP1PPP/RNBQR1K1 b kq - 1 7",
+            "flags": "n",
+            "piece": "b",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d7",
+            "to": "d6",
+            "san": "d6",
+            "lan": "d7d6",
+            "before": "r1bqk2r/2ppbppp/p1n2n2/1p2p3/4P3/1B3N2/PPPP1PPP/RNBQR1K1 b kq - 1 7",
+            "after": "r1bqk2r/2p1bppp/p1np1n2/1p2p3/4P3/1B3N2/PPPP1PPP/RNBQR1K1 w kq - 0 8",
+            "flags": "n",
+            "piece": "p",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "c2",
+            "to": "c3",
+            "san": "c3",
+            "lan": "c2c3",
+            "before": "r1bqk2r/2p1bppp/p1np1n2/1p2p3/4P3/1B3N2/PPPP1PPP/RNBQR1K1 w kq - 0 8",
+            "after": "r1bqk2r/2p1bppp/p1np1n2/1p2p3/4P3/1BP2N2/PP1P1PPP/RNBQR1K1 b kq - 0 8",
+            "flags": "n",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e8",
+            "to": "g8",
+            "san": "O-O",
+            "lan": "e8g8",
+            "before": "r1bqk2r/2p1bppp/p1np1n2/1p2p3/4P3/1BP2N2/PP1P1PPP/RNBQR1K1 b kq - 0 8",
+            "after": "r1bq1rk1/2p1bppp/p1np1n2/1p2p3/4P3/1BP2N2/PP1P1PPP/RNBQR1K1 w - - 1 9",
+            "flags": "k",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "h2",
+            "to": "h3",
+            "san": "h3",
+            "lan": "h2h3",
+            "before": "r1bq1rk1/2p1bppp/p1np1n2/1p2p3/4P3/1BP2N2/PP1P1PPP/RNBQR1K1 w - - 1 9",
+            "after": "r1bq1rk1/2p1bppp/p1np1n2/1p2p3/4P3/1BP2N1P/PP1P1PP1/RNBQR1K1 b - - 0 9",
+            "flags": "n",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
         }
       ],
       "currentPath": [],
       "isFlipped": false,
       "opening": {
-        "name": "Ruy Lopez",
+        "name": "Ruy Lopez, Morphy Defense",
         "eco": "C60"
       },
       "comments": {
-        "0": "The King's Pawn Opening - controls the center",
-        "1": "Black mirrors White's central pawn",
-        "2": "White develops the knight, attacking e5",
-        "3": "Black defends the e5 pawn",
-        "4": "The Ruy Lopez - White pins the knight",
-        "4,0,0": "Morphy Defense - Black challenges the bishop",
-        "4,0,1": "White retreats to maintain the pin"
+        "0": "White grabs central space and prepares rapid development.",
+        "4": "The bishop pins the c6-knight, pressuring e5.",
+        "10": "Re1 supports the e-pawn and hints at d4.",
+        "15": "Both sides complete development and castle for safety."
       }
     }
   },
   {
-    "studyName": "Sicilian Defense - Dragon Variation",
+    "studyName": "Sicilian Dragon – Yugoslav Setup",
     "category": "Opening",
-    "description": "An aggressive variation of the Sicilian Defense with sharp tactical play.",
+    "description": "Aggressive Sicilian Dragon structure highlighting opposite-side castling attacks.",
     "isPublic": true,
     "gameState": {
       "position": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
@@ -141,7 +275,7 @@
             "san": "e4",
             "lan": "e2e4",
             "before": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-            "after": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+            "after": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
             "flags": "b",
             "piece": "p",
             "color": "w"
@@ -154,8 +288,8 @@
             "to": "c5",
             "san": "c5",
             "lan": "c7c5",
-            "before": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
-            "after": "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2",
+            "before": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+            "after": "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
             "flags": "b",
             "piece": "p",
             "color": "b"
@@ -168,7 +302,7 @@
             "to": "f3",
             "san": "Nf3",
             "lan": "g1f3",
-            "before": "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2",
+            "before": "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
             "after": "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
             "flags": "n",
             "piece": "n",
@@ -197,7 +331,7 @@
             "san": "d4",
             "lan": "d2d4",
             "before": "rnbqkbnr/pp2pppp/3p4/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3",
-            "after": "rnbqkbnr/pp2pppp/3p4/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq d3 0 3",
+            "after": "rnbqkbnr/pp2pppp/3p4/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
             "flags": "b",
             "piece": "p",
             "color": "w"
@@ -210,12 +344,12 @@
             "to": "d4",
             "san": "cxd4",
             "lan": "c5d4",
-            "before": "rnbqkbnr/pp2pppp/3p4/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq d3 0 3",
+            "before": "rnbqkbnr/pp2pppp/3p4/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
             "after": "rnbqkbnr/pp2pppp/3p4/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4",
+            "captured": "p",
             "flags": "c",
             "piece": "p",
-            "color": "b",
-            "captured": "p"
+            "color": "b"
           },
           "branches": []
         },
@@ -227,10 +361,10 @@
             "lan": "f3d4",
             "before": "rnbqkbnr/pp2pppp/3p4/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4",
             "after": "rnbqkbnr/pp2pppp/3p4/8/3NP3/8/PPP2PPP/RNBQKB1R b KQkq - 0 4",
+            "captured": "p",
             "flags": "c",
             "piece": "n",
-            "color": "w",
-            "captured": "p"
+            "color": "w"
           },
           "branches": []
         },
@@ -274,24 +408,147 @@
             "piece": "p",
             "color": "b"
           },
-          "branches": [
-            [
-              {
-                "move": {
-                  "from": "c1",
-                  "to": "e3",
-                  "san": "Be3",
-                  "lan": "c1e3",
-                  "before": "rnbqkb1r/pp2pp1p/3p1np1/8/3NP3/2N5/PPP2PPP/R1BQKB1R w KQkq - 0 6",
-                  "after": "rnbqkb1r/pp2pp1p/3p1np1/8/3NP3/2N1B3/PPP2PPP/R2QKB1R b KQkq - 1 6",
-                  "flags": "n",
-                  "piece": "b",
-                  "color": "w"
-                },
-                "branches": []
-              }
-            ]
-          ]
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "c1",
+            "to": "e3",
+            "san": "Be3",
+            "lan": "c1e3",
+            "before": "rnbqkb1r/pp2pp1p/3p1np1/8/3NP3/2N5/PPP2PPP/R1BQKB1R w KQkq - 0 6",
+            "after": "rnbqkb1r/pp2pp1p/3p1np1/8/3NP3/2N1B3/PPP2PPP/R2QKB1R b KQkq - 1 6",
+            "flags": "n",
+            "piece": "b",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f8",
+            "to": "g7",
+            "san": "Bg7",
+            "lan": "f8g7",
+            "before": "rnbqkb1r/pp2pp1p/3p1np1/8/3NP3/2N1B3/PPP2PPP/R2QKB1R b KQkq - 1 6",
+            "after": "rnbqk2r/pp2ppbp/3p1np1/8/3NP3/2N1B3/PPP2PPP/R2QKB1R w KQkq - 2 7",
+            "flags": "n",
+            "piece": "b",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f2",
+            "to": "f3",
+            "san": "f3",
+            "lan": "f2f3",
+            "before": "rnbqk2r/pp2ppbp/3p1np1/8/3NP3/2N1B3/PPP2PPP/R2QKB1R w KQkq - 2 7",
+            "after": "rnbqk2r/pp2ppbp/3p1np1/8/3NP3/2N1BP2/PPP3PP/R2QKB1R b KQkq - 0 7",
+            "flags": "n",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e8",
+            "to": "g8",
+            "san": "O-O",
+            "lan": "e8g8",
+            "before": "rnbqk2r/pp2ppbp/3p1np1/8/3NP3/2N1BP2/PPP3PP/R2QKB1R b KQkq - 0 7",
+            "after": "rnbq1rk1/pp2ppbp/3p1np1/8/3NP3/2N1BP2/PPP3PP/R2QKB1R w KQ - 1 8",
+            "flags": "k",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d1",
+            "to": "d2",
+            "san": "Qd2",
+            "lan": "d1d2",
+            "before": "rnbq1rk1/pp2ppbp/3p1np1/8/3NP3/2N1BP2/PPP3PP/R2QKB1R w KQ - 1 8",
+            "after": "rnbq1rk1/pp2ppbp/3p1np1/8/3NP3/2N1BP2/PPPQ2PP/R3KB1R b KQ - 2 8",
+            "flags": "n",
+            "piece": "q",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "b8",
+            "to": "c6",
+            "san": "Nc6",
+            "lan": "b8c6",
+            "before": "rnbq1rk1/pp2ppbp/3p1np1/8/3NP3/2N1BP2/PPPQ2PP/R3KB1R b KQ - 2 8",
+            "after": "r1bq1rk1/pp2ppbp/2np1np1/8/3NP3/2N1BP2/PPPQ2PP/R3KB1R w KQ - 3 9",
+            "flags": "n",
+            "piece": "n",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e1",
+            "to": "c1",
+            "san": "O-O-O",
+            "lan": "e1c1",
+            "before": "r1bq1rk1/pp2ppbp/2np1np1/8/3NP3/2N1BP2/PPPQ2PP/R3KB1R w KQ - 3 9",
+            "after": "r1bq1rk1/pp2ppbp/2np1np1/8/3NP3/2N1BP2/PPPQ2PP/2KR1B1R b - - 4 9",
+            "flags": "q",
+            "piece": "k",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "c8",
+            "to": "e6",
+            "san": "Be6",
+            "lan": "c8e6",
+            "before": "r1bq1rk1/pp2ppbp/2np1np1/8/3NP3/2N1BP2/PPPQ2PP/2KR1B1R b - - 4 9",
+            "after": "r2q1rk1/pp2ppbp/2npbnp1/8/3NP3/2N1BP2/PPPQ2PP/2KR1B1R w - - 5 10",
+            "flags": "n",
+            "piece": "b",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "c1",
+            "to": "b1",
+            "san": "Kb1",
+            "lan": "c1b1",
+            "before": "r2q1rk1/pp2ppbp/2npbnp1/8/3NP3/2N1BP2/PPPQ2PP/2KR1B1R w - - 5 10",
+            "after": "r2q1rk1/pp2ppbp/2npbnp1/8/3NP3/2N1BP2/PPPQ2PP/1K1R1B1R b - - 6 10",
+            "flags": "n",
+            "piece": "k",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d6",
+            "to": "d5",
+            "san": "d5",
+            "lan": "d6d5",
+            "before": "r2q1rk1/pp2ppbp/2npbnp1/8/3NP3/2N1BP2/PPPQ2PP/1K1R1B1R b - - 6 10",
+            "after": "r2q1rk1/pp2ppbp/2n1bnp1/3p4/3NP3/2N1BP2/PPPQ2PP/1K1R1B1R w - - 0 11",
+            "flags": "n",
+            "piece": "p",
+            "color": "b"
+          },
+          "branches": []
         }
       ],
       "currentPath": [],
@@ -301,24 +558,17 @@
         "eco": "B70"
       },
       "comments": {
-        "0": "King's Pawn Opening",
-        "1": "Sicilian Defense - Black challenges the center",
-        "2": "White develops the knight",
-        "3": "Classical Sicilian setup",
-        "4": "White opens the center",
-        "5": "Black captures, entering main lines",
-        "6": "White recaptures with the knight",
-        "7": "Black develops the knight",
-        "8": "White develops the other knight",
-        "9": "Dragon Variation - Black fianchettos the bishop",
-        "9,0,0": "White develops the bishop to e3"
+        "0": "The Dragon often arises after 1...c5 and ...g6.",
+        "12": "White builds the Yugoslav Attack pawn chain.",
+        "16": "Opposite-side castling signals mutual attacks.",
+        "19": "Black strikes in the center with ...d5."
       }
     }
   },
   {
-    "studyName": "Queen's Gambit Declined",
+    "studyName": "Queen's Gambit Declined – Orthodox Plan",
     "category": "Opening",
-    "description": "A solid and classical response to the Queen's Gambit, focusing on central control.",
+    "description": "Fundamental Queen's Gambit Declined structure emphasizing harmony and timing.",
     "isPublic": true,
     "gameState": {
       "position": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
@@ -330,7 +580,7 @@
             "san": "d4",
             "lan": "d2d4",
             "before": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-            "after": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 1",
+            "after": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1",
             "flags": "b",
             "piece": "p",
             "color": "w"
@@ -343,8 +593,8 @@
             "to": "d5",
             "san": "d5",
             "lan": "d7d5",
-            "before": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 1",
-            "after": "rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq d6 0 2",
+            "before": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1",
+            "after": "rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2",
             "flags": "b",
             "piece": "p",
             "color": "b"
@@ -357,8 +607,8 @@
             "to": "c4",
             "san": "c4",
             "lan": "c2c4",
-            "before": "rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq d6 0 2",
-            "after": "rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq c3 0 2",
+            "before": "rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2",
+            "after": "rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2",
             "flags": "b",
             "piece": "p",
             "color": "w"
@@ -371,46 +621,13 @@
             "to": "e6",
             "san": "e6",
             "lan": "e7e6",
-            "before": "rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq c3 0 2",
+            "before": "rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2",
             "after": "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3",
             "flags": "n",
             "piece": "p",
             "color": "b"
           },
-          "branches": [
-            [
-              {
-                "move": {
-                  "from": "c4",
-                  "to": "d5",
-                  "san": "cxd5",
-                  "lan": "c4d5",
-                  "before": "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3",
-                  "after": "rnbqkbnr/ppp2ppp/4p3/3P4/3P4/8/PP2PPPP/RNBQKBNR b KQkq - 0 3",
-                  "flags": "c",
-                  "piece": "p",
-                  "color": "w",
-                  "captured": "p"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "e6",
-                  "to": "d5",
-                  "san": "exd5",
-                  "lan": "e6d5",
-                  "before": "rnbqkbnr/ppp2ppp/4p3/3P4/3P4/8/PP2PPPP/RNBQKBNR b KQkq - 0 3",
-                  "after": "rnbqkbnr/ppp2ppp/8/3p4/3P4/8/PP2PPPP/RNBQKBNR w KQkq - 0 4",
-                  "flags": "c",
-                  "piece": "p",
-                  "color": "b",
-                  "captured": "p"
-                },
-                "branches": []
-              }
-            ]
-          ]
+          "branches": []
         },
         {
           "move": {
@@ -419,7 +636,7 @@
             "san": "Nc3",
             "lan": "b1c3",
             "before": "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3",
-            "after": "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/2N5/PP2PPPP/R1BQKB1R b KQkq - 1 3",
+            "after": "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR b KQkq - 1 3",
             "flags": "n",
             "piece": "n",
             "color": "w"
@@ -428,14 +645,212 @@
         },
         {
           "move": {
-            "from": "f8",
-            "to": "b4",
-            "san": "Bb4",
-            "lan": "f8b4",
-            "before": "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/2N5/PP2PPPP/R1BQKB1R b KQkq - 1 3",
-            "after": "rnbqk1nr/ppp2ppp/4p3/3p4/1bPP4/2N5/PP2PPPP/R1BQKB1R w KQkq - 2 4",
+            "from": "g8",
+            "to": "f6",
+            "san": "Nf6",
+            "lan": "g8f6",
+            "before": "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR b KQkq - 1 3",
+            "after": "rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 4",
+            "flags": "n",
+            "piece": "n",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "c1",
+            "to": "g5",
+            "san": "Bg5",
+            "lan": "c1g5",
+            "before": "rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 4",
+            "after": "rnbqkb1r/ppp2ppp/4pn2/3p2B1/2PP4/2N5/PP2PPPP/R2QKBNR b KQkq - 3 4",
             "flags": "n",
             "piece": "b",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f8",
+            "to": "e7",
+            "san": "Be7",
+            "lan": "f8e7",
+            "before": "rnbqkb1r/ppp2ppp/4pn2/3p2B1/2PP4/2N5/PP2PPPP/R2QKBNR b KQkq - 3 4",
+            "after": "rnbqk2r/ppp1bppp/4pn2/3p2B1/2PP4/2N5/PP2PPPP/R2QKBNR w KQkq - 4 5",
+            "flags": "n",
+            "piece": "b",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e2",
+            "to": "e3",
+            "san": "e3",
+            "lan": "e2e3",
+            "before": "rnbqk2r/ppp1bppp/4pn2/3p2B1/2PP4/2N5/PP2PPPP/R2QKBNR w KQkq - 4 5",
+            "after": "rnbqk2r/ppp1bppp/4pn2/3p2B1/2PP4/2N1P3/PP3PPP/R2QKBNR b KQkq - 0 5",
+            "flags": "n",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e8",
+            "to": "g8",
+            "san": "O-O",
+            "lan": "e8g8",
+            "before": "rnbqk2r/ppp1bppp/4pn2/3p2B1/2PP4/2N1P3/PP3PPP/R2QKBNR b KQkq - 0 5",
+            "after": "rnbq1rk1/ppp1bppp/4pn2/3p2B1/2PP4/2N1P3/PP3PPP/R2QKBNR w KQ - 1 6",
+            "flags": "k",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "g1",
+            "to": "f3",
+            "san": "Nf3",
+            "lan": "g1f3",
+            "before": "rnbq1rk1/ppp1bppp/4pn2/3p2B1/2PP4/2N1P3/PP3PPP/R2QKBNR w KQ - 1 6",
+            "after": "rnbq1rk1/ppp1bppp/4pn2/3p2B1/2PP4/2N1PN2/PP3PPP/R2QKB1R b KQ - 2 6",
+            "flags": "n",
+            "piece": "n",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "b8",
+            "to": "d7",
+            "san": "Nbd7",
+            "lan": "b8d7",
+            "before": "rnbq1rk1/ppp1bppp/4pn2/3p2B1/2PP4/2N1PN2/PP3PPP/R2QKB1R b KQ - 2 6",
+            "after": "r1bq1rk1/pppnbppp/4pn2/3p2B1/2PP4/2N1PN2/PP3PPP/R2QKB1R w KQ - 3 7",
+            "flags": "n",
+            "piece": "n",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "a1",
+            "to": "c1",
+            "san": "Rc1",
+            "lan": "a1c1",
+            "before": "r1bq1rk1/pppnbppp/4pn2/3p2B1/2PP4/2N1PN2/PP3PPP/R2QKB1R w KQ - 3 7",
+            "after": "r1bq1rk1/pppnbppp/4pn2/3p2B1/2PP4/2N1PN2/PP3PPP/2RQKB1R b K - 4 7",
+            "flags": "n",
+            "piece": "r",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "c7",
+            "to": "c6",
+            "san": "c6",
+            "lan": "c7c6",
+            "before": "r1bq1rk1/pppnbppp/4pn2/3p2B1/2PP4/2N1PN2/PP3PPP/2RQKB1R b K - 4 7",
+            "after": "r1bq1rk1/pp1nbppp/2p1pn2/3p2B1/2PP4/2N1PN2/PP3PPP/2RQKB1R w K - 0 8",
+            "flags": "n",
+            "piece": "p",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f1",
+            "to": "d3",
+            "san": "Bd3",
+            "lan": "f1d3",
+            "before": "r1bq1rk1/pp1nbppp/2p1pn2/3p2B1/2PP4/2N1PN2/PP3PPP/2RQKB1R w K - 0 8",
+            "after": "r1bq1rk1/pp1nbppp/2p1pn2/3p2B1/2PP4/2NBPN2/PP3PPP/2RQK2R b K - 1 8",
+            "flags": "n",
+            "piece": "b",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d5",
+            "to": "c4",
+            "san": "dxc4",
+            "lan": "d5c4",
+            "before": "r1bq1rk1/pp1nbppp/2p1pn2/3p2B1/2PP4/2NBPN2/PP3PPP/2RQK2R b K - 1 8",
+            "after": "r1bq1rk1/pp1nbppp/2p1pn2/6B1/2pP4/2NBPN2/PP3PPP/2RQK2R w K - 0 9",
+            "captured": "p",
+            "flags": "c",
+            "piece": "p",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d3",
+            "to": "c4",
+            "san": "Bxc4",
+            "lan": "d3c4",
+            "before": "r1bq1rk1/pp1nbppp/2p1pn2/6B1/2pP4/2NBPN2/PP3PPP/2RQK2R w K - 0 9",
+            "after": "r1bq1rk1/pp1nbppp/2p1pn2/6B1/2BP4/2N1PN2/PP3PPP/2RQK2R b K - 0 9",
+            "captured": "p",
+            "flags": "c",
+            "piece": "b",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "b7",
+            "to": "b5",
+            "san": "b5",
+            "lan": "b7b5",
+            "before": "r1bq1rk1/pp1nbppp/2p1pn2/6B1/2BP4/2N1PN2/PP3PPP/2RQK2R b K - 0 9",
+            "after": "r1bq1rk1/p2nbppp/2p1pn2/1p4B1/2BP4/2N1PN2/PP3PPP/2RQK2R w K - 0 10",
+            "flags": "b",
+            "piece": "p",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "c4",
+            "to": "d3",
+            "san": "Bd3",
+            "lan": "c4d3",
+            "before": "r1bq1rk1/p2nbppp/2p1pn2/1p4B1/2BP4/2N1PN2/PP3PPP/2RQK2R w K - 0 10",
+            "after": "r1bq1rk1/p2nbppp/2p1pn2/1p4B1/3P4/2NBPN2/PP3PPP/2RQK2R b K - 1 10",
+            "flags": "n",
+            "piece": "b",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "a7",
+            "to": "a6",
+            "san": "a6",
+            "lan": "a7a6",
+            "before": "r1bq1rk1/p2nbppp/2p1pn2/1p4B1/3P4/2NBPN2/PP3PPP/2RQK2R b K - 1 10",
+            "after": "r1bq1rk1/3nbppp/p1p1pn2/1p4B1/3P4/2NBPN2/PP3PPP/2RQK2R w K - 0 11",
+            "flags": "n",
+            "piece": "p",
             "color": "b"
           },
           "branches": []
@@ -444,322 +859,117 @@
       "currentPath": [],
       "isFlipped": false,
       "opening": {
-        "name": "Queen's Gambit Declined",
-        "eco": "D30"
+        "name": "Queen's Gambit Declined, Orthodox",
+        "eco": "D60"
       },
       "comments": {
-        "0": "Queen's Pawn Opening",
-        "1": "Black mirrors with d5",
-        "2": "The Queen's Gambit",
-        "3": "Queen's Gambit Declined - Black doesn't take the pawn",
-        "3,0,0": "Exchange Variation - White takes immediately",
-        "3,0,1": "Black recaptures with the e-pawn",
-        "4": "White develops the knight",
-        "5": "Black pins the knight - Nimzo-Indian style"
+        "0": "White offers the Queen's Gambit to challenge d5.",
+        "6": "Pinning the knight increases pressure on d5.",
+        "12": "White places the rook behind the c-pawn before advancing.",
+        "18": "Black expands on the queenside with tempo."
       }
     }
   },
   {
-    "studyName": "Central Pawn Structure Strategy",
+    "studyName": "Strategic Center – Hanging Pawns",
     "category": "Strategy",
-    "description": "Understanding how to use central pawn structures to control the board and create long-term advantages.",
+    "description": "Plans in a hanging-pawn structure after the Orthodox Queen's Gambit middlegame.",
     "isPublic": true,
     "gameState": {
-      "position": "r1bqkb1r/pp2pppp/2n2n2/2pp4/2PP4/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 0 6",
+      "position": "r1bq1rk1/3nbppp/p1p1pn2/1p4B1/3P4/2NBPN2/PP3PPP/2RQK2R w K - 0 11",
       "moveTree": [
-        {
-          "move": {
-            "from": "c4",
-            "to": "d5",
-            "san": "cxd5",
-            "lan": "c4d5",
-            "before": "r1bqkb1r/pp2pppp/2n2n2/2pp4/2PP4/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 0 6",
-            "after": "r1bqkb1r/pp2pppp/2n2n2/2pP4/3P4/2N2N2/PP2PPPP/R1BQKB1R b KQkq - 0 6",
-            "flags": "c",
-            "piece": "p",
-            "color": "w",
-            "captured": "p"
-          },
-          "branches": [
-            [
-              {
-                "move": {
-                  "from": "c6",
-                  "to": "d5",
-                  "san": "Nxd5",
-                  "lan": "c6d5",
-                  "before": "r1bqkb1r/pp2pppp/2n2n2/2pP4/3P4/2N2N2/PP2PPPP/R1BQKB1R b KQkq - 0 6",
-                  "after": "r1bqkb1r/pp2pppp/5n2/2pn4/3P4/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 0 7",
-                  "flags": "c",
-                  "piece": "n",
-                  "color": "b",
-                  "captured": "p"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "f3",
-                  "to": "d5",
-                  "san": "Nxd5",
-                  "lan": "f3d5",
-                  "before": "r1bqkb1r/pp2pppp/5n2/2pn4/3P4/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 0 7",
-                  "after": "r1bqkb1r/pp2pppp/5n2/2pN4/3P4/2N5/PP2PPPP/R1BQKB1R b KQkq - 0 7",
-                  "flags": "c",
-                  "piece": "n",
-                  "color": "w",
-                  "captured": "n"
-                },
-                "branches": []
-              }
-            ],
-            [
-              {
-                "move": {
-                  "from": "c5",
-                  "to": "d5",
-                  "san": "cxd5",
-                  "lan": "c5d5",
-                  "before": "r1bqkb1r/pp2pppp/2n2n2/2pP4/3P4/2N2N2/PP2PPPP/R1BQKB1R b KQkq - 0 6",
-                  "after": "r1bqkb1r/pp2pppp/2n2n2/3p4/3P4/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 0 7",
-                  "flags": "c",
-                  "piece": "p",
-                  "color": "b",
-                  "captured": "p"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "e2",
-                  "to": "e4",
-                  "san": "e4",
-                  "lan": "e2e4",
-                  "before": "r1bqkb1r/pp2pppp/2n2n2/3p4/3P4/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 0 7",
-                  "after": "r1bqkb1r/pp2pppp/2n2n2/3p4/3PP3/2N2N2/PP3PPP/R1BQKB1R b KQkq e3 0 7",
-                  "flags": "b",
-                  "piece": "p",
-                  "color": "w"
-                },
-                "branches": []
-              }
-            ]
-          ]
-        }
-      ],
-      "currentPath": [],
-      "isFlipped": false,
-      "comments": {
-        "0": "White captures in the center, creating a strong pawn duo",
-        "0,0,0": "Black recaptures with the knight",
-        "0,0,1": "White recaptures, maintaining central control",
-        "0,1,0": "Black recaptures with the pawn instead",
-        "0,1,1": "White expands in the center with e4, creating a powerful pawn center"
-      }
-    }
-  },
-  {
-    "studyName": "Minor Piece Endgame Technique",
-    "category": "Strategy",
-    "description": "Mastering the art of using bishops and knights effectively in the middlegame and endgame.",
-    "isPublic": true,
-    "gameState": {
-      "position": "r1bqkb1r/pp3ppp/2n1pn2/2pp4/2PP4/2NBPN2/PP3PPP/R1BQK2R w KQkq - 0 8",
-      "moveTree": [
-        {
-          "move": {
-            "from": "c1",
-            "to": "f4",
-            "san": "Bf4",
-            "lan": "c1f4",
-            "before": "r1bqkb1r/pp3ppp/2n1pn2/2pp4/2PP4/2NBPN2/PP3PPP/R1BQK2R w KQkq - 0 8",
-            "after": "r1bqkb1r/pp3ppp/2n1pn2/2pp4/2PP1B2/2NBPN2/PP3PPP/R2QK2R b KQkq - 1 8",
-            "flags": "n",
-            "piece": "b",
-            "color": "w"
-          },
-          "branches": [
-            [
-              {
-                "move": {
-                  "from": "d7",
-                  "to": "d6",
-                  "san": "d6",
-                  "lan": "d7d6",
-                  "before": "r1bqkb1r/pp3ppp/2n1pn2/2pp4/2PP1B2/2NBPN2/PP3PPP/R2QK2R b KQkq - 1 8",
-                  "after": "r1bqkb1r/pp4pp/2np1n2/2pp4/2PP1B2/2NBPN2/PP3PPP/R2QK2R w KQkq - 0 9",
-                  "flags": "n",
-                  "piece": "p",
-                  "color": "b"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "f4",
-                  "to": "g5",
-                  "san": "Bg5",
-                  "lan": "f4g5",
-                  "before": "r1bqkb1r/pp4pp/2np1n2/2pp4/2PP1B2/2NBPN2/PP3PPP/R2QK2R w KQkq - 0 9",
-                  "after": "r1bqkb1r/pp4pp/2np1n2/2pp2B1/2PP4/2NBPN2/PP3PPP/R2QK2R b KQkq - 1 9",
-                  "flags": "n",
-                  "piece": "b",
-                  "color": "w"
-                },
-                "branches": []
-              }
-            ]
-          ]
-        },
         {
           "move": {
             "from": "e1",
             "to": "g1",
             "san": "O-O",
             "lan": "e1g1",
-            "before": "r1bqkb1r/pp3ppp/2n1pn2/2pp4/2PP1B2/2NBPN2/PP3PPP/R2QK2R w KQkq - 0 8",
-            "after": "r1bqkb1r/pp3ppp/2n1pn2/2pp4/2PP1B2/2NBPN2/PP3PPP/R2QK2R b KQkq - 0 8",
+            "before": "r1bq1rk1/3nbppp/p1p1pn2/1p4B1/3P4/2NBPN2/PP3PPP/2RQK2R w K - 0 11",
+            "after": "r1bq1rk1/3nbppp/p1p1pn2/1p4B1/3P4/2NBPN2/PP3PPP/2RQ1RK1 b - - 1 11",
             "flags": "k",
             "piece": "k",
             "color": "w"
           },
           "branches": []
-        }
-      ],
-      "currentPath": [],
-      "isFlipped": false,
-      "comments": {
-        "0": "White develops the bishop to an active square",
-        "0,0,0": "Black advances the d-pawn",
-        "0,0,1": "White pins the knight, creating tactical pressure",
-        "1": "White castles, securing the king and connecting rooks"
-      }
-    }
-  },
-  {
-    "studyName": "King and Pawn Endgame Basics",
-    "category": "Endgame",
-    "description": "Essential techniques for winning king and pawn endgames, including opposition and pawn promotion.",
-    "isPublic": true,
-    "gameState": {
-      "position": "8/5k2/8/4P3/8/8/5K2/8 w - - 0 1",
-      "moveTree": [
-        {
-          "move": {
-            "from": "f2",
-            "to": "e2",
-            "san": "Ke2",
-            "lan": "f2e2",
-            "before": "8/5k2/8/4P3/8/8/5K2/8 w - - 0 1",
-            "after": "8/5k2/8/4P3/8/8/4K3/8 b - - 1 1",
-            "flags": "n",
-            "piece": "k",
-            "color": "w"
-          },
-          "branches": [
-            [
-              {
-                "move": {
-                  "from": "f7",
-                  "to": "e7",
-                  "san": "Ke7",
-                  "lan": "f7e7",
-                  "before": "8/5k2/8/4P3/8/8/4K3/8 b - - 1 1",
-                  "after": "8/4k3/8/4P3/8/8/4K3/8 w - - 2 2",
-                  "flags": "n",
-                  "piece": "k",
-                  "color": "b"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "e2",
-                  "to": "e3",
-                  "san": "Ke3",
-                  "lan": "e2e3",
-                  "before": "8/4k3/8/4P3/8/8/4K3/8 w - - 2 2",
-                  "after": "8/4k3/8/4P3/4K3/8/8/8 b - - 3 2",
-                  "flags": "n",
-                  "piece": "k",
-                  "color": "w"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "e7",
-                  "to": "e6",
-                  "san": "Ke6",
-                  "lan": "e7e6",
-                  "before": "8/4k3/8/4P3/4K3/8/8/8 b - - 3 2",
-                  "after": "8/8/4k3/4P3/4K3/8/8/8 w - - 4 3",
-                  "flags": "n",
-                  "piece": "k",
-                  "color": "b"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "e5",
-                  "to": "e6",
-                  "san": "e6",
-                  "lan": "e5e6",
-                  "before": "8/8/4k3/4P3/4K3/8/8/8 w - - 4 3",
-                  "after": "8/8/4P3/8/4K3/8/8/8 b - - 0 3",
-                  "flags": "n",
-                  "piece": "p",
-                  "color": "w"
-                },
-                "branches": []
-              }
-            ]
-          ]
         },
         {
           "move": {
-            "from": "e5",
-            "to": "e6",
-            "san": "e6",
-            "lan": "e5e6",
-            "before": "8/5k2/8/4P3/8/8/5K2/8 w - - 0 1",
-            "after": "8/5k2/4P3/8/8/8/5K2/8 b - - 0 1",
+            "from": "c6",
+            "to": "c5",
+            "san": "c5",
+            "lan": "c6c5",
+            "before": "r1bq1rk1/3nbppp/p1p1pn2/1p4B1/3P4/2NBPN2/PP3PPP/2RQ1RK1 b - - 1 11",
+            "after": "r1bq1rk1/3nbppp/p3pn2/1pp3B1/3P4/2NBPN2/PP3PPP/2RQ1RK1 w - - 0 12",
             "flags": "n",
             "piece": "p",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d1",
+            "to": "e2",
+            "san": "Qe2",
+            "lan": "d1e2",
+            "before": "r1bq1rk1/3nbppp/p3pn2/1pp3B1/3P4/2NBPN2/PP3PPP/2RQ1RK1 w - - 0 12",
+            "after": "r1bq1rk1/3nbppp/p3pn2/1pp3B1/3P4/2NBPN2/PP2QPPP/2R2RK1 b - - 1 12",
+            "flags": "n",
+            "piece": "q",
             "color": "w"
           },
           "branches": []
-        }
-      ],
-      "currentPath": [],
-      "isFlipped": false,
-      "comments": {
-        "0": "White approaches the pawn - key technique in king and pawn endgames",
-        "0,0,0": "Black moves to block the pawn",
-        "0,0,1": "White uses the opposition concept",
-        "0,0,2": "Black must give way",
-        "0,0,3": "White advances the pawn, winning the race",
-        "1": "Alternative: White can push the pawn immediately"
-      }
-    }
-  },
-  {
-    "studyName": "Rook Endgame - Lucena Position",
-    "category": "Endgame",
-    "description": "Learning the Lucena position, a fundamental technique for winning rook and pawn endgames.",
-    "isPublic": true,
-    "gameState": {
-      "position": "8/8/8/8/4k3/4P3/4K3/4R3 w - - 0 1",
-      "moveTree": [
+        },
         {
           "move": {
-            "from": "e3",
-            "to": "e4",
-            "san": "e4",
-            "lan": "e3e4",
-            "before": "8/8/8/8/4k3/4P3/4K3/4R3 w - - 0 1",
-            "after": "8/8/8/8/4kP2/8/4K3/4R3 b - f3 0 1",
+            "from": "c8",
+            "to": "b7",
+            "san": "Bb7",
+            "lan": "c8b7",
+            "before": "r1bq1rk1/3nbppp/p3pn2/1pp3B1/3P4/2NBPN2/PP2QPPP/2R2RK1 b - - 1 12",
+            "after": "r2q1rk1/1b1nbppp/p3pn2/1pp3B1/3P4/2NBPN2/PP2QPPP/2R2RK1 w - - 2 13",
+            "flags": "n",
+            "piece": "b",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f1",
+            "to": "d1",
+            "san": "Rfd1",
+            "lan": "f1d1",
+            "before": "r2q1rk1/1b1nbppp/p3pn2/1pp3B1/3P4/2NBPN2/PP2QPPP/2R2RK1 w - - 2 13",
+            "after": "r2q1rk1/1b1nbppp/p3pn2/1pp3B1/3P4/2NBPN2/PP2QPPP/2RR2K1 b - - 3 13",
+            "flags": "n",
+            "piece": "r",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d8",
+            "to": "b6",
+            "san": "Qb6",
+            "lan": "d8b6",
+            "before": "r2q1rk1/1b1nbppp/p3pn2/1pp3B1/3P4/2NBPN2/PP2QPPP/2RR2K1 b - - 3 13",
+            "after": "r4rk1/1b1nbppp/pq2pn2/1pp3B1/3P4/2NBPN2/PP2QPPP/2RR2K1 w - - 4 14",
+            "flags": "n",
+            "piece": "q",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "a2",
+            "to": "a4",
+            "san": "a4",
+            "lan": "a2a4",
+            "before": "r4rk1/1b1nbppp/pq2pn2/1pp3B1/3P4/2NBPN2/PP2QPPP/2RR2K1 w - - 4 14",
+            "after": "r4rk1/1b1nbppp/pq2pn2/1pp3B1/P2P4/2NBPN2/1P2QPPP/2RR2K1 b - - 0 14",
             "flags": "b",
             "piece": "p",
             "color": "w"
@@ -768,12 +978,216 @@
         },
         {
           "move": {
+            "from": "b5",
+            "to": "b4",
+            "san": "b4",
+            "lan": "b5b4",
+            "before": "r4rk1/1b1nbppp/pq2pn2/1pp3B1/P2P4/2NBPN2/1P2QPPP/2RR2K1 b - - 0 14",
+            "after": "r4rk1/1b1nbppp/pq2pn2/2p3B1/Pp1P4/2NBPN2/1P2QPPP/2RR2K1 w - - 0 15",
+            "flags": "n",
+            "piece": "p",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "c3",
+            "to": "b1",
+            "san": "Nb1",
+            "lan": "c3b1",
+            "before": "r4rk1/1b1nbppp/pq2pn2/2p3B1/Pp1P4/2NBPN2/1P2QPPP/2RR2K1 w - - 0 15",
+            "after": "r4rk1/1b1nbppp/pq2pn2/2p3B1/Pp1P4/3BPN2/1P2QPPP/1NRR2K1 b - - 1 15",
+            "flags": "n",
+            "piece": "n",
+            "color": "w"
+          },
+          "branches": []
+        }
+      ],
+      "currentPath": [],
+      "isFlipped": false,
+      "comments": {
+        "0": "White castles and prepares central tension.",
+        "1": "Black advances the hanging pawns with ...c5.",
+        "6": "a4 undermines the queenside pawn chain."
+      }
+    }
+  },
+  {
+    "studyName": "Minority Attack Blueprint",
+    "category": "Strategy",
+    "description": "Demonstrates the classic queenside minority attack in the Carlsbad structure.",
+    "isPublic": true,
+    "gameState": {
+      "position": "r1bqr1k1/pp1n1ppp/2pbpn2/3p4/2PP4/2N1PN2/PPQ1BPPP/R1B2RK1 w - - 7 9",
+      "moveTree": [
+        {
+          "move": {
+            "from": "b2",
+            "to": "b3",
+            "san": "b3",
+            "lan": "b2b3",
+            "before": "r1bqr1k1/pp1n1ppp/2pbpn2/3p4/2PP4/2N1PN2/PPQ1BPPP/R1B2RK1 w - - 7 9",
+            "after": "r1bqr1k1/pp1n1ppp/2pbpn2/3p4/2PP4/1PN1PN2/P1Q1BPPP/R1B2RK1 b - - 0 9",
+            "flags": "n",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "b7",
+            "to": "b6",
+            "san": "b6",
+            "lan": "b7b6",
+            "before": "r1bqr1k1/pp1n1ppp/2pbpn2/3p4/2PP4/1PN1PN2/P1Q1BPPP/R1B2RK1 b - - 0 9",
+            "after": "r1bqr1k1/p2n1ppp/1ppbpn2/3p4/2PP4/1PN1PN2/P1Q1BPPP/R1B2RK1 w - - 0 10",
+            "flags": "n",
+            "piece": "p",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "c1",
+            "to": "b2",
+            "san": "Bb2",
+            "lan": "c1b2",
+            "before": "r1bqr1k1/p2n1ppp/1ppbpn2/3p4/2PP4/1PN1PN2/P1Q1BPPP/R1B2RK1 w - - 0 10",
+            "after": "r1bqr1k1/p2n1ppp/1ppbpn2/3p4/2PP4/1PN1PN2/PBQ1BPPP/R4RK1 b - - 1 10",
+            "flags": "n",
+            "piece": "b",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "c8",
+            "to": "b7",
+            "san": "Bb7",
+            "lan": "c8b7",
+            "before": "r1bqr1k1/p2n1ppp/1ppbpn2/3p4/2PP4/1PN1PN2/PBQ1BPPP/R4RK1 b - - 1 10",
+            "after": "r2qr1k1/pb1n1ppp/1ppbpn2/3p4/2PP4/1PN1PN2/PBQ1BPPP/R4RK1 w - - 2 11",
+            "flags": "n",
+            "piece": "b",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "a1",
+            "to": "c1",
+            "san": "Rac1",
+            "lan": "a1c1",
+            "before": "r2qr1k1/pb1n1ppp/1ppbpn2/3p4/2PP4/1PN1PN2/PBQ1BPPP/R4RK1 w - - 2 11",
+            "after": "r2qr1k1/pb1n1ppp/1ppbpn2/3p4/2PP4/1PN1PN2/PBQ1BPPP/2R2RK1 b - - 3 11",
+            "flags": "n",
+            "piece": "r",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d8",
+            "to": "e7",
+            "san": "Qe7",
+            "lan": "d8e7",
+            "before": "r2qr1k1/pb1n1ppp/1ppbpn2/3p4/2PP4/1PN1PN2/PBQ1BPPP/2R2RK1 b - - 3 11",
+            "after": "r3r1k1/pb1nqppp/1ppbpn2/3p4/2PP4/1PN1PN2/PBQ1BPPP/2R2RK1 w - - 4 12",
+            "flags": "n",
+            "piece": "q",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f1",
+            "to": "d1",
+            "san": "Rfd1",
+            "lan": "f1d1",
+            "before": "r3r1k1/pb1nqppp/1ppbpn2/3p4/2PP4/1PN1PN2/PBQ1BPPP/2R2RK1 w - - 4 12",
+            "after": "r3r1k1/pb1nqppp/1ppbpn2/3p4/2PP4/1PN1PN2/PBQ1BPPP/2RR2K1 b - - 5 12",
+            "flags": "n",
+            "piece": "r",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "a8",
+            "to": "d8",
+            "san": "Rad8",
+            "lan": "a8d8",
+            "before": "r3r1k1/pb1nqppp/1ppbpn2/3p4/2PP4/1PN1PN2/PBQ1BPPP/2RR2K1 b - - 5 12",
+            "after": "3rr1k1/pb1nqppp/1ppbpn2/3p4/2PP4/1PN1PN2/PBQ1BPPP/2RR2K1 w - - 6 13",
+            "flags": "n",
+            "piece": "r",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "a2",
+            "to": "a3",
+            "san": "a3",
+            "lan": "a2a3",
+            "before": "3rr1k1/pb1nqppp/1ppbpn2/3p4/2PP4/1PN1PN2/PBQ1BPPP/2RR2K1 w - - 6 13",
+            "after": "3rr1k1/pb1nqppp/1ppbpn2/3p4/2PP4/PPN1PN2/1BQ1BPPP/2RR2K1 b - - 0 13",
+            "flags": "n",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        }
+      ],
+      "currentPath": [],
+      "isFlipped": false,
+      "comments": {
+        "0": "White solidifies the queenside before launching the pawn minority.",
+        "2": "Pieces coordinate behind the b-pawn push.",
+        "6": "Central files are occupied to meet ...e5 breaks."
+      }
+    }
+  },
+  {
+    "studyName": "King and Pawn Technique",
+    "category": "Endgame",
+    "description": "Fundamental king-and-pawn endgame highlighting opposition and triangulation.",
+    "isPublic": true,
+    "gameState": {
+      "position": "8/8/8/8/4k3/4P3/4K3/8 w - - 0 1",
+      "moveTree": [
+        {
+          "move": {
+            "from": "e2",
+            "to": "f2",
+            "san": "Kf2",
+            "lan": "e2f2",
+            "before": "8/8/8/8/4k3/4P3/4K3/8 w - - 0 1",
+            "after": "8/8/8/8/4k3/4P3/5K2/8 b - - 1 1",
+            "flags": "n",
+            "piece": "k",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
             "from": "e4",
-            "to": "f4",
-            "san": "Kf4",
-            "lan": "e4f4",
-            "before": "8/8/8/8/4kP2/8/4K3/4R3 b - f3 0 1",
-            "after": "8/8/8/8/4kp2/8/4K3/4R3 w - - 1 2",
+            "to": "e5",
+            "san": "Ke5",
+            "lan": "e4e5",
+            "before": "8/8/8/8/4k3/4P3/5K2/8 b - - 1 1",
+            "after": "8/8/8/4k3/8/4P3/5K2/8 w - - 2 2",
             "flags": "n",
             "piece": "k",
             "color": "b"
@@ -782,424 +1196,1186 @@
         },
         {
           "move": {
-            "from": "e1",
-            "to": "e8",
-            "san": "Re8",
-            "lan": "e1e8",
-            "before": "8/8/8/8/4kp2/8/4K3/4R3 w - - 1 2",
-            "after": "8/4R3/8/8/4kp2/8/4K3/8 b - - 2 2",
+            "from": "f2",
+            "to": "f3",
+            "san": "Kf3",
+            "lan": "f2f3",
+            "before": "8/8/8/4k3/8/4P3/5K2/8 w - - 2 2",
+            "after": "8/8/8/4k3/8/4PK2/8/8 b - - 3 2",
+            "flags": "n",
+            "piece": "k",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e5",
+            "to": "f5",
+            "san": "Kf5",
+            "lan": "e5f5",
+            "before": "8/8/8/4k3/8/4PK2/8/8 b - - 3 2",
+            "after": "8/8/8/5k2/8/4PK2/8/8 w - - 4 3",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e3",
+            "to": "e4",
+            "san": "e4+",
+            "lan": "e3e4",
+            "before": "8/8/8/5k2/8/4PK2/8/8 w - - 4 3",
+            "after": "8/8/8/5k2/4P3/5K2/8/8 b - - 0 3",
+            "flags": "n",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f5",
+            "to": "e5",
+            "san": "Ke5",
+            "lan": "f5e5",
+            "before": "8/8/8/5k2/4P3/5K2/8/8 b - - 0 3",
+            "after": "8/8/8/4k3/4P3/5K2/8/8 w - - 1 4",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f3",
+            "to": "e3",
+            "san": "Ke3",
+            "lan": "f3e3",
+            "before": "8/8/8/4k3/4P3/5K2/8/8 w - - 1 4",
+            "after": "8/8/8/4k3/4P3/4K3/8/8 b - - 2 4",
+            "flags": "n",
+            "piece": "k",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e5",
+            "to": "e6",
+            "san": "Ke6",
+            "lan": "e5e6",
+            "before": "8/8/8/4k3/4P3/4K3/8/8 b - - 2 4",
+            "after": "8/8/4k3/8/4P3/4K3/8/8 w - - 3 5",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e3",
+            "to": "f4",
+            "san": "Kf4",
+            "lan": "e3f4",
+            "before": "8/8/4k3/8/4P3/4K3/8/8 w - - 3 5",
+            "after": "8/8/4k3/8/4PK2/8/8/8 b - - 4 5",
+            "flags": "n",
+            "piece": "k",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e6",
+            "to": "f6",
+            "san": "Kf6",
+            "lan": "e6f6",
+            "before": "8/8/4k3/8/4PK2/8/8/8 b - - 4 5",
+            "after": "8/8/5k2/8/4PK2/8/8/8 w - - 5 6",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        }
+      ],
+      "currentPath": [],
+      "isFlipped": false,
+      "comments": {
+        "0": "Activate the king toward the pawn.",
+        "4": "The breakthrough e4+ forces the opposing king back."
+      }
+    }
+  },
+  {
+    "studyName": "Rook Endgame – Building a Bridge",
+    "category": "Endgame",
+    "description": "Simple rook endgame showing how to escort a passed pawn with the rook.",
+    "isPublic": true,
+    "gameState": {
+      "position": "8/8/8/8/3k4/4P3/4K3/3R4 w - - 0 1",
+      "moveTree": [
+        {
+          "move": {
+            "from": "d1",
+            "to": "f1",
+            "san": "Rf1+",
+            "lan": "d1f1",
+            "before": "8/8/8/8/3k4/4P3/4K3/3R4 w - - 0 1",
+            "after": "8/8/8/8/3k4/4P3/4K3/5R2 b - - 1 1",
             "flags": "n",
             "piece": "r",
             "color": "w"
           },
-          "branches": [
-            [
-              {
-                "move": {
-                  "from": "f4",
-                  "to": "g4",
-                  "san": "Kg4",
-                  "lan": "f4g4",
-                  "before": "8/4R3/8/8/4kp2/8/4K3/8 b - - 2 2",
-                  "after": "8/4R3/8/8/4k1p1/8/4K3/8 w - - 3 3",
-                  "flags": "n",
-                  "piece": "k",
-                  "color": "b"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "e2",
-                  "to": "f2",
-                  "san": "Kf2",
-                  "lan": "e2f2",
-                  "before": "8/4R3/8/8/4k1p1/8/4K3/8 w - - 3 3",
-                  "after": "8/4R3/8/8/4k1p1/8/5K2/8 b - - 4 3",
-                  "flags": "n",
-                  "piece": "k",
-                  "color": "w"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "f4",
-                  "to": "f5",
-                  "san": "f5",
-                  "lan": "f4f5",
-                  "before": "8/4R3/8/8/4k1p1/8/5K2/8 b - - 4 3",
-                  "after": "8/4R3/8/5k2/6p1/8/5K2/8 w - - 0 4",
-                  "flags": "n",
-                  "piece": "p",
-                  "color": "b"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "e8",
-                  "to": "e5",
-                  "san": "Re5",
-                  "lan": "e8e5",
-                  "before": "8/4R3/8/5k2/6p1/8/5K2/8 w - - 0 4",
-                  "after": "8/8/8/4Rk2/6p1/8/5K2/8 b - - 1 4",
-                  "flags": "n",
-                  "piece": "r",
-                  "color": "w"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "f5",
-                  "to": "f6",
-                  "san": "Kf6",
-                  "lan": "f5f6",
-                  "before": "8/8/8/4Rk2/6p1/8/5K2/8 b - - 1 4",
-                  "after": "8/8/5k2/4R3/6p1/8/5K2/8 w - - 2 5",
-                  "flags": "n",
-                  "piece": "k",
-                  "color": "b"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "f2",
-                  "to": "f3",
-                  "san": "Kf3",
-                  "lan": "f2f3",
-                  "before": "8/8/5k2/4R3/6p1/8/5K2/8 w - - 2 5",
-                  "after": "8/8/5k2/4R3/6p1/5K2/8/8 b - - 3 5",
-                  "flags": "n",
-                  "piece": "k",
-                  "color": "w"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "f6",
-                  "to": "g6",
-                  "san": "Kg6",
-                  "lan": "f6g6",
-                  "before": "8/8/5k2/4R3/6p1/5K2/8/8 b - - 3 5",
-                  "after": "8/8/6k1/4R3/6p1/5K2/8/8 w - - 4 6",
-                  "flags": "n",
-                  "piece": "k",
-                  "color": "b"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "e5",
-                  "to": "e6",
-                  "san": "Re6",
-                  "lan": "e5e6",
-                  "before": "8/8/6k1/4R3/6p1/5K2/8/8 w - - 4 6",
-                  "after": "8/8/4R1k1/8/6p1/5K2/8/8 b - - 5 6",
-                  "flags": "n",
-                  "piece": "r",
-                  "color": "w"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "g6",
-                  "to": "g5",
-                  "san": "Kg5",
-                  "lan": "g6g5",
-                  "before": "8/8/4R1k1/8/6p1/5K2/8/8 b - - 5 6",
-                  "after": "8/8/4R3/6k1/6p1/5K2/8/8 w - - 6 7",
-                  "flags": "n",
-                  "piece": "k",
-                  "color": "b"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "f3",
-                  "to": "g4",
-                  "san": "Kxg4",
-                  "lan": "f3g4",
-                  "before": "8/8/4R3/6k1/6p1/5K2/8/8 w - - 6 7",
-                  "after": "8/8/4R3/6k1/6K1/8/8/8 b - - 0 7",
-                  "flags": "c",
-                  "piece": "k",
-                  "color": "w",
-                  "captured": "p"
-                },
-                "branches": []
-              }
-            ]
-          ]
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d4",
+            "to": "e5",
+            "san": "Ke5",
+            "lan": "d4e5",
+            "before": "8/8/8/8/3k4/4P3/4K3/5R2 b - - 1 1",
+            "after": "8/8/8/4k3/8/4P3/4K3/5R2 w - - 2 2",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f1",
+            "to": "f4",
+            "san": "Rf4",
+            "lan": "f1f4",
+            "before": "8/8/8/4k3/8/4P3/4K3/5R2 w - - 2 2",
+            "after": "8/8/8/4k3/5R2/4P3/4K3/8 b - - 3 2",
+            "flags": "n",
+            "piece": "r",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e5",
+            "to": "d5",
+            "san": "Kd5",
+            "lan": "e5d5",
+            "before": "8/8/8/4k3/5R2/4P3/4K3/8 b - - 3 2",
+            "after": "8/8/8/3k4/5R2/4P3/4K3/8 w - - 4 3",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e2",
+            "to": "f3",
+            "san": "Kf3",
+            "lan": "e2f3",
+            "before": "8/8/8/3k4/5R2/4P3/4K3/8 w - - 4 3",
+            "after": "8/8/8/3k4/5R2/4PK2/8/8 b - - 5 3",
+            "flags": "n",
+            "piece": "k",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d5",
+            "to": "e5",
+            "san": "Ke5",
+            "lan": "d5e5",
+            "before": "8/8/8/3k4/5R2/4PK2/8/8 b - - 5 3",
+            "after": "8/8/8/4k3/5R2/4PK2/8/8 w - - 6 4",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f4",
+            "to": "e4",
+            "san": "Re4+",
+            "lan": "f4e4",
+            "before": "8/8/8/4k3/5R2/4PK2/8/8 w - - 6 4",
+            "after": "8/8/8/4k3/4R3/4PK2/8/8 b - - 7 4",
+            "flags": "n",
+            "piece": "r",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e5",
+            "to": "d5",
+            "san": "Kd5",
+            "lan": "e5d5",
+            "before": "8/8/8/4k3/4R3/4PK2/8/8 b - - 7 4",
+            "after": "8/8/8/3k4/4R3/4PK2/8/8 w - - 8 5",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f3",
+            "to": "f4",
+            "san": "Kf4",
+            "lan": "f3f4",
+            "before": "8/8/8/3k4/4R3/4PK2/8/8 w - - 8 5",
+            "after": "8/8/8/3k4/4RK2/4P3/8/8 b - - 9 5",
+            "flags": "n",
+            "piece": "k",
+            "color": "w"
+          },
+          "branches": []
         }
       ],
       "currentPath": [],
       "isFlipped": false,
       "comments": {
-        "0": "White advances the pawn to the 4th rank",
-        "1": "Black's king approaches",
-        "2": "Lucena Position - White cuts off the king with the rook",
-        "2,0,0": "Black tries to escape",
-        "2,0,1": "White brings the king closer",
-        "2,0,2": "Black advances the pawn",
-        "2,0,3": "White cuts off the king again",
-        "2,0,4": "Black continues trying to escape",
-        "2,0,5": "White maintains the cut-off",
-        "2,0,6": "Black moves to g6",
-        "2,0,7": "White continues cutting off",
-        "2,0,8": "Black moves to g5",
-        "2,0,9": "White captures the pawn and wins"
+        "0": "Check the enemy king away before advancing.",
+        "4": "Centralizing the rook forces the king back."
       }
     }
   },
   {
-    "studyName": "Fork Tactic - Knight Fork",
+    "studyName": "Tactical Motif – Knight Fork",
     "category": "Tactics",
-    "description": "Master the knight fork, one of the most common and effective tactical patterns in chess.",
+    "description": "Active calculation exercise featuring a classic knight fork against queen and rook.",
     "isPublic": true,
     "gameState": {
-      "position": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
+      "position": "r1bq1rk1/ppp2ppp/2n2n2/2bp4/2P5/2N1PN2/PPQ1BPPP/R1B2RK1 w - - 0 10",
       "moveTree": [
         {
           "move": {
+            "from": "c4",
+            "to": "d5",
+            "san": "cxd5",
+            "lan": "c4d5",
+            "before": "r1bq1rk1/ppp2ppp/2n2n2/2bp4/2P5/2N1PN2/PPQ1BPPP/R1B2RK1 w - - 0 10",
+            "after": "r1bq1rk1/ppp2ppp/2n2n2/2bP4/8/2N1PN2/PPQ1BPPP/R1B2RK1 b - - 0 10",
+            "captured": "p",
+            "flags": "c",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "c6",
+            "to": "b4",
+            "san": "Nb4",
+            "lan": "c6b4",
+            "before": "r1bq1rk1/ppp2ppp/2n2n2/2bP4/8/2N1PN2/PPQ1BPPP/R1B2RK1 b - - 0 10",
+            "after": "r1bq1rk1/ppp2ppp/5n2/2bP4/1n6/2N1PN2/PPQ1BPPP/R1B2RK1 w - - 1 11",
+            "flags": "n",
+            "piece": "n",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "c2",
+            "to": "b3",
+            "san": "Qb3",
+            "lan": "c2b3",
+            "before": "r1bq1rk1/ppp2ppp/5n2/2bP4/1n6/2N1PN2/PPQ1BPPP/R1B2RK1 w - - 1 11",
+            "after": "r1bq1rk1/ppp2ppp/5n2/2bP4/1n6/1QN1PN2/PP2BPPP/R1B2RK1 b - - 2 11",
+            "flags": "n",
+            "piece": "q",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "b4",
+            "to": "d5",
+            "san": "Nbxd5",
+            "lan": "b4d5",
+            "before": "r1bq1rk1/ppp2ppp/5n2/2bP4/1n6/1QN1PN2/PP2BPPP/R1B2RK1 b - - 2 11",
+            "after": "r1bq1rk1/ppp2ppp/5n2/2bn4/8/1QN1PN2/PP2BPPP/R1B2RK1 w - - 0 12",
+            "captured": "p",
+            "flags": "c",
+            "piece": "n",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f1",
+            "to": "d1",
+            "san": "Rd1",
+            "lan": "f1d1",
+            "before": "r1bq1rk1/ppp2ppp/5n2/2bn4/8/1QN1PN2/PP2BPPP/R1B2RK1 w - - 0 12",
+            "after": "r1bq1rk1/ppp2ppp/5n2/2bn4/8/1QN1PN2/PP2BPPP/R1BR2K1 b - - 1 12",
+            "flags": "n",
+            "piece": "r",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "c7",
+            "to": "c6",
+            "san": "c6",
+            "lan": "c7c6",
+            "before": "r1bq1rk1/ppp2ppp/5n2/2bn4/8/1QN1PN2/PP2BPPP/R1BR2K1 b - - 1 12",
+            "after": "r1bq1rk1/pp3ppp/2p2n2/2bn4/8/1QN1PN2/PP2BPPP/R1BR2K1 w - - 0 13",
+            "flags": "n",
+            "piece": "p",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e3",
+            "to": "e4",
+            "san": "e4",
+            "lan": "e3e4",
+            "before": "r1bq1rk1/pp3ppp/2p2n2/2bn4/8/1QN1PN2/PP2BPPP/R1BR2K1 w - - 0 13",
+            "after": "r1bq1rk1/pp3ppp/2p2n2/2bn4/4P3/1QN2N2/PP2BPPP/R1BR2K1 b - - 0 13",
+            "flags": "n",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        }
+      ],
+      "currentPath": [],
+      "isFlipped": false,
+      "comments": {
+        "0": "White captures to open the c-file and target d5.",
+        "4": "Rd1 piles on the pinned knight.",
+        "6": "e4 tactically overloads the defender."
+      }
+    }
+  },
+  {
+    "studyName": "Tactical Motif – Exploiting the Pin",
+    "category": "Tactics",
+    "description": "Illustrates how to increase pressure on a pinned piece and convert it tactically.",
+    "isPublic": true,
+    "gameState": {
+      "position": "r2q1rk1/pp2bppp/2n2n2/3p4/3P4/2N1BN2/PPQ1BPPP/R3K2R w KQ - 0 12",
+      "moveTree": [
+        {
+          "move": {
+            "from": "e1",
+            "to": "g1",
+            "san": "O-O",
+            "lan": "e1g1",
+            "before": "r2q1rk1/pp2bppp/2n2n2/3p4/3P4/2N1BN2/PPQ1BPPP/R3K2R w KQ - 0 12",
+            "after": "r2q1rk1/pp2bppp/2n2n2/3p4/3P4/2N1BN2/PPQ1BPPP/R4RK1 b - - 1 12",
+            "flags": "k",
+            "piece": "k",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f8",
+            "to": "e8",
+            "san": "Re8",
+            "lan": "f8e8",
+            "before": "r2q1rk1/pp2bppp/2n2n2/3p4/3P4/2N1BN2/PPQ1BPPP/R4RK1 b - - 1 12",
+            "after": "r2qr1k1/pp2bppp/2n2n2/3p4/3P4/2N1BN2/PPQ1BPPP/R4RK1 w - - 2 13",
+            "flags": "n",
+            "piece": "r",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f1",
+            "to": "e1",
+            "san": "Rfe1",
+            "lan": "f1e1",
+            "before": "r2qr1k1/pp2bppp/2n2n2/3p4/3P4/2N1BN2/PPQ1BPPP/R4RK1 w - - 2 13",
+            "after": "r2qr1k1/pp2bppp/2n2n2/3p4/3P4/2N1BN2/PPQ1BPPP/R3R1K1 b - - 3 13",
+            "flags": "n",
+            "piece": "r",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e7",
+            "to": "b4",
+            "san": "Bb4",
+            "lan": "e7b4",
+            "before": "r2qr1k1/pp2bppp/2n2n2/3p4/3P4/2N1BN2/PPQ1BPPP/R3R1K1 b - - 3 13",
+            "after": "r2qr1k1/pp3ppp/2n2n2/3p4/1b1P4/2N1BN2/PPQ1BPPP/R3R1K1 w - - 4 14",
+            "flags": "n",
+            "piece": "b",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "a1",
+            "to": "c1",
+            "san": "Rac1",
+            "lan": "a1c1",
+            "before": "r2qr1k1/pp3ppp/2n2n2/3p4/1b1P4/2N1BN2/PPQ1BPPP/R3R1K1 w - - 4 14",
+            "after": "r2qr1k1/pp3ppp/2n2n2/3p4/1b1P4/2N1BN2/PPQ1BPPP/2R1R1K1 b - - 5 14",
+            "flags": "n",
+            "piece": "r",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f6",
+            "to": "e4",
+            "san": "Ne4",
+            "lan": "f6e4",
+            "before": "r2qr1k1/pp3ppp/2n2n2/3p4/1b1P4/2N1BN2/PPQ1BPPP/2R1R1K1 b - - 5 14",
+            "after": "r2qr1k1/pp3ppp/2n5/3p4/1b1Pn3/2N1BN2/PPQ1BPPP/2R1R1K1 w - - 6 15",
+            "flags": "n",
+            "piece": "n",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "c3",
+            "to": "e4",
+            "san": "Nxe4",
+            "lan": "c3e4",
+            "before": "r2qr1k1/pp3ppp/2n5/3p4/1b1Pn3/2N1BN2/PPQ1BPPP/2R1R1K1 w - - 6 15",
+            "after": "r2qr1k1/pp3ppp/2n5/3p4/1b1PN3/4BN2/PPQ1BPPP/2R1R1K1 b - - 0 15",
+            "captured": "n",
+            "flags": "c",
+            "piece": "n",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d5",
+            "to": "e4",
+            "san": "dxe4",
+            "lan": "d5e4",
+            "before": "r2qr1k1/pp3ppp/2n5/3p4/1b1PN3/4BN2/PPQ1BPPP/2R1R1K1 b - - 0 15",
+            "after": "r2qr1k1/pp3ppp/2n5/8/1b1Pp3/4BN2/PPQ1BPPP/2R1R1K1 w - - 0 16",
+            "captured": "n",
+            "flags": "c",
+            "piece": "p",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
             "from": "f3",
-            "to": "e5",
-            "san": "Ne5",
-            "lan": "f3e5",
-            "before": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
-            "after": "r1bqkb1r/pppp1ppp/2n2n2/4N3/2B1P3/8/PPPP1PPP/RNBQK2R b KQkq - 5 4",
+            "to": "d2",
+            "san": "Nd2",
+            "lan": "f3d2",
+            "before": "r2qr1k1/pp3ppp/2n5/8/1b1Pp3/4BN2/PPQ1BPPP/2R1R1K1 w - - 0 16",
+            "after": "r2qr1k1/pp3ppp/2n5/8/1b1Pp3/4B3/PPQNBPPP/2R1R1K1 b - - 1 16",
             "flags": "n",
             "piece": "n",
             "color": "w"
           },
-          "branches": [
-            [
-              {
-                "move": {
-                  "from": "c6",
-                  "to": "e5",
-                  "san": "Nxe5",
-                  "lan": "c6e5",
-                  "before": "r1bqkb1r/pppp1ppp/2n2n2/4N3/2B1P3/8/PPPP1PPP/RNBQK2R b KQkq - 5 4",
-                  "after": "r1bqkb1r/pppp1ppp/5n2/4n3/2B1P3/8/PPPP1PPP/RNBQK2R w KQkq - 0 5",
-                  "flags": "c",
-                  "piece": "n",
-                  "color": "b",
-                  "captured": "n"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "c4",
-                  "to": "f7",
-                  "san": "Bxf7",
-                  "lan": "c4f7",
-                  "before": "r1bqkb1r/pppp1ppp/5n2/4n3/2B1P3/8/PPPP1PPP/RNBQK2R w KQkq - 0 5",
-                  "after": "r1bqkb1r/ppppBppp/5n2/4n3/4P3/8/PPPP1PPP/RNBQK2R b KQkq - 0 5",
-                  "flags": "c",
-                  "piece": "b",
-                  "color": "w",
-                  "captured": "p"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "e8",
-                  "to": "f7",
-                  "san": "Kxf7",
-                  "lan": "e8f7",
-                  "before": "r1bqkb1r/ppppBppp/5n2/4n3/4P3/8/PPPP1PPP/RNBQK2R b KQkq - 0 5",
-                  "after": "r1bqk2r/ppppBppp/5n2/4n3/4P3/8/PPPP1PPP/RNBQK2R w KQkq - 0 6",
-                  "flags": "c",
-                  "piece": "k",
-                  "color": "b",
-                  "captured": "b"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "e5",
-                  "to": "c6",
-                  "san": "Nxc6",
-                  "lan": "e5c6",
-                  "before": "r1bqk2r/ppppBppp/5n2/4n3/4P3/8/PPPP1PPP/RNBQK2R w KQkq - 0 6",
-                  "after": "r1bqk2r/ppppBppp/2N2n2/8/4P3/8/PPPP1PPP/RNBQK2R b KQkq - 0 6",
-                  "flags": "c",
-                  "piece": "n",
-                  "color": "w",
-                  "captured": "n"
-                },
-                "branches": []
-              }
-            ]
-          ]
+          "branches": []
         }
       ],
       "currentPath": [],
       "isFlipped": false,
       "comments": {
-        "0": "White centralizes the knight, threatening a fork",
-        "0,0,0": "Black captures the knight",
-        "0,0,1": "White sacrifices the bishop to expose the king",
-        "0,0,2": "Black is forced to capture",
-        "0,0,3": "Knight fork! White forks the king and rook, winning material"
+        "0": "Castle before launching operations on the pinned knight.",
+        "2": "Central rooks intensify pressure on the e-file.",
+        "6": "Tactical liquidation leaves Black with structural weaknesses."
       }
     }
   },
   {
-    "studyName": "Pin and Win Material",
-    "category": "Tactics",
-    "description": "Learn how to use pins to win material and create winning positions.",
+    "studyName": "Endgame Marathon – King March",
+    "category": "Endgame",
+    "description": "Extended king-and-pawn technique that highlights triangulation, zugzwang, and precise king manoeuvres.",
     "isPublic": true,
     "gameState": {
-      "position": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
+      "position": "8/8/8/3k4/8/4PK2/8/8 w - - 0 1",
       "moveTree": [
         {
           "move": {
-            "from": "c1",
-            "to": "g5",
-            "san": "Bg5",
-            "lan": "c1g5",
-            "before": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
-            "after": "r1bqkb1r/pppp1ppp/2n2n2/4p1B1/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 5 4",
+            "from": "f3",
+            "to": "f4",
+            "san": "Kf4",
+            "lan": "f3f4",
+            "before": "8/8/8/3k4/8/4PK2/8/8 w - - 0 1",
+            "after": "8/8/8/3k4/5K2/4P3/8/8 b - - 1 1",
             "flags": "n",
-            "piece": "b",
+            "piece": "k",
             "color": "w"
           },
-          "branches": [
-            [
-              {
-                "move": {
-                  "from": "f6",
-                  "to": "e4",
-                  "san": "Ne4",
-                  "lan": "f6e4",
-                  "before": "r1bqkb1r/pppp1ppp/2n2n2/4p1B1/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 5 4",
-                  "after": "r1bqkb1r/pppp1ppp/2n5/4p1B1/2B1n3/5N2/PPPP1PPP/RNBQK2R w KQkq - 6 5",
-                  "flags": "c",
-                  "piece": "n",
-                  "color": "b",
-                  "captured": "p"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "g5",
-                  "to": "d2",
-                  "san": "Bxd2",
-                  "lan": "g5d2",
-                  "before": "r1bqkb1r/pppp1ppp/2n5/4p1B1/2B1n3/5N2/PPPP1PPP/RNBQK2R w KQkq - 6 5",
-                  "after": "r1bqkb1r/pppp1ppp/2n5/4p3/2B1n3/5N2/PPPp1PPP/RNBQK2R b KQkq - 0 5",
-                  "flags": "c",
-                  "piece": "b",
-                  "color": "w",
-                  "captured": "n"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "d8",
-                  "to": "d2",
-                  "san": "Qxd2",
-                  "lan": "d8d2",
-                  "before": "r1bqkb1r/pppp1ppp/2n5/4p3/2B1n3/5N2/PPPp1PPP/RNBQK2R b KQkq - 0 5",
-                  "after": "r1b1kb1r/pppp1ppp/2n5/4p3/2B1n3/5N2/PPPq1PPP/RNBQK2R w KQkq - 0 6",
-                  "flags": "c",
-                  "piece": "q",
-                  "color": "b",
-                  "captured": "b"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "f3",
-                  "to": "e5",
-                  "san": "Nxe5",
-                  "lan": "f3e5",
-                  "before": "r1b1kb1r/pppp1ppp/2n5/4p3/2B1n3/5N2/PPPq1PPP/RNBQK2R w KQkq - 0 6",
-                  "after": "r1b1kb1r/pppp1ppp/2n5/4N3/2B1n3/8/PPPq1PPP/RNBQK2R b KQkq - 0 6",
-                  "flags": "c",
-                  "piece": "n",
-                  "color": "w",
-                  "captured": "p"
-                },
-                "branches": []
-              }
-            ],
-            [
-              {
-                "move": {
-                  "from": "f6",
-                  "to": "d7",
-                  "san": "Nbd7",
-                  "lan": "f6d7",
-                  "before": "r1bqkb1r/pppp1ppp/2n2n2/4p1B1/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 5 4",
-                  "after": "r1bqkb1r/ppp1nppp/2n5/4p1B1/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 6 5",
-                  "flags": "n",
-                  "piece": "n",
-                  "color": "b"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "g5",
-                  "to": "f6",
-                  "san": "Bxf6",
-                  "lan": "g5f6",
-                  "before": "r1bqkb1r/ppp1nppp/2n5/4p1B1/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 6 5",
-                  "after": "r1bqkb1r/ppp1nppp/2n2B2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 5",
-                  "flags": "c",
-                  "piece": "b",
-                  "color": "w",
-                  "captured": "n"
-                },
-                "branches": []
-              },
-              {
-                "move": {
-                  "from": "g7",
-                  "to": "f6",
-                  "san": "gxf6",
-                  "lan": "g7f6",
-                  "before": "r1bqkb1r/ppp1nppp/2n2B2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 5",
-                  "after": "r1bqkb1r/ppp1npp1/2n2p2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 6",
-                  "flags": "c",
-                  "piece": "p",
-                  "color": "b",
-                  "captured": "b"
-                },
-                "branches": []
-              }
-            ]
-          ]
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d5",
+            "to": "e6",
+            "san": "Ke6",
+            "lan": "d5e6",
+            "before": "8/8/8/3k4/5K2/4P3/8/8 b - - 1 1",
+            "after": "8/8/4k3/8/5K2/4P3/8/8 w - - 2 2",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e3",
+            "to": "e4",
+            "san": "e4",
+            "lan": "e3e4",
+            "before": "8/8/4k3/8/5K2/4P3/8/8 w - - 2 2",
+            "after": "8/8/4k3/8/4PK2/8/8/8 b - - 0 2",
+            "flags": "n",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e6",
+            "to": "e7",
+            "san": "Ke7",
+            "lan": "e6e7",
+            "before": "8/8/4k3/8/4PK2/8/8/8 b - - 0 2",
+            "after": "8/4k3/8/8/4PK2/8/8/8 w - - 1 3",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f4",
+            "to": "e5",
+            "san": "Ke5",
+            "lan": "f4e5",
+            "before": "8/4k3/8/8/4PK2/8/8/8 w - - 1 3",
+            "after": "8/4k3/8/4K3/4P3/8/8/8 b - - 2 3",
+            "flags": "n",
+            "piece": "k",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e7",
+            "to": "d7",
+            "san": "Kd7",
+            "lan": "e7d7",
+            "before": "8/4k3/8/4K3/4P3/8/8/8 b - - 2 3",
+            "after": "8/3k4/8/4K3/4P3/8/8/8 w - - 3 4",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e5",
+            "to": "d5",
+            "san": "Kd5",
+            "lan": "e5d5",
+            "before": "8/3k4/8/4K3/4P3/8/8/8 w - - 3 4",
+            "after": "8/3k4/8/3K4/4P3/8/8/8 b - - 4 4",
+            "flags": "n",
+            "piece": "k",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d7",
+            "to": "e7",
+            "san": "Ke7",
+            "lan": "d7e7",
+            "before": "8/3k4/8/3K4/4P3/8/8/8 b - - 4 4",
+            "after": "8/4k3/8/3K4/4P3/8/8/8 w - - 5 5",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e4",
+            "to": "e5",
+            "san": "e5",
+            "lan": "e4e5",
+            "before": "8/4k3/8/3K4/4P3/8/8/8 w - - 5 5",
+            "after": "8/4k3/8/3KP3/8/8/8/8 b - - 0 5",
+            "flags": "n",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e7",
+            "to": "d7",
+            "san": "Kd7",
+            "lan": "e7d7",
+            "before": "8/4k3/8/3KP3/8/8/8/8 b - - 0 5",
+            "after": "8/3k4/8/3KP3/8/8/8/8 w - - 1 6",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e5",
+            "to": "e6",
+            "san": "e6+",
+            "lan": "e5e6",
+            "before": "8/3k4/8/3KP3/8/8/8/8 w - - 1 6",
+            "after": "8/3k4/4P3/3K4/8/8/8/8 b - - 0 6",
+            "flags": "n",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d7",
+            "to": "e7",
+            "san": "Ke7",
+            "lan": "d7e7",
+            "before": "8/3k4/4P3/3K4/8/8/8/8 b - - 0 6",
+            "after": "8/4k3/4P3/3K4/8/8/8/8 w - - 1 7",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d5",
+            "to": "e5",
+            "san": "Ke5",
+            "lan": "d5e5",
+            "before": "8/4k3/4P3/3K4/8/8/8/8 w - - 1 7",
+            "after": "8/4k3/4P3/4K3/8/8/8/8 b - - 2 7",
+            "flags": "n",
+            "piece": "k",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e7",
+            "to": "d8",
+            "san": "Kd8",
+            "lan": "e7d8",
+            "before": "8/4k3/4P3/4K3/8/8/8/8 b - - 2 7",
+            "after": "3k4/8/4P3/4K3/8/8/8/8 w - - 3 8",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e5",
+            "to": "d6",
+            "san": "Kd6",
+            "lan": "e5d6",
+            "before": "3k4/8/4P3/4K3/8/8/8/8 w - - 3 8",
+            "after": "3k4/8/3KP3/8/8/8/8/8 b - - 4 8",
+            "flags": "n",
+            "piece": "k",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d8",
+            "to": "e8",
+            "san": "Ke8",
+            "lan": "d8e8",
+            "before": "3k4/8/3KP3/8/8/8/8/8 b - - 4 8",
+            "after": "4k3/8/3KP3/8/8/8/8/8 w - - 5 9",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e6",
+            "to": "e7",
+            "san": "e7",
+            "lan": "e6e7",
+            "before": "4k3/8/3KP3/8/8/8/8/8 w - - 5 9",
+            "after": "4k3/4P3/3K4/8/8/8/8/8 b - - 0 9",
+            "flags": "n",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e8",
+            "to": "f7",
+            "san": "Kf7",
+            "lan": "e8f7",
+            "before": "4k3/4P3/3K4/8/8/8/8/8 b - - 0 9",
+            "after": "8/4Pk2/3K4/8/8/8/8/8 w - - 1 10",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d6",
+            "to": "d7",
+            "san": "Kd7",
+            "lan": "d6d7",
+            "before": "8/4Pk2/3K4/8/8/8/8/8 w - - 1 10",
+            "after": "8/3KPk2/8/8/8/8/8/8 b - - 2 10",
+            "flags": "n",
+            "piece": "k",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f7",
+            "to": "g6",
+            "san": "Kg6",
+            "lan": "f7g6",
+            "before": "8/3KPk2/8/8/8/8/8/8 b - - 2 10",
+            "after": "8/3KP3/6k1/8/8/8/8/8 w - - 3 11",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e7",
+            "to": "e8",
+            "promotion": "q",
+            "san": "e8=Q+",
+            "lan": "e7e8q",
+            "before": "8/3KP3/6k1/8/8/8/8/8 w - - 3 11",
+            "after": "4Q3/3K4/6k1/8/8/8/8/8 b - - 0 11",
+            "flags": "np",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "g6",
+            "to": "f5",
+            "san": "Kf5",
+            "lan": "g6f5",
+            "before": "4Q3/3K4/6k1/8/8/8/8/8 b - - 0 11",
+            "after": "4Q3/3K4/8/5k2/8/8/8/8 w - - 1 12",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e8",
+            "to": "e6",
+            "san": "Qe6+",
+            "lan": "e8e6",
+            "before": "4Q3/3K4/8/5k2/8/8/8/8 w - - 1 12",
+            "after": "8/3K4/4Q3/5k2/8/8/8/8 b - - 2 12",
+            "flags": "n",
+            "piece": "q",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f5",
+            "to": "g5",
+            "san": "Kg5",
+            "lan": "f5g5",
+            "before": "8/3K4/4Q3/5k2/8/8/8/8 b - - 2 12",
+            "after": "8/3K4/4Q3/6k1/8/8/8/8 w - - 3 13",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e6",
+            "to": "e5",
+            "san": "Qe5+",
+            "lan": "e6e5",
+            "before": "8/3K4/4Q3/6k1/8/8/8/8 w - - 3 13",
+            "after": "8/3K4/8/4Q1k1/8/8/8/8 b - - 4 13",
+            "flags": "n",
+            "piece": "q",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "g5",
+            "to": "g4",
+            "san": "Kg4",
+            "lan": "g5g4",
+            "before": "8/3K4/8/4Q1k1/8/8/8/8 b - - 4 13",
+            "after": "8/3K4/8/4Q3/6k1/8/8/8 w - - 5 14",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e5",
+            "to": "f6",
+            "san": "Qf6",
+            "lan": "e5f6",
+            "before": "8/3K4/8/4Q3/6k1/8/8/8 w - - 5 14",
+            "after": "8/3K4/5Q2/8/6k1/8/8/8 b - - 6 14",
+            "flags": "n",
+            "piece": "q",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "g4",
+            "to": "g3",
+            "san": "Kg3",
+            "lan": "g4g3",
+            "before": "8/3K4/5Q2/8/6k1/8/8/8 b - - 6 14",
+            "after": "8/3K4/5Q2/8/8/6k1/8/8 w - - 7 15",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f6",
+            "to": "g6",
+            "san": "Qg6+",
+            "lan": "f6g6",
+            "before": "8/3K4/5Q2/8/8/6k1/8/8 w - - 7 15",
+            "after": "8/3K4/6Q1/8/8/6k1/8/8 b - - 8 15",
+            "flags": "n",
+            "piece": "q",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "g3",
+            "to": "h4",
+            "san": "Kh4",
+            "lan": "g3h4",
+            "before": "8/3K4/6Q1/8/8/6k1/8/8 b - - 8 15",
+            "after": "8/3K4/6Q1/8/7k/8/8/8 w - - 9 16",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "g6",
+            "to": "g4",
+            "san": "Qg4+",
+            "lan": "g6g4",
+            "before": "8/3K4/6Q1/8/7k/8/8/8 w - - 9 16",
+            "after": "8/3K4/8/8/6Qk/8/8/8 b - - 10 16",
+            "flags": "n",
+            "piece": "q",
+            "color": "w"
+          },
+          "branches": []
         }
       ],
       "currentPath": [],
       "isFlipped": false,
       "comments": {
-        "0": "White pins the knight to the queen",
-        "0,0,0": "Black tries to break the pin",
-        "0,0,1": "White captures the pinned piece",
-        "0,0,2": "Black recaptures with the queen",
-        "0,0,3": "White wins a pawn with a tactical shot",
-        "0,1,0": "Alternative: Black develops the other knight",
-        "0,1,1": "White captures the pinned knight",
-        "0,1,2": "Black recaptures, but the pin has done its job"
+        "0": "Bring the king forward to support the passer.",
+        "10": "The breakthrough check forces the opposing king backward.",
+        "17": "After queening, precise checks herd the king into a mating net."
+      }
+    }
+  },
+  {
+    "studyName": "Tactical Motif – Greek Gift Storm",
+    "category": "Tactics",
+    "description": "A classic bishop sacrifice on h7 that snowballs into a decisive mating attack.",
+    "isPublic": true,
+    "gameState": {
+      "position": "r3r1k1/pp1n1ppp/2p1pn2/3p4/2PP2b1/2NBPN2/PP3PPP/R2Q1RK1 w - - 0 12",
+      "moveTree": [
+        {
+          "move": {
+            "from": "d3",
+            "to": "h7",
+            "san": "Bxh7+",
+            "lan": "d3h7",
+            "before": "r3r1k1/pp1n1ppp/2p1pn2/3p4/2PP2b1/2NBPN2/PP3PPP/R2Q1RK1 w - - 0 12",
+            "after": "r3r1k1/pp1n1ppB/2p1pn2/3p4/2PP2b1/2N1PN2/PP3PPP/R2Q1RK1 b - - 0 12",
+            "captured": "p",
+            "flags": "c",
+            "piece": "b",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "g8",
+            "to": "h7",
+            "san": "Kxh7",
+            "lan": "g8h7",
+            "before": "r3r1k1/pp1n1ppB/2p1pn2/3p4/2PP2b1/2N1PN2/PP3PPP/R2Q1RK1 b - - 0 12",
+            "after": "r3r3/pp1n1ppk/2p1pn2/3p4/2PP2b1/2N1PN2/PP3PPP/R2Q1RK1 w - - 0 13",
+            "captured": "b",
+            "flags": "c",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f3",
+            "to": "g5",
+            "san": "Ng5+",
+            "lan": "f3g5",
+            "before": "r3r3/pp1n1ppk/2p1pn2/3p4/2PP2b1/2N1PN2/PP3PPP/R2Q1RK1 w - - 0 13",
+            "after": "r3r3/pp1n1ppk/2p1pn2/3p2N1/2PP2b1/2N1P3/PP3PPP/R2Q1RK1 b - - 1 13",
+            "flags": "n",
+            "piece": "n",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "h7",
+            "to": "g8",
+            "san": "Kg8",
+            "lan": "h7g8",
+            "before": "r3r3/pp1n1ppk/2p1pn2/3p2N1/2PP2b1/2N1P3/PP3PPP/R2Q1RK1 b - - 1 13",
+            "after": "r3r1k1/pp1n1pp1/2p1pn2/3p2N1/2PP2b1/2N1P3/PP3PPP/R2Q1RK1 w - - 2 14",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d1",
+            "to": "f3",
+            "san": "Qf3",
+            "lan": "d1f3",
+            "before": "r3r1k1/pp1n1pp1/2p1pn2/3p2N1/2PP2b1/2N1P3/PP3PPP/R2Q1RK1 w - - 2 14",
+            "after": "r3r1k1/pp1n1pp1/2p1pn2/3p2N1/2PP2b1/2N1PQ2/PP3PPP/R4RK1 b - - 3 14",
+            "flags": "n",
+            "piece": "q",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "g4",
+            "to": "h5",
+            "san": "Bh5",
+            "lan": "g4h5",
+            "before": "r3r1k1/pp1n1pp1/2p1pn2/3p2N1/2PP2b1/2N1PQ2/PP3PPP/R4RK1 b - - 3 14",
+            "after": "r3r1k1/pp1n1pp1/2p1pn2/3p2Nb/2PP4/2N1PQ2/PP3PPP/R4RK1 w - - 4 15",
+            "flags": "n",
+            "piece": "b",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f3",
+            "to": "h3",
+            "san": "Qh3",
+            "lan": "f3h3",
+            "before": "r3r1k1/pp1n1pp1/2p1pn2/3p2Nb/2PP4/2N1PQ2/PP3PPP/R4RK1 w - - 4 15",
+            "after": "r3r1k1/pp1n1pp1/2p1pn2/3p2Nb/2PP4/2N1P2Q/PP3PPP/R4RK1 b - - 5 15",
+            "flags": "n",
+            "piece": "q",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e8",
+            "to": "e7",
+            "san": "Re7",
+            "lan": "e8e7",
+            "before": "r3r1k1/pp1n1pp1/2p1pn2/3p2Nb/2PP4/2N1P2Q/PP3PPP/R4RK1 b - - 5 15",
+            "after": "r5k1/pp1nrpp1/2p1pn2/3p2Nb/2PP4/2N1P2Q/PP3PPP/R4RK1 w - - 6 16",
+            "flags": "n",
+            "piece": "r",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "g2",
+            "to": "g4",
+            "san": "g4",
+            "lan": "g2g4",
+            "before": "r5k1/pp1nrpp1/2p1pn2/3p2Nb/2PP4/2N1P2Q/PP3PPP/R4RK1 w - - 6 16",
+            "after": "r5k1/pp1nrpp1/2p1pn2/3p2Nb/2PP2P1/2N1P2Q/PP3P1P/R4RK1 b - - 0 16",
+            "flags": "b",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "h5",
+            "to": "g4",
+            "san": "Bxg4",
+            "lan": "h5g4",
+            "before": "r5k1/pp1nrpp1/2p1pn2/3p2Nb/2PP2P1/2N1P2Q/PP3P1P/R4RK1 b - - 0 16",
+            "after": "r5k1/pp1nrpp1/2p1pn2/3p2N1/2PP2b1/2N1P2Q/PP3P1P/R4RK1 w - - 0 17",
+            "captured": "p",
+            "flags": "c",
+            "piece": "b",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "h3",
+            "to": "h7",
+            "san": "Qh7+",
+            "lan": "h3h7",
+            "before": "r5k1/pp1nrpp1/2p1pn2/3p2N1/2PP2b1/2N1P2Q/PP3P1P/R4RK1 w - - 0 17",
+            "after": "r5k1/pp1nrppQ/2p1pn2/3p2N1/2PP2b1/2N1P3/PP3P1P/R4RK1 b - - 1 17",
+            "flags": "n",
+            "piece": "q",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "g8",
+            "to": "f8",
+            "san": "Kf8",
+            "lan": "g8f8",
+            "before": "r5k1/pp1nrppQ/2p1pn2/3p2N1/2PP2b1/2N1P3/PP3P1P/R4RK1 b - - 1 17",
+            "after": "r4k2/pp1nrppQ/2p1pn2/3p2N1/2PP2b1/2N1P3/PP3P1P/R4RK1 w - - 2 18",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "h7",
+            "to": "h8",
+            "san": "Qh8+",
+            "lan": "h7h8",
+            "before": "r4k2/pp1nrppQ/2p1pn2/3p2N1/2PP2b1/2N1P3/PP3P1P/R4RK1 w - - 2 18",
+            "after": "r4k1Q/pp1nrpp1/2p1pn2/3p2N1/2PP2b1/2N1P3/PP3P1P/R4RK1 b - - 3 18",
+            "flags": "n",
+            "piece": "q",
+            "color": "w"
+          },
+          "branches": []
+        }
+      ],
+      "currentPath": [],
+      "isFlipped": false,
+      "comments": {
+        "0": "The Greek Gift sacrifice drags the king into the open.",
+        "4": "Qf3 switches the queen to the h-file with tempo.",
+        "8": "g4 undermines the pinned bishop and opens the mating net."
       }
     }
   }
 ]
-

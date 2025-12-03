@@ -62,8 +62,12 @@ export const StudyCard = ({ study, onDelete, onEdit }: StudyCardProps) => {
     }
   };
 
-  // Get the last FEN position from gameState
+  const lastMainLineMove =
+    study.gameState?.moveTree && study.gameState.moveTree.length > 0
+      ? study.gameState.moveTree[study.gameState.moveTree.length - 1]
+      : null;
   const fenPosition =
+    lastMainLineMove?.move.after ||
     study.gameState?.position ||
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
