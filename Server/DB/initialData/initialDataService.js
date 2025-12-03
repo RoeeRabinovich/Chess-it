@@ -3,24 +3,53 @@ const User = require("../../users/models/mongodb/User");
 const initialStudyData = require("./initialStudyData.json");
 const chalk = require("chalk");
 
+const normalizeComments = (comments = {}) => {
+  if (comments instanceof Map) {
+    return normalizeComments(Object.fromEntries(comments.entries()));
+  }
+  if (typeof comments !== "object" || comments === null) {
+    return {};
+  }
+  const sortedKeys = Object.keys(comments).sort();
+  return sortedKeys.reduce((acc, key) => {
+    acc[key] = comments[key];
+    return acc;
+  }, {});
+};
+
+const normalizeStudy = (study) => {
+  const {
+    studyName,
+    category,
+    description = "",
+    isPublic = true,
+    gameState,
+  } = study;
+
+  return JSON.stringify({
+    studyName,
+    category,
+    description,
+    isPublic,
+    gameState: {
+      position: gameState?.position || "",
+      moveTree: gameState?.moveTree || [],
+      currentPath: Array.isArray(gameState?.currentPath)
+        ? gameState.currentPath
+        : [],
+      isFlipped: !!gameState?.isFlipped,
+      opening: gameState?.opening || null,
+      comments: normalizeComments(gameState?.comments || {}),
+    },
+  });
+};
+
 /**
- * Initialize studies in the database
- * Finds any user and loads initial study data
+ * Initialize studies in the database.
+ * Compares existing studies with the seed data and inserts any missing ones.
  */
 const initializeStudies = async () => {
   try {
-    // Check if studies already exist
-    const existingStudies = await Study.countDocuments();
-    if (existingStudies > 1) {
-      console.log(
-        chalk.yellow(
-          `Studies already exist (${existingStudies} found). Skipping initialization.`
-        )
-      );
-      return;
-    }
-
-    // Find any user for the studies
     const user = await User.findOne();
 
     if (!user) {
@@ -32,23 +61,45 @@ const initializeStudies = async () => {
       return;
     }
 
+    const existingStudies = await Study.find(
+      {},
+      "studyName category description isPublic gameState"
+    ).lean();
+    const existingStudySet = new Set(
+      existingStudies.map((study) => normalizeStudy(study))
+    );
+
+    const studiesToCreate = initialStudyData.filter((study) => {
+      const normalized = normalizeStudy(study);
+      return !existingStudySet.has(normalized);
+    });
+
+    if (studiesToCreate.length === 0) {
+      console.log(
+        chalk.green("Initial studies already present. No new studies created.")
+      );
+      return;
+    }
+
     console.log(
       chalk.blue(
-        `Initializing ${initialStudyData.length} studies with user: ${user.username}`
+        `Adding ${studiesToCreate.length} missing initial studies with user: ${user.username}`
       )
     );
 
-    // Prepare studies with the user's ID
-    const studiesToInsert = initialStudyData.map((study) => ({
+    const payload = studiesToCreate.map((study) => ({
       ...study,
       createdBy: user._id,
     }));
 
-    // Insert studies
-    const result = await Study.insertMany(studiesToInsert);
+    const result = await Study.insertMany(payload);
 
     console.log(
-      chalk.greenBright(`✅ Successfully initialized ${result.length} studies!`)
+      chalk.greenBright(
+        `✅ Successfully inserted ${result.length} initial stud${
+          result.length === 1 ? "y" : "ies"
+        }.`
+      )
     );
   } catch (error) {
     console.error(chalk.redBright("❌ Error initializing studies:"), error);
