@@ -53,6 +53,7 @@ const loginUser = async ({ email, password }) => {
         "createdAt",
         "puzzleRating",
         "studiesCreated",
+        "isAdmin",
       ]);
       return Promise.resolve({ token, user: userData });
     } catch (error) {

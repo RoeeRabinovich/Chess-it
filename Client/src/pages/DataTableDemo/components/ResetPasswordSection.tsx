@@ -5,7 +5,7 @@ import { PasswordResetConfirmModal } from "./PasswordResetConfirmModal";
 
 interface ResetPasswordSectionProps {
   user: DemoUser;
-  onPasswordReset?: (userId: string, email: string) => Promise<void>;
+  onPasswordReset?: (userId: string) => Promise<void>;
 }
 
 export const ResetPasswordSection = ({
@@ -27,7 +27,7 @@ export const ResetPasswordSection = ({
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       if (onPasswordReset) {
-        await onPasswordReset(user._id, user.email);
+        await onPasswordReset(user._id);
       }
 
       alert(`Password reset email sent to ${user.email}`);

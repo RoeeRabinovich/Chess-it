@@ -4,25 +4,24 @@ import {
   DataTableColumn,
   SortState,
   getColumnKey,
-} from "../../components/DataTable";
-import { Badge } from "../../components/ui/Badge";
-import { Button } from "../../components/ui/Button";
+} from "../../../components/DataTable";
+import { Badge } from "../../../components/ui/Badge";
+import { Button } from "../../../components/ui/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../components/ui/Dropdown-menu";
-import { sortData } from "../../components/DataTable/utils";
+} from "../../../components/ui/Dropdown-menu";
+import { sortData } from "../../../components/DataTable/utils";
 import { MoreVertical, Edit, Trash } from "lucide-react";
-import { UserDetailsModal } from "./components/UserDetailsModal";
-import { DeleteSelectedModal } from "./components/DeleteSelectedModal";
-import { userService } from "../../services/userService";
-import { User } from "../../types/user";
-import { DemoUser } from "./types";
+import { UserDetailsModal } from "../../DataTableDemo/components/UserDetailsModal";
+import { DeleteSelectedModal } from "../../DataTableDemo/components/DeleteSelectedModal";
+import { userService } from "../../../services/userService";
+import { User } from "../../../types/user";
 
-export const DataTableDemo = () => {
+export const AdminUsers = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,12 +33,12 @@ export const DataTableDemo = () => {
   });
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [users, setUsers] = useState<DemoUser[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedUser, setSelectedUser] = useState<DemoUser | null>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isUserDetailsModalOpen, setIsUserDetailsModalOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState<DemoUser | null>(null);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [isSingleDeleteModalOpen, setIsSingleDeleteModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,17 +53,11 @@ export const DataTableDemo = () => {
         search: searchQuery,
       });
 
-      // Transform User[] to DemoUser[] (map isAdmin to role)
-      const transformedUsers: DemoUser[] = response.users.map((user: User) => ({
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        role:
-          user.role ||
-          ((user as User & { isAdmin?: boolean }).isAdmin ? "admin" : "user"),
-        puzzleRating: user.puzzleRating || 0,
-        studiesCreated: user.studiesCreated || 0,
-        createdAt: user.createdAt,
+      // Use User[] directly from API response
+      const transformedUsers: User[] = response.users.map((user: User) => ({
+        ...user,
+        puzzleRating: user.puzzleRating ?? 0,
+        studiesCreated: user.studiesCreated ?? 0,
       }));
 
       setUsers(transformedUsers);
@@ -87,7 +80,7 @@ export const DataTableDemo = () => {
   }, [currentPage, pageSize, searchQuery]);
 
   // Column definitions
-  const columns: DataTableColumn<DemoUser>[] = useMemo(
+  const columns: DataTableColumn<User>[] = useMemo(
     () => [
       {
         header: "Username",
@@ -98,16 +91,17 @@ export const DataTableDemo = () => {
         header: "Email",
         accessor: "email",
         sortable: true,
-        visible: (breakpoint) => breakpoint !== "mobile", // Hide on mobile
+        visible: (breakpoint) => breakpoint !== "mobile",
       },
       {
         header: "Role",
         accessor: "role",
-        render: (value) => {
-          const isAdmin = value === "admin";
+        render: (value, row) => {
+          const user = row as User;
+          const isAdmin = value === "admin" || user.isAdmin === true;
           return (
             <Badge variant={isAdmin ? "default" : "secondary"}>
-              {String(value).toUpperCase()}
+              {isAdmin ? "ADMIN" : "USER"}
             </Badge>
           );
         },
@@ -124,14 +118,14 @@ export const DataTableDemo = () => {
         header: "Studies Created",
         accessor: "studiesCreated",
         sortable: true,
-        visible: (breakpoint) => breakpoint !== "mobile", // Hide on mobile
+        visible: (breakpoint) => breakpoint !== "mobile",
         render: (value) => <span className="font-medium">{String(value)}</span>,
       },
       {
         header: "Join Date",
         accessor: "createdAt",
         sortable: true,
-        visible: (breakpoint) => breakpoint !== "mobile", // Hide on mobile
+        visible: (breakpoint) => breakpoint !== "mobile",
         render: (value) => {
           const date = new Date(String(value));
           return date.toLocaleDateString("en-US", {
@@ -146,7 +140,7 @@ export const DataTableDemo = () => {
         accessor: "_id",
         cellClassName: "text-center",
         render: (_value, row) => {
-          const user = row as DemoUser;
+          const user = row as User;
           return (
             <div className="flex items-center justify-center gap-2">
               <DropdownMenu>
@@ -202,8 +196,12 @@ export const DataTableDemo = () => {
   // Get selected users and separate admin from non-admin
   const { adminUsers, nonAdminUsers } = useMemo(() => {
     const selected = users.filter((user) => selectedUserIds.includes(user._id));
-    const admins = selected.filter((user) => user.role === "admin");
-    const nonAdmins = selected.filter((user) => user.role !== "admin");
+    const admins = selected.filter(
+      (user) => user.isAdmin === true || user.role === "admin",
+    );
+    const nonAdmins = selected.filter(
+      (user) => !user.isAdmin && user.role !== "admin",
+    );
     return {
       adminUsers: admins,
       nonAdminUsers: nonAdmins,
@@ -217,7 +215,6 @@ export const DataTableDemo = () => {
 
   // Handle delete selected users (only non-admin users)
   const handleDeleteSelected = async () => {
-    // Only delete non-admin users
     const nonAdminUserIds = nonAdminUsers.map((user) => user._id);
 
     if (nonAdminUserIds.length === 0) {
@@ -227,18 +224,12 @@ export const DataTableDemo = () => {
 
     setIsDeleting(true);
     try {
-      // Delete all non-admin users
       await Promise.all(
         nonAdminUserIds.map((userId) => userService.deleteUser(userId)),
       );
 
-      // Clear selection
       setSelectedUserIds([]);
-
-      // Close modal
       setIsDeleteModalOpen(false);
-
-      // Refresh users list
       await fetchUsers();
     } catch (error) {
       const err = error as { message?: string };
@@ -255,7 +246,6 @@ export const DataTableDemo = () => {
       return users;
     }
 
-    // Find the column that matches the sort column
     const columnIndex = columns.findIndex((col, idx) => {
       const key = getColumnKey(col, idx);
       return key === sortState.column;
@@ -288,23 +278,25 @@ export const DataTableDemo = () => {
   }, [currentPage, totalPages]);
 
   return (
-    <div className="container mx-auto mt-10 p-6">
-      <div className="mb-6">
-        <h1 className="mb-2 text-3xl font-bold">DataTable Demo</h1>
-        <p className="text-muted-foreground">
-          This is a demo page to showcase the DataTable component
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold">User Management</h1>
+        <p className="text-muted-foreground mt-2">
+          Manage users, roles, and permissions
         </p>
       </div>
 
       {error && (
-        <div className="bg-destructive/10 text-destructive mb-4 rounded-md p-4">
+        <div className="bg-destructive/10 text-destructive rounded-md p-4">
           {error}
         </div>
       )}
 
       <DataTable
-        data={sortedData}
-        columns={columns}
+        data={sortedData as unknown as Record<string, unknown>[]}
+        columns={
+          columns as unknown as DataTableColumn<Record<string, unknown>>[]
+        }
         rowIdKey="_id"
         loading={loading}
         hoverable={true}
@@ -313,7 +305,7 @@ export const DataTableDemo = () => {
           value: searchQuery,
           onChange: setSearchQuery,
           placeholder: "Search users...",
-          debounceMs: 500, // Increased debounce for API calls
+          debounceMs: 500,
         }}
         sorting={{
           state: sortState,
@@ -329,7 +321,7 @@ export const DataTableDemo = () => {
           onPageChange: setCurrentPage,
           onPageSizeChange: (newSize) => {
             setPageSize(newSize);
-            setCurrentPage(1); // Reset to first page when page size changes
+            setCurrentPage(1);
           },
           showPageSizeSelector: true,
         }}
@@ -338,22 +330,21 @@ export const DataTableDemo = () => {
           onSelectionChange: setSelectedUserIds,
           selectable: true,
         }}
-        onRowClick={(row) => {
-          console.log("Row clicked:", row);
-        }}
         emptyMessage="No users found"
       >
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={() => setIsDeleteModalOpen(true)}
-          disabled={selectedUserIds.length === 0}
-          className="ml-auto"
-        >
-          <Trash className="mr-2 h-4 w-4" />
-          Delete Selected{" "}
-          {selectedUserIds.length > 0 && `(${selectedUserIds.length})`}
-        </Button>
+        {selectedUserIds.length > 0 && (
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => setIsDeleteModalOpen(true)}
+            disabled={selectedUserIds.length === 0}
+            className="ml-auto"
+          >
+            <Trash className="mr-2 h-4 w-4" />
+            Delete Selected{" "}
+            {selectedUserIds.length > 0 && `(${selectedUserIds.length})`}
+          </Button>
+        )}
       </DataTable>
 
       {/* Bulk Delete Modal */}
@@ -375,14 +366,21 @@ export const DataTableDemo = () => {
             setUserToDelete(null);
           }}
           usernames={
-            userToDelete.role === "admin" ? [] : [userToDelete.username]
+            userToDelete.isAdmin === true || userToDelete.role === "admin"
+              ? []
+              : [userToDelete.username]
           }
           adminUsernames={
-            userToDelete.role === "admin" ? [userToDelete.username] : []
+            userToDelete.isAdmin === true || userToDelete.role === "admin"
+              ? [userToDelete.username]
+              : []
           }
           isDeleting={isDeleting}
           onConfirm={async () => {
-            if (userToDelete.role === "admin") {
+            if (
+              userToDelete.isAdmin === true ||
+              userToDelete.role === "admin"
+            ) {
               setIsSingleDeleteModalOpen(false);
               setUserToDelete(null);
               return;
@@ -391,12 +389,8 @@ export const DataTableDemo = () => {
             setIsDeleting(true);
             try {
               await userService.deleteUser(userToDelete._id);
-
-              // Close modal
               setIsSingleDeleteModalOpen(false);
               setUserToDelete(null);
-
-              // Refresh users list
               await fetchUsers();
             } catch (error) {
               const err = error as { message?: string };
@@ -419,7 +413,6 @@ export const DataTableDemo = () => {
         onUsernameUpdate={async (userId, newUsername) => {
           try {
             await userService.adminUpdateUsername(userId, newUsername);
-            // Refresh users list
             await fetchUsers();
           } catch (error) {
             const err = error as { message?: string };
@@ -429,7 +422,6 @@ export const DataTableDemo = () => {
         onRoleUpdate={async (userId, newRole) => {
           try {
             await userService.updateUserRole(userId, newRole === "admin");
-            // Refresh users list
             await fetchUsers();
           } catch (error) {
             const err = error as { message?: string };
@@ -447,26 +439,6 @@ export const DataTableDemo = () => {
           }
         }}
       />
-
-      <div className="text-muted-foreground mt-4 flex flex-wrap gap-4 text-sm">
-        <div>
-          Showing <strong>{users.length}</strong> of{" "}
-          <strong>{totalUsers}</strong> users
-          {searchQuery && ` matching "${searchQuery}"`}
-        </div>
-        {sortState.column && (
-          <div>
-            Sorted by: <strong>{sortState.column}</strong> (
-            {sortState.direction === "asc" ? "Ascending" : "Descending"})
-          </div>
-        )}
-        {selectedUserIds.length > 0 && (
-          <div>
-            <strong>{selectedUserIds.length}</strong>{" "}
-            {selectedUserIds.length === 1 ? "user" : "users"} selected
-          </div>
-        )}
-      </div>
     </div>
   );
 };

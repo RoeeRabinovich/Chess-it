@@ -20,10 +20,14 @@ import { Profile } from "./pages/Profile/Profile.page";
 import { MyStudies } from "./pages/MyStudies/MyStudies.page";
 import About from "./pages/About/About.page";
 import { DataTableDemo } from "./pages/DataTableDemo/DataTableDemo.page";
+import { AdminLayout } from "./pages/Admin/layouts/AdminLayout";
+import { AdminDashboard } from "./pages/Admin/Dashboard/Dashboard.page";
+import { AdminUsers } from "./pages/Admin/Users/Users.page";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { Toaster } from "./components/ui/Toaster";
 import { ProtectedRoute } from "./components/RouteGuard/ProtectedRoute";
+import { AdminRoute } from "./components/RouteGuard/AdminRoute";
 import { PublicRoute } from "./components/RouteGuard/PublicRoute";
 import { useAuth } from "./hooks/useAuth";
 
@@ -124,6 +128,37 @@ function AppContent() {
         <Route path="/studies/:id" element={<ReviewStudy />} />
         <Route path="/about" element={<About />} />
         <Route path="/datatable-demo" element={<DataTableDemo />} />
+
+        {/* Admin Routes */}
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminLayout />
+            </AdminRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route
+            path="studies"
+            element={
+              <div className="space-y-6">
+                <div>
+                  <h1 className="text-3xl font-bold">Study Management</h1>
+                  <p className="text-muted-foreground mt-2">
+                    Manage studies, visibility, and metadata
+                  </p>
+                </div>
+                <div className="bg-card rounded-lg border p-8 text-center">
+                  <p className="text-muted-foreground">
+                    Study management coming soon...
+                  </p>
+                </div>
+              </div>
+            }
+          />
+        </Route>
       </Routes>
       <ConditionalFooter />
       <Toaster />

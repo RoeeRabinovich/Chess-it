@@ -7,7 +7,7 @@ interface EditUserTabProps {
   user: DemoUser;
   onUsernameUpdate?: (userId: string, newUsername: string) => Promise<void>;
   onRoleUpdate?: (userId: string, newRole: "admin" | "user") => Promise<void>;
-  onPasswordReset?: (userId: string, email: string) => Promise<void>;
+  onPasswordReset?: (userId: string) => Promise<void>;
 }
 
 export const EditUserTab = ({

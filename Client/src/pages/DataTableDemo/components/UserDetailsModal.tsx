@@ -4,14 +4,15 @@ import { Tabs, TabsList, Tab, TabContent } from "../../../components/ui/Tabs";
 import { UserDetailsTab } from "./UserDetailsTab";
 import { EditUserTab } from "./EditUserTab";
 import { DemoUser } from "../types";
+import { User } from "../../../types/user";
 
 interface UserDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  user: DemoUser | null;
+  user: DemoUser | User | null;
   onUsernameUpdate?: (userId: string, newUsername: string) => Promise<void>;
   onRoleUpdate?: (userId: string, newRole: "admin" | "user") => Promise<void>;
-  onPasswordReset?: (userId: string, email: string) => Promise<void>;
+  onPasswordReset?: (userId: string) => Promise<void>;
 }
 
 export const UserDetailsModal = ({

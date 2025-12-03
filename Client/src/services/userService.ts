@@ -57,9 +57,65 @@ class UserService {
     );
     return response.data;
   }
+
+  // Admin endpoints
+  async getAllUsers(params: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+  }): Promise<{
+    users: User[];
+    totalUsers: number;
+    currentPage: number;
+    totalPages: number;
+    pageSize: number;
+  }> {
+    const response = await apiClient.get<{
+      users: User[];
+      totalUsers: number;
+      currentPage: number;
+      totalPages: number;
+      pageSize: number;
+    }>("/admin/users", { params });
+    return response.data;
+  }
+
+  async getUserById(userId: string): Promise<User> {
+    const response = await apiClient.get<User>(`/admin/users/${userId}`);
+    return response.data;
+  }
+
+  async adminUpdateUsername(userId: string, username: string): Promise<User> {
+    const response = await apiClient.patch<User>(
+      `/admin/users/${userId}/username`,
+      { username },
+    );
+    return response.data;
+  }
+
+  async updateUserRole(userId: string, isAdmin: boolean): Promise<User> {
+    const response = await apiClient.patch<User>(
+      `/admin/users/${userId}/role`,
+      { isAdmin },
+    );
+    return response.data;
+  }
+
+  async adminResetPassword(userId: string): Promise<{ message: string }> {
+    const response = await apiClient.post<{ message: string }>(
+      `/admin/users/${userId}/reset-password`,
+    );
+    return response.data;
+  }
+
+  async deleteUser(userId: string): Promise<{ message: string }> {
+    const response = await apiClient.delete<{ message: string }>(
+      `/admin/users/${userId}`,
+    );
+    return response.data;
+  }
 }
 
 // Export singleton instance
 export const userService = new UserService();
 export default userService;
-
