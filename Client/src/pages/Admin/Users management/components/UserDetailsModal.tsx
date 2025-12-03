@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
-import { Modal } from "../../../components/ui/Modal";
-import { Tabs, TabsList, Tab, TabContent } from "../../../components/ui/Tabs";
+import { Modal } from "../../../../components/ui/Modal";
+import { Tabs, TabsList, Tab, TabContent } from "../../../../components/ui/Tabs";
 import { UserDetailsTab } from "./UserDetailsTab";
 import { EditUserTab } from "./EditUserTab";
-import { DemoUser } from "../types";
-import { User } from "../../../types/user";
+import { User } from "../../../../types/user";
 
 interface UserDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  user: DemoUser | User | null;
+  user: User | null;
   onUsernameUpdate?: (userId: string, newUsername: string) => Promise<void>;
   onRoleUpdate?: (userId: string, newRole: "admin" | "user") => Promise<void>;
   onPasswordReset?: (userId: string) => Promise<void>;
@@ -76,3 +75,4 @@ export const UserDetailsModal = ({
     </Modal>
   );
 };
+

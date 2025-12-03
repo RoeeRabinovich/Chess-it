@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Button } from "../../../components/ui/Button";
-import { cn } from "../../../lib/utils";
-import { DemoUser } from "../types";
+import { Button } from "../../../../components/ui/Button";
+import { cn } from "../../../../lib/utils";
+import { User } from "../../../../types/user";
 import { RoleChangeConfirmModal } from "./RoleChangeConfirmModal";
 
 interface EditRoleSectionProps {
-  user: DemoUser;
+  user: User;
   onRoleUpdate?: (userId: string, newRole: "admin" | "user") => Promise<void>;
 }
 
@@ -13,10 +13,12 @@ export const EditRoleSection = ({
   user,
   onRoleUpdate,
 }: EditRoleSectionProps) => {
-  const [role, setRole] = useState<"admin" | "user">(user.role);
+  const currentRole =
+    user.isAdmin === true || user.role === "admin" ? "admin" : "user";
+  const [role, setRole] = useState<"admin" | "user">(currentRole);
   const [isSaving, setIsSaving] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [pendingRole, setPendingRole] = useState<"admin" | "user">(user.role);
+  const [pendingRole, setPendingRole] = useState<"admin" | "user">(currentRole);
 
   const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newRole = e.target.value as "admin" | "user";
@@ -37,7 +39,7 @@ export const EditRoleSection = ({
 
       setRole(pendingRole);
     } catch {
-      setPendingRole(user.role);
+      setPendingRole(currentRole);
       alert("Failed to update role. Please try again.");
     } finally {
       setIsSaving(false);
@@ -76,7 +78,7 @@ export const EditRoleSection = ({
                 setPendingRole(role);
                 setShowConfirm(true);
               }}
-              disabled={isSaving || role === user.role}
+              disabled={isSaving || role === currentRole}
               size="sm"
             >
               {isSaving ? "Saving..." : "Save Role"}
@@ -89,7 +91,7 @@ export const EditRoleSection = ({
         isOpen={showConfirm}
         onClose={() => {
           setShowConfirm(false);
-          setPendingRole(user.role);
+          setPendingRole(currentRole);
         }}
         user={user}
         pendingRole={pendingRole}

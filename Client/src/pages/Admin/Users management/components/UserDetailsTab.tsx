@@ -1,6 +1,6 @@
-import { Badge } from "../../../components/ui/Badge";
-import { Avatar } from "../../../components/ui/Avatar";
-import { User } from "../../../types/user";
+import { Badge } from "../../../../components/ui/Badge";
+import { Avatar } from "../../../../components/ui/Avatar";
+import { User } from "../../../../types/user";
 
 interface UserDetailsTabProps {
   user: User;
@@ -92,3 +92,4 @@ export const UserDetailsTab = ({ user, formatDate }: UserDetailsTabProps) => {
     </div>
   );
 };
+

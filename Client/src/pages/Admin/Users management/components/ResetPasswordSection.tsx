@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Button } from "../../../components/ui/Button";
-import { DemoUser } from "../types";
+import { Button } from "../../../../components/ui/Button";
+import { User } from "../../../../types/user";
 import { PasswordResetConfirmModal } from "./PasswordResetConfirmModal";
 
 interface ResetPasswordSectionProps {
-  user: DemoUser;
+  user: User;
   onPasswordReset?: (userId: string) => Promise<void>;
 }
 

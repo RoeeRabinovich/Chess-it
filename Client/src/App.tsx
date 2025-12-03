@@ -19,7 +19,6 @@ import { Puzzles } from "./pages/Puzzles/Puzzles.page";
 import { Profile } from "./pages/Profile/Profile.page";
 import { MyStudies } from "./pages/MyStudies/MyStudies.page";
 import About from "./pages/About/About.page";
-import { DataTableDemo } from "./pages/DataTableDemo/DataTableDemo.page";
 import { AdminLayout } from "./pages/Admin/layouts/AdminLayout";
 import { AdminDashboard } from "./pages/Admin/Dashboard/Dashboard.page";
 import { AdminUsers } from "./pages/Admin/Users management/AdminUsers.page";
@@ -121,7 +120,6 @@ function AppContent() {
 
         <Route path="/studies/:id" element={<ReviewStudy />} />
         <Route path="/about" element={<About />} />
-        <Route path="/datatable-demo" element={<DataTableDemo />} />
 
         {/* Admin Routes */}
         <Route

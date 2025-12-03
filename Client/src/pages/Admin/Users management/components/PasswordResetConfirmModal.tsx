@@ -1,11 +1,11 @@
-import { Modal } from "../../../components/ui/Modal";
-import { Button } from "../../../components/ui/Button";
-import { DemoUser } from "../types";
+import { Modal } from "../../../../components/ui/Modal";
+import { Button } from "../../../../components/ui/Button";
+import { User } from "../../../../types/user";
 
 interface PasswordResetConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
-  user: DemoUser;
+  user: User;
   onConfirm: () => void;
 }
 

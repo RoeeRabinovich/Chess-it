@@ -1,11 +1,11 @@
-import { Modal } from "../../../components/ui/Modal";
-import { Button } from "../../../components/ui/Button";
-import { DemoUser } from "../types";
+import { Modal } from "../../../../components/ui/Modal";
+import { Button } from "../../../../components/ui/Button";
+import { User } from "../../../../types/user";
 
 interface RoleChangeConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
-  user: DemoUser;
+  user: User;
   pendingRole: "admin" | "user";
   onConfirm: () => void;
 }
@@ -17,6 +17,9 @@ export const RoleChangeConfirmModal = ({
   pendingRole,
   onConfirm,
 }: RoleChangeConfirmModalProps) => {
+  const currentRole =
+    user.isAdmin === true || user.role === "admin" ? "admin" : "user";
+
   return (
     <Modal
       isOpen={isOpen}
@@ -28,7 +31,7 @@ export const RoleChangeConfirmModal = ({
       <div className="space-y-4">
         <p className="text-foreground">
           Are you sure you want to change <strong>{user.username}</strong>'s role
-          from <strong>{user.role.toUpperCase()}</strong> to{" "}
+          from <strong>{currentRole.toUpperCase()}</strong> to{" "}
           <strong>{pendingRole.toUpperCase()}</strong>?
         </p>
         {pendingRole === "admin" && (

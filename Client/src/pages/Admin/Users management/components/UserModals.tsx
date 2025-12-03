@@ -1,7 +1,7 @@
 import { userService } from "../../../../services/userService";
 import { User } from "../../../../types/user";
-import { DeleteSelectedModal } from "../../../DataTableDemo/components/DeleteSelectedModal";
-import { UserDetailsModal } from "../../../DataTableDemo/components/UserDetailsModal";
+import { DeleteSelectedModal } from "./DeleteSelectedModal";
+import { UserDetailsModal } from "./UserDetailsModal";
 
 interface UserModalsProps {
   // Bulk delete modal
