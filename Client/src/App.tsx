@@ -85,14 +85,7 @@ function AppContent() {
             </PublicRoute>
           }
         />
-        <Route
-          path="/reset-password"
-          element={
-            <PublicRoute>
-              <ResetPassword />
-            </PublicRoute>
-          }
-        />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route
           path="/create-study"
           element={
