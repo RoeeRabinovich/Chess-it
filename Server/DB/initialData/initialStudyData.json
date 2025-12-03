@@ -1,0 +1,1205 @@
+[
+  {
+    "studyName": "Ruy Lopez Opening - Main Line",
+    "category": "Opening",
+    "description": "A comprehensive study of the Ruy Lopez, one of the oldest and most respected openings in chess.",
+    "isPublic": true,
+    "gameState": {
+      "position": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "moveTree": [
+        {
+          "move": {
+            "from": "e2",
+            "to": "e4",
+            "san": "e4",
+            "lan": "e2e4",
+            "before": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+            "after": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+            "flags": "b",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e7",
+            "to": "e5",
+            "san": "e5",
+            "lan": "e7e5",
+            "before": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+            "after": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+            "flags": "b",
+            "piece": "p",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "g1",
+            "to": "f3",
+            "san": "Nf3",
+            "lan": "g1f3",
+            "before": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+            "after": "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
+            "flags": "n",
+            "piece": "n",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "b8",
+            "to": "c6",
+            "san": "Nc6",
+            "lan": "b8c6",
+            "before": "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
+            "after": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3",
+            "flags": "n",
+            "piece": "n",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f1",
+            "to": "b5",
+            "san": "Bb5",
+            "lan": "f1b5",
+            "before": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3",
+            "after": "r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3",
+            "flags": "n",
+            "piece": "b",
+            "color": "w"
+          },
+          "branches": [
+            [
+              {
+                "move": {
+                  "from": "a7",
+                  "to": "a6",
+                  "san": "a6",
+                  "lan": "a7a6",
+                  "before": "r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3",
+                  "after": "r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4",
+                  "flags": "n",
+                  "piece": "p",
+                  "color": "b"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "b5",
+                  "to": "a4",
+                  "san": "Ba4",
+                  "lan": "b5a4",
+                  "before": "r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4",
+                  "after": "r1bqkbnr/1ppp1ppp/p1n5/4p3/B3P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 4",
+                  "flags": "n",
+                  "piece": "b",
+                  "color": "w"
+                },
+                "branches": []
+              }
+            ]
+          ]
+        }
+      ],
+      "currentPath": [],
+      "isFlipped": false,
+      "opening": {
+        "name": "Ruy Lopez",
+        "eco": "C60"
+      },
+      "comments": {
+        "0": "The King's Pawn Opening - controls the center",
+        "1": "Black mirrors White's central pawn",
+        "2": "White develops the knight, attacking e5",
+        "3": "Black defends the e5 pawn",
+        "4": "The Ruy Lopez - White pins the knight",
+        "4,0,0": "Morphy Defense - Black challenges the bishop",
+        "4,0,1": "White retreats to maintain the pin"
+      }
+    }
+  },
+  {
+    "studyName": "Sicilian Defense - Dragon Variation",
+    "category": "Opening",
+    "description": "An aggressive variation of the Sicilian Defense with sharp tactical play.",
+    "isPublic": true,
+    "gameState": {
+      "position": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "moveTree": [
+        {
+          "move": {
+            "from": "e2",
+            "to": "e4",
+            "san": "e4",
+            "lan": "e2e4",
+            "before": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+            "after": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+            "flags": "b",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "c7",
+            "to": "c5",
+            "san": "c5",
+            "lan": "c7c5",
+            "before": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+            "after": "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2",
+            "flags": "b",
+            "piece": "p",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "g1",
+            "to": "f3",
+            "san": "Nf3",
+            "lan": "g1f3",
+            "before": "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2",
+            "after": "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
+            "flags": "n",
+            "piece": "n",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d7",
+            "to": "d6",
+            "san": "d6",
+            "lan": "d7d6",
+            "before": "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
+            "after": "rnbqkbnr/pp2pppp/3p4/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3",
+            "flags": "n",
+            "piece": "p",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d2",
+            "to": "d4",
+            "san": "d4",
+            "lan": "d2d4",
+            "before": "rnbqkbnr/pp2pppp/3p4/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3",
+            "after": "rnbqkbnr/pp2pppp/3p4/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq d3 0 3",
+            "flags": "b",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "c5",
+            "to": "d4",
+            "san": "cxd4",
+            "lan": "c5d4",
+            "before": "rnbqkbnr/pp2pppp/3p4/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq d3 0 3",
+            "after": "rnbqkbnr/pp2pppp/3p4/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4",
+            "flags": "c",
+            "piece": "p",
+            "color": "b",
+            "captured": "p"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f3",
+            "to": "d4",
+            "san": "Nxd4",
+            "lan": "f3d4",
+            "before": "rnbqkbnr/pp2pppp/3p4/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4",
+            "after": "rnbqkbnr/pp2pppp/3p4/8/3NP3/8/PPP2PPP/RNBQKB1R b KQkq - 0 4",
+            "flags": "c",
+            "piece": "n",
+            "color": "w",
+            "captured": "p"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "g8",
+            "to": "f6",
+            "san": "Nf6",
+            "lan": "g8f6",
+            "before": "rnbqkbnr/pp2pppp/3p4/8/3NP3/8/PPP2PPP/RNBQKB1R b KQkq - 0 4",
+            "after": "rnbqkb1r/pp2pppp/3p1n2/8/3NP3/8/PPP2PPP/RNBQKB1R w KQkq - 1 5",
+            "flags": "n",
+            "piece": "n",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "b1",
+            "to": "c3",
+            "san": "Nc3",
+            "lan": "b1c3",
+            "before": "rnbqkb1r/pp2pppp/3p1n2/8/3NP3/8/PPP2PPP/RNBQKB1R w KQkq - 1 5",
+            "after": "rnbqkb1r/pp2pppp/3p1n2/8/3NP3/2N5/PPP2PPP/R1BQKB1R b KQkq - 2 5",
+            "flags": "n",
+            "piece": "n",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "g7",
+            "to": "g6",
+            "san": "g6",
+            "lan": "g7g6",
+            "before": "rnbqkb1r/pp2pppp/3p1n2/8/3NP3/2N5/PPP2PPP/R1BQKB1R b KQkq - 2 5",
+            "after": "rnbqkb1r/pp2pp1p/3p1np1/8/3NP3/2N5/PPP2PPP/R1BQKB1R w KQkq - 0 6",
+            "flags": "n",
+            "piece": "p",
+            "color": "b"
+          },
+          "branches": [
+            [
+              {
+                "move": {
+                  "from": "c1",
+                  "to": "e3",
+                  "san": "Be3",
+                  "lan": "c1e3",
+                  "before": "rnbqkb1r/pp2pp1p/3p1np1/8/3NP3/2N5/PPP2PPP/R1BQKB1R w KQkq - 0 6",
+                  "after": "rnbqkb1r/pp2pp1p/3p1np1/8/3NP3/2N1B3/PPP2PPP/R2QKB1R b KQkq - 1 6",
+                  "flags": "n",
+                  "piece": "b",
+                  "color": "w"
+                },
+                "branches": []
+              }
+            ]
+          ]
+        }
+      ],
+      "currentPath": [],
+      "isFlipped": false,
+      "opening": {
+        "name": "Sicilian Defense, Dragon Variation",
+        "eco": "B70"
+      },
+      "comments": {
+        "0": "King's Pawn Opening",
+        "1": "Sicilian Defense - Black challenges the center",
+        "2": "White develops the knight",
+        "3": "Classical Sicilian setup",
+        "4": "White opens the center",
+        "5": "Black captures, entering main lines",
+        "6": "White recaptures with the knight",
+        "7": "Black develops the knight",
+        "8": "White develops the other knight",
+        "9": "Dragon Variation - Black fianchettos the bishop",
+        "9,0,0": "White develops the bishop to e3"
+      }
+    }
+  },
+  {
+    "studyName": "Queen's Gambit Declined",
+    "category": "Opening",
+    "description": "A solid and classical response to the Queen's Gambit, focusing on central control.",
+    "isPublic": true,
+    "gameState": {
+      "position": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "moveTree": [
+        {
+          "move": {
+            "from": "d2",
+            "to": "d4",
+            "san": "d4",
+            "lan": "d2d4",
+            "before": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+            "after": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 1",
+            "flags": "b",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "d7",
+            "to": "d5",
+            "san": "d5",
+            "lan": "d7d5",
+            "before": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 1",
+            "after": "rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq d6 0 2",
+            "flags": "b",
+            "piece": "p",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "c2",
+            "to": "c4",
+            "san": "c4",
+            "lan": "c2c4",
+            "before": "rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq d6 0 2",
+            "after": "rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq c3 0 2",
+            "flags": "b",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e7",
+            "to": "e6",
+            "san": "e6",
+            "lan": "e7e6",
+            "before": "rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq c3 0 2",
+            "after": "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3",
+            "flags": "n",
+            "piece": "p",
+            "color": "b"
+          },
+          "branches": [
+            [
+              {
+                "move": {
+                  "from": "c4",
+                  "to": "d5",
+                  "san": "cxd5",
+                  "lan": "c4d5",
+                  "before": "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3",
+                  "after": "rnbqkbnr/ppp2ppp/4p3/3P4/3P4/8/PP2PPPP/RNBQKBNR b KQkq - 0 3",
+                  "flags": "c",
+                  "piece": "p",
+                  "color": "w",
+                  "captured": "p"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "e6",
+                  "to": "d5",
+                  "san": "exd5",
+                  "lan": "e6d5",
+                  "before": "rnbqkbnr/ppp2ppp/4p3/3P4/3P4/8/PP2PPPP/RNBQKBNR b KQkq - 0 3",
+                  "after": "rnbqkbnr/ppp2ppp/8/3p4/3P4/8/PP2PPPP/RNBQKBNR w KQkq - 0 4",
+                  "flags": "c",
+                  "piece": "p",
+                  "color": "b",
+                  "captured": "p"
+                },
+                "branches": []
+              }
+            ]
+          ]
+        },
+        {
+          "move": {
+            "from": "b1",
+            "to": "c3",
+            "san": "Nc3",
+            "lan": "b1c3",
+            "before": "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3",
+            "after": "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/2N5/PP2PPPP/R1BQKB1R b KQkq - 1 3",
+            "flags": "n",
+            "piece": "n",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "f8",
+            "to": "b4",
+            "san": "Bb4",
+            "lan": "f8b4",
+            "before": "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/2N5/PP2PPPP/R1BQKB1R b KQkq - 1 3",
+            "after": "rnbqk1nr/ppp2ppp/4p3/3p4/1bPP4/2N5/PP2PPPP/R1BQKB1R w KQkq - 2 4",
+            "flags": "n",
+            "piece": "b",
+            "color": "b"
+          },
+          "branches": []
+        }
+      ],
+      "currentPath": [],
+      "isFlipped": false,
+      "opening": {
+        "name": "Queen's Gambit Declined",
+        "eco": "D30"
+      },
+      "comments": {
+        "0": "Queen's Pawn Opening",
+        "1": "Black mirrors with d5",
+        "2": "The Queen's Gambit",
+        "3": "Queen's Gambit Declined - Black doesn't take the pawn",
+        "3,0,0": "Exchange Variation - White takes immediately",
+        "3,0,1": "Black recaptures with the e-pawn",
+        "4": "White develops the knight",
+        "5": "Black pins the knight - Nimzo-Indian style"
+      }
+    }
+  },
+  {
+    "studyName": "Central Pawn Structure Strategy",
+    "category": "Strategy",
+    "description": "Understanding how to use central pawn structures to control the board and create long-term advantages.",
+    "isPublic": true,
+    "gameState": {
+      "position": "r1bqkb1r/pp2pppp/2n2n2/2pp4/2PP4/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 0 6",
+      "moveTree": [
+        {
+          "move": {
+            "from": "c4",
+            "to": "d5",
+            "san": "cxd5",
+            "lan": "c4d5",
+            "before": "r1bqkb1r/pp2pppp/2n2n2/2pp4/2PP4/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 0 6",
+            "after": "r1bqkb1r/pp2pppp/2n2n2/2pP4/3P4/2N2N2/PP2PPPP/R1BQKB1R b KQkq - 0 6",
+            "flags": "c",
+            "piece": "p",
+            "color": "w",
+            "captured": "p"
+          },
+          "branches": [
+            [
+              {
+                "move": {
+                  "from": "c6",
+                  "to": "d5",
+                  "san": "Nxd5",
+                  "lan": "c6d5",
+                  "before": "r1bqkb1r/pp2pppp/2n2n2/2pP4/3P4/2N2N2/PP2PPPP/R1BQKB1R b KQkq - 0 6",
+                  "after": "r1bqkb1r/pp2pppp/5n2/2pn4/3P4/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 0 7",
+                  "flags": "c",
+                  "piece": "n",
+                  "color": "b",
+                  "captured": "p"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "f3",
+                  "to": "d5",
+                  "san": "Nxd5",
+                  "lan": "f3d5",
+                  "before": "r1bqkb1r/pp2pppp/5n2/2pn4/3P4/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 0 7",
+                  "after": "r1bqkb1r/pp2pppp/5n2/2pN4/3P4/2N5/PP2PPPP/R1BQKB1R b KQkq - 0 7",
+                  "flags": "c",
+                  "piece": "n",
+                  "color": "w",
+                  "captured": "n"
+                },
+                "branches": []
+              }
+            ],
+            [
+              {
+                "move": {
+                  "from": "c5",
+                  "to": "d5",
+                  "san": "cxd5",
+                  "lan": "c5d5",
+                  "before": "r1bqkb1r/pp2pppp/2n2n2/2pP4/3P4/2N2N2/PP2PPPP/R1BQKB1R b KQkq - 0 6",
+                  "after": "r1bqkb1r/pp2pppp/2n2n2/3p4/3P4/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 0 7",
+                  "flags": "c",
+                  "piece": "p",
+                  "color": "b",
+                  "captured": "p"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "e2",
+                  "to": "e4",
+                  "san": "e4",
+                  "lan": "e2e4",
+                  "before": "r1bqkb1r/pp2pppp/2n2n2/3p4/3P4/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 0 7",
+                  "after": "r1bqkb1r/pp2pppp/2n2n2/3p4/3PP3/2N2N2/PP3PPP/R1BQKB1R b KQkq e3 0 7",
+                  "flags": "b",
+                  "piece": "p",
+                  "color": "w"
+                },
+                "branches": []
+              }
+            ]
+          ]
+        }
+      ],
+      "currentPath": [],
+      "isFlipped": false,
+      "comments": {
+        "0": "White captures in the center, creating a strong pawn duo",
+        "0,0,0": "Black recaptures with the knight",
+        "0,0,1": "White recaptures, maintaining central control",
+        "0,1,0": "Black recaptures with the pawn instead",
+        "0,1,1": "White expands in the center with e4, creating a powerful pawn center"
+      }
+    }
+  },
+  {
+    "studyName": "Minor Piece Endgame Technique",
+    "category": "Strategy",
+    "description": "Mastering the art of using bishops and knights effectively in the middlegame and endgame.",
+    "isPublic": true,
+    "gameState": {
+      "position": "r1bqkb1r/pp3ppp/2n1pn2/2pp4/2PP4/2NBPN2/PP3PPP/R1BQK2R w KQkq - 0 8",
+      "moveTree": [
+        {
+          "move": {
+            "from": "c1",
+            "to": "f4",
+            "san": "Bf4",
+            "lan": "c1f4",
+            "before": "r1bqkb1r/pp3ppp/2n1pn2/2pp4/2PP4/2NBPN2/PP3PPP/R1BQK2R w KQkq - 0 8",
+            "after": "r1bqkb1r/pp3ppp/2n1pn2/2pp4/2PP1B2/2NBPN2/PP3PPP/R2QK2R b KQkq - 1 8",
+            "flags": "n",
+            "piece": "b",
+            "color": "w"
+          },
+          "branches": [
+            [
+              {
+                "move": {
+                  "from": "d7",
+                  "to": "d6",
+                  "san": "d6",
+                  "lan": "d7d6",
+                  "before": "r1bqkb1r/pp3ppp/2n1pn2/2pp4/2PP1B2/2NBPN2/PP3PPP/R2QK2R b KQkq - 1 8",
+                  "after": "r1bqkb1r/pp4pp/2np1n2/2pp4/2PP1B2/2NBPN2/PP3PPP/R2QK2R w KQkq - 0 9",
+                  "flags": "n",
+                  "piece": "p",
+                  "color": "b"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "f4",
+                  "to": "g5",
+                  "san": "Bg5",
+                  "lan": "f4g5",
+                  "before": "r1bqkb1r/pp4pp/2np1n2/2pp4/2PP1B2/2NBPN2/PP3PPP/R2QK2R w KQkq - 0 9",
+                  "after": "r1bqkb1r/pp4pp/2np1n2/2pp2B1/2PP4/2NBPN2/PP3PPP/R2QK2R b KQkq - 1 9",
+                  "flags": "n",
+                  "piece": "b",
+                  "color": "w"
+                },
+                "branches": []
+              }
+            ]
+          ]
+        },
+        {
+          "move": {
+            "from": "e1",
+            "to": "g1",
+            "san": "O-O",
+            "lan": "e1g1",
+            "before": "r1bqkb1r/pp3ppp/2n1pn2/2pp4/2PP1B2/2NBPN2/PP3PPP/R2QK2R w KQkq - 0 8",
+            "after": "r1bqkb1r/pp3ppp/2n1pn2/2pp4/2PP1B2/2NBPN2/PP3PPP/R2QK2R b KQkq - 0 8",
+            "flags": "k",
+            "piece": "k",
+            "color": "w"
+          },
+          "branches": []
+        }
+      ],
+      "currentPath": [],
+      "isFlipped": false,
+      "comments": {
+        "0": "White develops the bishop to an active square",
+        "0,0,0": "Black advances the d-pawn",
+        "0,0,1": "White pins the knight, creating tactical pressure",
+        "1": "White castles, securing the king and connecting rooks"
+      }
+    }
+  },
+  {
+    "studyName": "King and Pawn Endgame Basics",
+    "category": "Endgame",
+    "description": "Essential techniques for winning king and pawn endgames, including opposition and pawn promotion.",
+    "isPublic": true,
+    "gameState": {
+      "position": "8/5k2/8/4P3/8/8/5K2/8 w - - 0 1",
+      "moveTree": [
+        {
+          "move": {
+            "from": "f2",
+            "to": "e2",
+            "san": "Ke2",
+            "lan": "f2e2",
+            "before": "8/5k2/8/4P3/8/8/5K2/8 w - - 0 1",
+            "after": "8/5k2/8/4P3/8/8/4K3/8 b - - 1 1",
+            "flags": "n",
+            "piece": "k",
+            "color": "w"
+          },
+          "branches": [
+            [
+              {
+                "move": {
+                  "from": "f7",
+                  "to": "e7",
+                  "san": "Ke7",
+                  "lan": "f7e7",
+                  "before": "8/5k2/8/4P3/8/8/4K3/8 b - - 1 1",
+                  "after": "8/4k3/8/4P3/8/8/4K3/8 w - - 2 2",
+                  "flags": "n",
+                  "piece": "k",
+                  "color": "b"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "e2",
+                  "to": "e3",
+                  "san": "Ke3",
+                  "lan": "e2e3",
+                  "before": "8/4k3/8/4P3/8/8/4K3/8 w - - 2 2",
+                  "after": "8/4k3/8/4P3/4K3/8/8/8 b - - 3 2",
+                  "flags": "n",
+                  "piece": "k",
+                  "color": "w"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "e7",
+                  "to": "e6",
+                  "san": "Ke6",
+                  "lan": "e7e6",
+                  "before": "8/4k3/8/4P3/4K3/8/8/8 b - - 3 2",
+                  "after": "8/8/4k3/4P3/4K3/8/8/8 w - - 4 3",
+                  "flags": "n",
+                  "piece": "k",
+                  "color": "b"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "e5",
+                  "to": "e6",
+                  "san": "e6",
+                  "lan": "e5e6",
+                  "before": "8/8/4k3/4P3/4K3/8/8/8 w - - 4 3",
+                  "after": "8/8/4P3/8/4K3/8/8/8 b - - 0 3",
+                  "flags": "n",
+                  "piece": "p",
+                  "color": "w"
+                },
+                "branches": []
+              }
+            ]
+          ]
+        },
+        {
+          "move": {
+            "from": "e5",
+            "to": "e6",
+            "san": "e6",
+            "lan": "e5e6",
+            "before": "8/5k2/8/4P3/8/8/5K2/8 w - - 0 1",
+            "after": "8/5k2/4P3/8/8/8/5K2/8 b - - 0 1",
+            "flags": "n",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        }
+      ],
+      "currentPath": [],
+      "isFlipped": false,
+      "comments": {
+        "0": "White approaches the pawn - key technique in king and pawn endgames",
+        "0,0,0": "Black moves to block the pawn",
+        "0,0,1": "White uses the opposition concept",
+        "0,0,2": "Black must give way",
+        "0,0,3": "White advances the pawn, winning the race",
+        "1": "Alternative: White can push the pawn immediately"
+      }
+    }
+  },
+  {
+    "studyName": "Rook Endgame - Lucena Position",
+    "category": "Endgame",
+    "description": "Learning the Lucena position, a fundamental technique for winning rook and pawn endgames.",
+    "isPublic": true,
+    "gameState": {
+      "position": "8/8/8/8/4k3/4P3/4K3/4R3 w - - 0 1",
+      "moveTree": [
+        {
+          "move": {
+            "from": "e3",
+            "to": "e4",
+            "san": "e4",
+            "lan": "e3e4",
+            "before": "8/8/8/8/4k3/4P3/4K3/4R3 w - - 0 1",
+            "after": "8/8/8/8/4kP2/8/4K3/4R3 b - f3 0 1",
+            "flags": "b",
+            "piece": "p",
+            "color": "w"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e4",
+            "to": "f4",
+            "san": "Kf4",
+            "lan": "e4f4",
+            "before": "8/8/8/8/4kP2/8/4K3/4R3 b - f3 0 1",
+            "after": "8/8/8/8/4kp2/8/4K3/4R3 w - - 1 2",
+            "flags": "n",
+            "piece": "k",
+            "color": "b"
+          },
+          "branches": []
+        },
+        {
+          "move": {
+            "from": "e1",
+            "to": "e8",
+            "san": "Re8",
+            "lan": "e1e8",
+            "before": "8/8/8/8/4kp2/8/4K3/4R3 w - - 1 2",
+            "after": "8/4R3/8/8/4kp2/8/4K3/8 b - - 2 2",
+            "flags": "n",
+            "piece": "r",
+            "color": "w"
+          },
+          "branches": [
+            [
+              {
+                "move": {
+                  "from": "f4",
+                  "to": "g4",
+                  "san": "Kg4",
+                  "lan": "f4g4",
+                  "before": "8/4R3/8/8/4kp2/8/4K3/8 b - - 2 2",
+                  "after": "8/4R3/8/8/4k1p1/8/4K3/8 w - - 3 3",
+                  "flags": "n",
+                  "piece": "k",
+                  "color": "b"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "e2",
+                  "to": "f2",
+                  "san": "Kf2",
+                  "lan": "e2f2",
+                  "before": "8/4R3/8/8/4k1p1/8/4K3/8 w - - 3 3",
+                  "after": "8/4R3/8/8/4k1p1/8/5K2/8 b - - 4 3",
+                  "flags": "n",
+                  "piece": "k",
+                  "color": "w"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "f4",
+                  "to": "f5",
+                  "san": "f5",
+                  "lan": "f4f5",
+                  "before": "8/4R3/8/8/4k1p1/8/5K2/8 b - - 4 3",
+                  "after": "8/4R3/8/5k2/6p1/8/5K2/8 w - - 0 4",
+                  "flags": "n",
+                  "piece": "p",
+                  "color": "b"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "e8",
+                  "to": "e5",
+                  "san": "Re5",
+                  "lan": "e8e5",
+                  "before": "8/4R3/8/5k2/6p1/8/5K2/8 w - - 0 4",
+                  "after": "8/8/8/4Rk2/6p1/8/5K2/8 b - - 1 4",
+                  "flags": "n",
+                  "piece": "r",
+                  "color": "w"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "f5",
+                  "to": "f6",
+                  "san": "Kf6",
+                  "lan": "f5f6",
+                  "before": "8/8/8/4Rk2/6p1/8/5K2/8 b - - 1 4",
+                  "after": "8/8/5k2/4R3/6p1/8/5K2/8 w - - 2 5",
+                  "flags": "n",
+                  "piece": "k",
+                  "color": "b"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "f2",
+                  "to": "f3",
+                  "san": "Kf3",
+                  "lan": "f2f3",
+                  "before": "8/8/5k2/4R3/6p1/8/5K2/8 w - - 2 5",
+                  "after": "8/8/5k2/4R3/6p1/5K2/8/8 b - - 3 5",
+                  "flags": "n",
+                  "piece": "k",
+                  "color": "w"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "f6",
+                  "to": "g6",
+                  "san": "Kg6",
+                  "lan": "f6g6",
+                  "before": "8/8/5k2/4R3/6p1/5K2/8/8 b - - 3 5",
+                  "after": "8/8/6k1/4R3/6p1/5K2/8/8 w - - 4 6",
+                  "flags": "n",
+                  "piece": "k",
+                  "color": "b"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "e5",
+                  "to": "e6",
+                  "san": "Re6",
+                  "lan": "e5e6",
+                  "before": "8/8/6k1/4R3/6p1/5K2/8/8 w - - 4 6",
+                  "after": "8/8/4R1k1/8/6p1/5K2/8/8 b - - 5 6",
+                  "flags": "n",
+                  "piece": "r",
+                  "color": "w"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "g6",
+                  "to": "g5",
+                  "san": "Kg5",
+                  "lan": "g6g5",
+                  "before": "8/8/4R1k1/8/6p1/5K2/8/8 b - - 5 6",
+                  "after": "8/8/4R3/6k1/6p1/5K2/8/8 w - - 6 7",
+                  "flags": "n",
+                  "piece": "k",
+                  "color": "b"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "f3",
+                  "to": "g4",
+                  "san": "Kxg4",
+                  "lan": "f3g4",
+                  "before": "8/8/4R3/6k1/6p1/5K2/8/8 w - - 6 7",
+                  "after": "8/8/4R3/6k1/6K1/8/8/8 b - - 0 7",
+                  "flags": "c",
+                  "piece": "k",
+                  "color": "w",
+                  "captured": "p"
+                },
+                "branches": []
+              }
+            ]
+          ]
+        }
+      ],
+      "currentPath": [],
+      "isFlipped": false,
+      "comments": {
+        "0": "White advances the pawn to the 4th rank",
+        "1": "Black's king approaches",
+        "2": "Lucena Position - White cuts off the king with the rook",
+        "2,0,0": "Black tries to escape",
+        "2,0,1": "White brings the king closer",
+        "2,0,2": "Black advances the pawn",
+        "2,0,3": "White cuts off the king again",
+        "2,0,4": "Black continues trying to escape",
+        "2,0,5": "White maintains the cut-off",
+        "2,0,6": "Black moves to g6",
+        "2,0,7": "White continues cutting off",
+        "2,0,8": "Black moves to g5",
+        "2,0,9": "White captures the pawn and wins"
+      }
+    }
+  },
+  {
+    "studyName": "Fork Tactic - Knight Fork",
+    "category": "Tactics",
+    "description": "Master the knight fork, one of the most common and effective tactical patterns in chess.",
+    "isPublic": true,
+    "gameState": {
+      "position": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
+      "moveTree": [
+        {
+          "move": {
+            "from": "f3",
+            "to": "e5",
+            "san": "Ne5",
+            "lan": "f3e5",
+            "before": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
+            "after": "r1bqkb1r/pppp1ppp/2n2n2/4N3/2B1P3/8/PPPP1PPP/RNBQK2R b KQkq - 5 4",
+            "flags": "n",
+            "piece": "n",
+            "color": "w"
+          },
+          "branches": [
+            [
+              {
+                "move": {
+                  "from": "c6",
+                  "to": "e5",
+                  "san": "Nxe5",
+                  "lan": "c6e5",
+                  "before": "r1bqkb1r/pppp1ppp/2n2n2/4N3/2B1P3/8/PPPP1PPP/RNBQK2R b KQkq - 5 4",
+                  "after": "r1bqkb1r/pppp1ppp/5n2/4n3/2B1P3/8/PPPP1PPP/RNBQK2R w KQkq - 0 5",
+                  "flags": "c",
+                  "piece": "n",
+                  "color": "b",
+                  "captured": "n"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "c4",
+                  "to": "f7",
+                  "san": "Bxf7",
+                  "lan": "c4f7",
+                  "before": "r1bqkb1r/pppp1ppp/5n2/4n3/2B1P3/8/PPPP1PPP/RNBQK2R w KQkq - 0 5",
+                  "after": "r1bqkb1r/ppppBppp/5n2/4n3/4P3/8/PPPP1PPP/RNBQK2R b KQkq - 0 5",
+                  "flags": "c",
+                  "piece": "b",
+                  "color": "w",
+                  "captured": "p"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "e8",
+                  "to": "f7",
+                  "san": "Kxf7",
+                  "lan": "e8f7",
+                  "before": "r1bqkb1r/ppppBppp/5n2/4n3/4P3/8/PPPP1PPP/RNBQK2R b KQkq - 0 5",
+                  "after": "r1bqk2r/ppppBppp/5n2/4n3/4P3/8/PPPP1PPP/RNBQK2R w KQkq - 0 6",
+                  "flags": "c",
+                  "piece": "k",
+                  "color": "b",
+                  "captured": "b"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "e5",
+                  "to": "c6",
+                  "san": "Nxc6",
+                  "lan": "e5c6",
+                  "before": "r1bqk2r/ppppBppp/5n2/4n3/4P3/8/PPPP1PPP/RNBQK2R w KQkq - 0 6",
+                  "after": "r1bqk2r/ppppBppp/2N2n2/8/4P3/8/PPPP1PPP/RNBQK2R b KQkq - 0 6",
+                  "flags": "c",
+                  "piece": "n",
+                  "color": "w",
+                  "captured": "n"
+                },
+                "branches": []
+              }
+            ]
+          ]
+        }
+      ],
+      "currentPath": [],
+      "isFlipped": false,
+      "comments": {
+        "0": "White centralizes the knight, threatening a fork",
+        "0,0,0": "Black captures the knight",
+        "0,0,1": "White sacrifices the bishop to expose the king",
+        "0,0,2": "Black is forced to capture",
+        "0,0,3": "Knight fork! White forks the king and rook, winning material"
+      }
+    }
+  },
+  {
+    "studyName": "Pin and Win Material",
+    "category": "Tactics",
+    "description": "Learn how to use pins to win material and create winning positions.",
+    "isPublic": true,
+    "gameState": {
+      "position": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
+      "moveTree": [
+        {
+          "move": {
+            "from": "c1",
+            "to": "g5",
+            "san": "Bg5",
+            "lan": "c1g5",
+            "before": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
+            "after": "r1bqkb1r/pppp1ppp/2n2n2/4p1B1/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 5 4",
+            "flags": "n",
+            "piece": "b",
+            "color": "w"
+          },
+          "branches": [
+            [
+              {
+                "move": {
+                  "from": "f6",
+                  "to": "e4",
+                  "san": "Ne4",
+                  "lan": "f6e4",
+                  "before": "r1bqkb1r/pppp1ppp/2n2n2/4p1B1/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 5 4",
+                  "after": "r1bqkb1r/pppp1ppp/2n5/4p1B1/2B1n3/5N2/PPPP1PPP/RNBQK2R w KQkq - 6 5",
+                  "flags": "c",
+                  "piece": "n",
+                  "color": "b",
+                  "captured": "p"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "g5",
+                  "to": "d2",
+                  "san": "Bxd2",
+                  "lan": "g5d2",
+                  "before": "r1bqkb1r/pppp1ppp/2n5/4p1B1/2B1n3/5N2/PPPP1PPP/RNBQK2R w KQkq - 6 5",
+                  "after": "r1bqkb1r/pppp1ppp/2n5/4p3/2B1n3/5N2/PPPp1PPP/RNBQK2R b KQkq - 0 5",
+                  "flags": "c",
+                  "piece": "b",
+                  "color": "w",
+                  "captured": "n"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "d8",
+                  "to": "d2",
+                  "san": "Qxd2",
+                  "lan": "d8d2",
+                  "before": "r1bqkb1r/pppp1ppp/2n5/4p3/2B1n3/5N2/PPPp1PPP/RNBQK2R b KQkq - 0 5",
+                  "after": "r1b1kb1r/pppp1ppp/2n5/4p3/2B1n3/5N2/PPPq1PPP/RNBQK2R w KQkq - 0 6",
+                  "flags": "c",
+                  "piece": "q",
+                  "color": "b",
+                  "captured": "b"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "f3",
+                  "to": "e5",
+                  "san": "Nxe5",
+                  "lan": "f3e5",
+                  "before": "r1b1kb1r/pppp1ppp/2n5/4p3/2B1n3/5N2/PPPq1PPP/RNBQK2R w KQkq - 0 6",
+                  "after": "r1b1kb1r/pppp1ppp/2n5/4N3/2B1n3/8/PPPq1PPP/RNBQK2R b KQkq - 0 6",
+                  "flags": "c",
+                  "piece": "n",
+                  "color": "w",
+                  "captured": "p"
+                },
+                "branches": []
+              }
+            ],
+            [
+              {
+                "move": {
+                  "from": "f6",
+                  "to": "d7",
+                  "san": "Nbd7",
+                  "lan": "f6d7",
+                  "before": "r1bqkb1r/pppp1ppp/2n2n2/4p1B1/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 5 4",
+                  "after": "r1bqkb1r/ppp1nppp/2n5/4p1B1/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 6 5",
+                  "flags": "n",
+                  "piece": "n",
+                  "color": "b"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "g5",
+                  "to": "f6",
+                  "san": "Bxf6",
+                  "lan": "g5f6",
+                  "before": "r1bqkb1r/ppp1nppp/2n5/4p1B1/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 6 5",
+                  "after": "r1bqkb1r/ppp1nppp/2n2B2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 5",
+                  "flags": "c",
+                  "piece": "b",
+                  "color": "w",
+                  "captured": "n"
+                },
+                "branches": []
+              },
+              {
+                "move": {
+                  "from": "g7",
+                  "to": "f6",
+                  "san": "gxf6",
+                  "lan": "g7f6",
+                  "before": "r1bqkb1r/ppp1nppp/2n2B2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 5",
+                  "after": "r1bqkb1r/ppp1npp1/2n2p2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 6",
+                  "flags": "c",
+                  "piece": "p",
+                  "color": "b",
+                  "captured": "b"
+                },
+                "branches": []
+              }
+            ]
+          ]
+        }
+      ],
+      "currentPath": [],
+      "isFlipped": false,
+      "comments": {
+        "0": "White pins the knight to the queen",
+        "0,0,0": "Black tries to break the pin",
+        "0,0,1": "White captures the pinned piece",
+        "0,0,2": "Black recaptures with the queen",
+        "0,0,3": "White wins a pawn with a tactical shot",
+        "0,1,0": "Alternative: Black develops the other knight",
+        "0,1,1": "White captures the pinned knight",
+        "0,1,2": "Black recaptures, but the pin has done its job"
+      }
+    }
+  }
+]
+

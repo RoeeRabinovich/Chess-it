@@ -43,16 +43,25 @@ export const useChessGameReview = ({
 
   const { getComment } = useChessComments({ gameState, setGameState });
 
+  // Store the starting position from studyGameState for navigation
+  const startingPosition = useMemo(
+    () =>
+      studyGameState.position ||
+      "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+    [studyGameState.position],
+  );
+
   const makeMove = useCallback(
     (move: ChessMove | MoveData): boolean => {
       return makeReviewMove({
         chessRef,
         gameState,
         setGameState,
+        startingPosition,
         onInvalidMove,
       })(move);
     },
-    [gameState, setGameState, onInvalidMove],
+    [gameState, setGameState, startingPosition, onInvalidMove],
   );
 
   const undoMove = useCallback((): boolean => {
@@ -60,13 +69,15 @@ export const useChessGameReview = ({
       chessRef,
       gameState,
       setGameState,
+      startingPosition,
     })();
-  }, [gameState, setGameState]);
+  }, [gameState, setGameState, startingPosition]);
 
   const navigation = useTreeChessNavigation({
     chessRef,
     gameState,
     setGameState,
+    startingPosition, // Pass the starting position for review mode
   });
 
   const tools = useChessTools({

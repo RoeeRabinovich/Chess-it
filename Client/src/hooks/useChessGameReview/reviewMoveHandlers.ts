@@ -10,6 +10,7 @@ interface ReviewMoveHandlersParams {
   chessRef: React.MutableRefObject<Chess>;
   gameState: ChessGameState;
   setGameState: React.Dispatch<React.SetStateAction<ChessGameState>>;
+  startingPosition: string; // The original starting position from the study
   onInvalidMove?: (message: string) => void;
 }
 
@@ -21,6 +22,7 @@ export const makeReviewMove = ({
   chessRef,
   gameState,
   setGameState,
+  startingPosition,
   onInvalidMove,
 }: ReviewMoveHandlersParams) => {
   return (move: ChessMove | MoveData): boolean => {
@@ -66,9 +68,14 @@ export const makeReviewMove = ({
         return false;
       }
 
-      // Load position from current path
+      // Load position from current path using the starting position
       if (
-        !loadPositionFromPath(chessRef.current, gameState.moveTree, currentPath)
+        !loadPositionFromPath(
+          chessRef.current,
+          gameState.moveTree,
+          currentPath,
+          startingPosition,
+        )
       ) {
         onInvalidMove?.("Failed to load current position.");
         return false;
@@ -101,6 +108,7 @@ export const undoReviewMove = ({
   chessRef,
   gameState,
   setGameState,
+  startingPosition,
 }: ReviewMoveHandlersParams) => {
   return (): boolean => {
     const currentPath = gameState.currentPath;
@@ -133,9 +141,14 @@ export const undoReviewMove = ({
         }
       }
 
-      // Load position from new path
+      // Load position from new path using the starting position
       if (
-        !loadPositionFromPath(chessRef.current, gameState.moveTree, newPath)
+        !loadPositionFromPath(
+          chessRef.current,
+          gameState.moveTree,
+          newPath,
+          startingPosition,
+        )
       ) {
         return false;
       }

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const chalk = require("chalk");
+const initializeStudies = require("../initialData/initialDataService");
 
 const URI = process.env.MONGODB_URI;
 
@@ -10,7 +11,11 @@ if (!URI) {
 
 mongoose
   .connect(URI)
-  .then(() => console.log(chalk.greenBright("Connect to atlas MongoDb")))
+  .then(() => {
+    console.log(chalk.greenBright("Connect to atlas MongoDb"));
+    // Initialize studies after connection
+    initializeStudies();
+  })
   .catch((error) => {
     console.log(chalk.redBright(error));
     process.exit(1);

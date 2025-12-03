@@ -32,8 +32,10 @@ export const useStudyData = (id: string | undefined): UseStudyDataReturn => {
   // Memoize studyGameState to prevent unnecessary re-renders
   const studyGameState = useMemo(() => {
     if (!study?.gameState) {
+      const defaultPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+      console.log("🔍 [useStudyData] No study.gameState, using default position:", defaultPosition);
       return {
-        position: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        position: defaultPosition,
         moveTree: [],
         currentPath: [],
         isFlipped: false,
@@ -42,6 +44,8 @@ export const useStudyData = (id: string | undefined): UseStudyDataReturn => {
     // Ensure the gameState matches the expected structure
     const { position, moveTree, currentPath, isFlipped, opening, comments } =
       study.gameState;
+    console.log("🔍 [useStudyData] Study gameState.position:", position);
+    console.log("🔍 [useStudyData] Full study.gameState:", study.gameState);
     return {
       position,
       moveTree: moveTree || [],

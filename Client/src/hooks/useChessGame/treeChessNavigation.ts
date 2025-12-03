@@ -7,13 +7,22 @@ interface UseTreeChessNavigationParams {
   chessRef: React.MutableRefObject<Chess>;
   gameState: ChessGameState;
   setGameState: React.Dispatch<React.SetStateAction<ChessGameState>>;
+  startingPosition?: string; // Optional starting position (for review mode with custom starting positions)
 }
 
 export const useTreeChessNavigation = ({
   chessRef,
   gameState,
   setGameState,
+  startingPosition,
 }: UseTreeChessNavigationParams) => {
+  // Determine the starting position to use
+  // If provided explicitly, use it. Otherwise, use gameState.position when at start (for create mode)
+  const effectiveStartingPosition =
+    startingPosition ||
+    (gameState.currentPath.length === 0 ? gameState.position : undefined) ||
+    "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
   const navigateToPath = useCallback(
     (path: MovePath) => {
       try {
@@ -21,6 +30,7 @@ export const useTreeChessNavigation = ({
           chessRef.current,
           gameState.moveTree,
           path,
+          effectiveStartingPosition, // Use the effective starting position
         );
         if (!success) {
           throw new Error("Failed to replay moves");
@@ -35,7 +45,7 @@ export const useTreeChessNavigation = ({
         console.error("Error navigating to path:", error);
       }
     },
-    [chessRef, gameState.moveTree, setGameState],
+    [chessRef, gameState.moveTree, effectiveStartingPosition, setGameState],
   );
 
   const navigateToMainLineMove = useCallback(

@@ -75,34 +75,80 @@ export const useStudyInitialization = ({
       return;
     }
 
+    // Log the starting position from studyGameState
+    const startingFen =
+      studyGameState.position ||
+      "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    console.log(
+      "🔍 [useStudyInitialization] Starting FEN from studyGameState:",
+      startingFen,
+    );
+    console.log(
+      "🔍 [useStudyInitialization] studyGameState.position:",
+      studyGameState.position,
+    );
+    console.log(
+      "🔍 [useStudyInitialization] studyGameState.moveTree length:",
+      studyGameState.moveTree?.length || 0,
+    );
+
     if (!studyGameState.moveTree || studyGameState.moveTree.length === 0) {
-      chessRef.current.reset();
-      setGameState((prev) => ({
-        ...prev,
-        position: chessRef.current.fen(),
-        moveTree: [],
-        currentPath: [],
-      }));
-      initializedRef.current = studyKey;
+      try {
+        chessRef.current.load(startingFen);
+        const loadedFen = chessRef.current.fen();
+        console.log(
+          "🔍 [useStudyInitialization] Loaded FEN (no moves):",
+          loadedFen,
+        );
+        setGameState((prev) => ({
+          ...prev,
+          position: loadedFen,
+          moveTree: [],
+          currentPath: [],
+        }));
+        initializedRef.current = studyKey;
+      } catch (error) {
+        console.error(
+          "❌ [useStudyInitialization] Error loading starting position:",
+          error,
+        );
+        chessRef.current.reset();
+        setGameState((prev) => ({
+          ...prev,
+          position: chessRef.current.fen(),
+          moveTree: [],
+          currentPath: [],
+        }));
+        initializedRef.current = studyKey;
+      }
       return;
     }
 
     try {
-      chessRef.current.reset();
-      const currentFen = chessRef.current.fen();
+      // Load the study's starting position instead of resetting
+      chessRef.current.load(startingFen);
+      const loadedFen = chessRef.current.fen();
+      console.log(
+        "🔍 [useStudyInitialization] Loaded starting FEN:",
+        loadedFen,
+      );
       const commentsMap = commentsToMap(studyGameState.comments);
 
       setGameState((prev) => {
         if (
-          prev.position === currentFen &&
+          prev.position === loadedFen &&
           prev.currentPath.length === 0 &&
           prev.moveTree.length === studyGameState.moveTree.length
         ) {
           return prev;
         }
+        console.log(
+          "🔍 [useStudyInitialization] Setting gameState with position:",
+          loadedFen,
+        );
         return {
           ...prev,
-          position: currentFen,
+          position: loadedFen,
           moveTree: studyGameState.moveTree,
           // Always start at starting position in review mode, ignore saved currentPath
           currentPath: [],
@@ -111,11 +157,20 @@ export const useStudyInitialization = ({
       });
       initializedRef.current = studyKey;
     } catch (error) {
-      console.error("Error initializing chess game from study:", error);
+      console.error(
+        "❌ [useStudyInitialization] Error initializing chess game from study:",
+        error,
+      );
+      // Fallback to default position if study position is invalid
       chessRef.current.reset();
+      const fallbackFen = chessRef.current.fen();
+      console.log(
+        "🔍 [useStudyInitialization] Using fallback FEN:",
+        fallbackFen,
+      );
       setGameState((prev) => ({
         ...prev,
-        position: chessRef.current.fen(),
+        position: fallbackFen,
         moveTree: [],
         currentPath: [],
       }));

@@ -140,13 +140,29 @@ export const getMovesAlongPath = (
 
 /**
  * Loads a chess position by replaying moves along a path
+ * @param chess - The chess instance
+ * @param tree - The move tree
+ * @param path - The path to navigate to
+ * @param startingPosition - Optional starting FEN position (defaults to standard starting position)
  */
 export const loadPositionFromPath = (
   chess: Chess,
   tree: MoveNode[],
   path: MovePath,
+  startingPosition?: string,
 ): boolean => {
-  chess.reset();
+  // Load the starting position instead of resetting to default
+  const defaultPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+  const position = startingPosition || defaultPosition;
+  
+  try {
+    chess.load(position);
+  } catch (error) {
+    // If loading fails, fall back to reset
+    console.warn("Failed to load starting position, using default:", error);
+    chess.reset();
+  }
+  
   const moves = getMovesAlongPath(tree, path);
   return replayMoves(chess, moves, moves.length);
 };
