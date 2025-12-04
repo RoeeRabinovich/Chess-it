@@ -31,34 +31,7 @@ export const mockPuzzles: Puzzle[] = [
     gameId: "immortal-game-1851",
   },
 
-  // 2. Evergreen Game - Rook and Queen Sacrifice
-  {
-    id: "evergreen-game-rook-sacrifice",
-    rating: 1700,
-    themes: ["sacrifice", "checkmate", "middlegame", "attraction"],
-    fen: "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 3",
-    moves: [
-      "f6e4", // Computer: Black knight moves to center
-      "f3e5", // Player: Knight sacrifice! (brilliant tactical move)
-      "d8f6", // Computer: Black queen defends
-      "d1f3", // Player: Queen joins attack
-      "f6f3", // Computer: Black queen takes white queen
-      "e1g1", // Player: Castles
-      "f3f2", // Computer: Black queen checks
-      "g1h1", // Player: King moves
-      "f2e1", // Computer: Black queen checks
-      "h1g1", // Player: King moves back
-      "e1f2", // Computer: Black queen checks
-      "g1h1", // Player: King moves
-      "f2f1", // Computer: Black queen checks
-      "h1g2", // Player: King moves
-      "f1g2", // Computer: Black queen takes
-    ],
-    playerMoves: 4,
-    gameId: "evergreen-game-1852",
-  },
-
-  // 3. Opera Game - Back Rank Mate
+  // 2. Opera Game - Back Rank Mate
   {
     id: "opera-game-back-rank",
     rating: 1600,
@@ -82,7 +55,7 @@ export const mockPuzzles: Puzzle[] = [
     gameId: "opera-game-1858",
   },
 
-  // 4. Smothered Mate Pattern
+  // 3. Smothered Mate Pattern
   {
     id: "smothered-mate-classic",
     rating: 1500,
@@ -106,7 +79,7 @@ export const mockPuzzles: Puzzle[] = [
     gameId: "smothered-mate-pattern",
   },
 
-  // 5. Endgame Promotion Tactic
+  // 4. Endgame Promotion Tactic
   {
     id: "endgame-promotion-tactic",
     rating: 1400,
@@ -134,7 +107,7 @@ export const mockPuzzles: Puzzle[] = [
     gameId: "endgame-promotion",
   },
 
-  // 6. Greek Gift Sacrifice
+  // 5. Greek Gift Sacrifice
   {
     id: "greek-gift-sacrifice",
     rating: 1650,
@@ -156,7 +129,7 @@ export const mockPuzzles: Puzzle[] = [
     gameId: "greek-gift-pattern",
   },
 
-  // 7. Fork Tactic
+  // 6. Fork Tactic
   {
     id: "fork-tactic-classic",
     rating: 1200,
@@ -178,7 +151,7 @@ export const mockPuzzles: Puzzle[] = [
     gameId: "fork-tactic",
   },
 
-  // 8. Pin and Win Material
+  // 7. Pin and Win Material
   {
     id: "pin-tactic-material",
     rating: 1300,
@@ -204,7 +177,7 @@ export const mockPuzzles: Puzzle[] = [
     gameId: "pin-tactic",
   },
 
-  // 9. Discovered Attack
+  // 8. Discovered Attack
   {
     id: "discovered-attack-classic",
     rating: 1550,
@@ -226,7 +199,7 @@ export const mockPuzzles: Puzzle[] = [
     gameId: "discovered-attack",
   },
 
-  // 10. Double Check
+  // 9. Double Check
   {
     id: "double-check-mate",
     rating: 1750,
