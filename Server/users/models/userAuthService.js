@@ -19,7 +19,7 @@ const registerUser = async (normalizedUser) => {
       user = new User(normalizedUser);
       user = await user.save();
 
-      const userData = _.pick(user, ["_id", "username", "email", "createdAt"]);
+      const userData = _.pick(user, ["_id", "username", "createdAt"]);
       return Promise.resolve({ user: userData });
     } catch (error) {
       error.status = 400;
@@ -49,7 +49,6 @@ const loginUser = async ({ email, password }) => {
       const userData = _.pick(user, [
         "_id",
         "username",
-        "email",
         "createdAt",
         "puzzleRating",
         "studiesCreated",
@@ -70,4 +69,3 @@ module.exports = {
   registerUser,
   loginUser,
 };
-

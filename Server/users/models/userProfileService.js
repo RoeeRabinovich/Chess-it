@@ -54,7 +54,6 @@ const updateUsername = async (userId, newUsername) => {
       const userData = _.pick(user, [
         "_id",
         "username",
-        "email",
         "createdAt",
         "puzzleRating",
         "studiesCreated",
@@ -85,7 +84,6 @@ const updatePuzzleRating = async (userId, newRating) => {
       const userData = _.pick(user, [
         "_id",
         "username",
-        "email",
         "createdAt",
         "puzzleRating",
         "studiesCreated",
