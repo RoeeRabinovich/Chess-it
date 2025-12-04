@@ -31,12 +31,10 @@ export function filterData<T extends Record<string, unknown>>(
   return data.filter((row) => {
     return columns.some((column) => {
       const value = getValueFromRow(row, column.accessor);
-      
+
       // Convert value to string for searching
-      const searchableValue = value != null 
-        ? String(value).toLowerCase()
-        : "";
-      
+      const searchableValue = value != null ? String(value).toLowerCase() : "";
+
       return searchableValue.includes(query);
     });
   });
@@ -49,8 +47,6 @@ export function sortData<T extends Record<string, unknown>>(
   data: T[],
   column: DataTableColumn<T>,
   direction: "asc" | "desc",
-  getColumnKey: (column: DataTableColumn<T>, index: number) => string,
-  columnIndex: number,
 ): T[] {
   const sortedData = [...data];
 
@@ -66,11 +62,7 @@ export function sortData<T extends Record<string, unknown>>(
     // Compare values
     let comparison = 0;
 
-    if (typeof aValue === "string" && typeof bValue === "string") {
-      comparison = aValue.localeCompare(bValue);
-    } else if (typeof aValue === "number" && typeof bValue === "number") {
-      comparison = aValue - bValue;
-    } else if (aValue instanceof Date && bValue instanceof Date) {
+    if (aValue instanceof Date && bValue instanceof Date) {
       comparison = aValue.getTime() - bValue.getTime();
     } else if (
       typeof aValue === "string" &&
@@ -79,8 +71,11 @@ export function sortData<T extends Record<string, unknown>>(
       !isNaN(Date.parse(bValue))
     ) {
       // Handle date strings
-      comparison =
-        new Date(aValue).getTime() - new Date(bValue).getTime();
+      comparison = new Date(aValue).getTime() - new Date(bValue).getTime();
+    } else if (typeof aValue === "string" && typeof bValue === "string") {
+      comparison = aValue.localeCompare(bValue);
+    } else if (typeof aValue === "number" && typeof bValue === "number") {
+      comparison = aValue - bValue;
     } else {
       // Fallback: convert to string and compare
       comparison = String(aValue).localeCompare(String(bValue));

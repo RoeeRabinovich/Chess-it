@@ -105,8 +105,6 @@ export const AdminStudies = () => {
       studies,
       column,
       sortState.direction,
-      getColumnKey,
-      columnIndex,
     );
   }, [studies, sortState, columns]);
 

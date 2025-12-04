@@ -87,8 +87,6 @@ export const AdminUsers = () => {
       users,
       column,
       sortState.direction,
-      getColumnKey,
-      columnIndex,
     );
   }, [users, sortState, columns]);
 
