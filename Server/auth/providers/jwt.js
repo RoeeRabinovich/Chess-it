@@ -9,7 +9,7 @@ if (!key) {
 // Generate authentication token
 const generateAuthToken = (user) => {
   const { _id, isAdmin } = user;
-  const token = jwt.sign({ _id, isAdmin }, key, { expiresIn: "1h" }); // Generate token with user data and secret key and expiration time (1 hour)
+  const token = jwt.sign({ _id, isAdmin }, key, { expiresIn: "4h" }); // Generate token with user data and secret key and expiration time (4 hours)
   return token;
 };
 
