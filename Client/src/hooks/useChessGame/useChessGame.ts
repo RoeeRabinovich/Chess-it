@@ -29,11 +29,10 @@ export const useChessGame = () => {
     setGameState,
   });
 
-  const { makeMove, undoMove } = useTreeChessMoveManager({
+  const { makeMove } = useTreeChessMoveManager({
     chessRef,
     gameState,
     setGameState,
-    getCommentKey,
   });
 
   const navigation = useTreeChessNavigation({
@@ -45,8 +44,10 @@ export const useChessGame = () => {
 
   const tools = useChessTools({
     chessRef,
+    gameState,
     setGameState,
     createInitialState,
+    getCommentKey,
   });
 
   const helpers = useMemo(() => {
@@ -66,7 +67,7 @@ export const useChessGame = () => {
   return {
     gameState,
     makeMove,
-    undoMove,
+    undoMove: tools.undoMove,
     resetGame: tools.resetGame,
     flipBoard: tools.flipBoard,
     loadFEN: tools.loadFEN,

@@ -1,18 +1,23 @@
 import { useCallback } from "react";
 import type { Chess } from "chess.js";
-import type { ChessGameState } from "../../types/chess";
+import type { ChessGameState, MovePath } from "../../types/chess";
 import { toChessMove } from "../../utils/chessMoveUtils";
+import { useUndoMove } from "./undoMoveHandler";
 
 interface UseChessToolsParams {
   chessRef: React.MutableRefObject<Chess>;
+  gameState: ChessGameState;
   setGameState: React.Dispatch<React.SetStateAction<ChessGameState>>;
   createInitialState: () => ChessGameState;
+  getCommentKey: (path: MovePath) => string;
 }
 
 export const useChessTools = ({
   chessRef,
+  gameState,
   setGameState,
   createInitialState,
+  getCommentKey,
 }: UseChessToolsParams) => {
   const flipBoard = useCallback(() => {
     setGameState((prev) => ({
@@ -83,10 +88,18 @@ export const useChessTools = ({
     setGameState(createInitialState());
   }, [chessRef, createInitialState, setGameState]);
 
+  const undoMove = useUndoMove({
+    chessRef,
+    gameState,
+    setGameState,
+    getCommentKey,
+  });
+
   return {
     flipBoard,
     loadFEN,
     loadPGN,
     resetGame,
+    undoMove,
   };
 };

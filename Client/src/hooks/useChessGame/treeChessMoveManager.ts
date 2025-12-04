@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import type { Chess } from "chess.js";
-import type { ChessGameState, ChessMove, MovePath } from "../../types/chess";
+import type { ChessGameState, ChessMove } from "../../types/chess";
 import { toChessMove, toMoveData } from "../../utils/chessMoveUtils";
-import { getNodeAtPath, ROOT_PATH_INDEX } from "../../utils/moveTreeUtils";
+import { getNodeAtPath } from "../../utils/moveTreeUtils";
 import {
   isAtEndOfPath,
   findMatchingBranchAtPath,
@@ -17,7 +17,6 @@ interface UseTreeChessMoveManagerParams {
   chessRef: React.MutableRefObject<Chess>;
   gameState: ChessGameState;
   setGameState: React.Dispatch<React.SetStateAction<ChessGameState>>;
-  getCommentKey: (path: MovePath) => string;
 }
 
 const movesMatch = (
@@ -39,7 +38,6 @@ export const useTreeChessMoveManager = ({
   chessRef,
   gameState,
   setGameState,
-  getCommentKey,
 }: UseTreeChessMoveManagerParams) => {
   const makeMove = useCallback(
     (move: ChessMove | { from: string; to: string; promotion?: string }) => {
@@ -157,62 +155,7 @@ export const useTreeChessMoveManager = ({
     [chessRef, gameState, setGameState],
   );
 
-  const undoMove = useCallback(() => {
-    try {
-      const move = chessRef.current.undo();
-      if (!move) {
-        return false;
-      }
-
-      setGameState((prev) => {
-        const currentPath = prev.currentPath;
-        const commentKey = getCommentKey(currentPath);
-        const comments = new Map(prev.comments ?? new Map());
-        comments.delete(commentKey);
-
-        // Calculate previous path
-        let newPath: MovePath;
-        if (currentPath.length === 1) {
-          // On main line
-          const mainIndex = currentPath[0];
-          if (mainIndex > 0) {
-            newPath = [mainIndex - 1];
-          } else {
-            newPath = [];
-          }
-        } else {
-          // In a branch - go back one move in the branch
-          const newPathArray = [...currentPath];
-          const moveIndexInBranch = newPathArray[newPathArray.length - 1];
-          if (moveIndexInBranch > 0) {
-            newPathArray[newPathArray.length - 1] = moveIndexInBranch - 1;
-            newPath = newPathArray;
-          } else {
-            // At start of branch - go back to parent
-            newPath = newPathArray.slice(0, -2);
-            if (newPath.length === 1 && newPath[0] === ROOT_PATH_INDEX) {
-              newPath = [];
-            }
-          }
-        }
-
-        return {
-          ...prev,
-          position: chessRef.current.fen(),
-          currentPath: newPath,
-          comments,
-        };
-      });
-
-      return true;
-    } catch (error) {
-      console.error("Cannot undo:", error);
-      return false;
-    }
-  }, [chessRef, getCommentKey, setGameState]);
-
   return {
     makeMove,
-    undoMove,
   };
 };
