@@ -17,11 +17,11 @@ export const registerSchema = Joi.object({
 
   password: Joi.string()
     .ruleset.regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+<>?]).{8,}$/,
+      /^(?=.*[a-z])(?=.*[A-Z])(?=(?:.*\d){4})(?=.*[*_\-+&%^$#@!]).{8,}$/,
     )
     .rule({
       message:
-        "Password must be at least 8 characters long and contain an uppercase letter, a lowercase letter, a number and one special character",
+        "Password must be at least 8 characters long and contain an uppercase letter, a lowercase letter, at least 4 numbers, and one special character (*_-+&%^$#@!)",
     })
     .required(),
 

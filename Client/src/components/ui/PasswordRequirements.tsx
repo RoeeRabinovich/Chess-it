@@ -44,12 +44,12 @@ const PasswordRequirements = ({
       isValid: /[a-z]/.test(password),
     },
     {
-      text: "Contains number",
-      isValid: /\d/.test(password),
+      text: "Contains at least 4 numbers",
+      isValid: (password.match(/\d/g) || []).length >= 4,
     },
     {
-      text: "Contains special character",
-      isValid: /[!@#$%^&*()_+<>?]/.test(password),
+      text: "Contains special character (*_-+&%^$#@!)",
+      isValid: /[*_\-+&%^$#@!]/.test(password),
     },
     {
       text: "Passwords match",

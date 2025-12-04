@@ -19,8 +19,8 @@ const registerUser = async (normalizedUser) => {
       user = new User(normalizedUser);
       user = await user.save();
 
-      user = _.pick(user, ["_id", "username", "email", "createdAt"]);
-      return Promise.resolve(user);
+      const userData = _.pick(user, ["_id", "username", "email", "createdAt"]);
+      return Promise.resolve({ user: userData });
     } catch (error) {
       error.status = 400;
       return handleBadRequest("Mongoose", error);

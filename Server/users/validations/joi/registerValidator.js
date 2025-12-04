@@ -2,14 +2,14 @@ const Joi = require("joi");
 
 const registerValidator = (user) => {
   const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+<>?]).{8,}$/;
+    /^(?=.*[a-z])(?=.*[A-Z])(?=(?:.*\d){4})(?=.*[*_\-+&%^$#@!]).{8,}$/;
 
   const schema = Joi.object({
     username: Joi.string().min(3).max(30).required(),
     email: Joi.string().email().required(),
     password: Joi.string().pattern(passwordRegex).required().messages({
       "string.pattern.base":
-        "Password must be at least 8 characters long and contain an uppercase letter, a lowercase letter, a number and one special character",
+        "Password must be at least 8 characters long and contain an uppercase letter, a lowercase letter, at least 4 numbers, and one special character (*_-+&%^$#@!)",
     }),
     confirmPassword: Joi.string().valid(Joi.ref("password")).required(),
     messages: {
