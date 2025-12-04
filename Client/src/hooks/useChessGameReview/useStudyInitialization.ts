@@ -5,6 +5,8 @@ import type { ChessGameState, MoveNode, MovePath } from "../../types/chess";
 interface StudyGameState {
   position: string;
   moveTree: MoveNode[];
+  rootBranches?: MoveNode[][];
+  startingPosition?: string;
   currentPath: MovePath;
   isFlipped: boolean;
   opening?: ChessGameState["opening"];
@@ -57,6 +59,10 @@ export const useStudyInitialization = ({
       studyGameState.position ||
       "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
     moveTree: studyGameState.moveTree || [],
+    rootBranches: studyGameState.rootBranches || [],
+    startingPosition:
+      studyGameState.startingPosition ||
+      "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
     // Always start at starting position in review mode, ignore saved currentPath
     currentPath: [],
     isFlipped: studyGameState.isFlipped || false,
@@ -86,6 +92,8 @@ export const useStudyInitialization = ({
           ...prev,
           position: chessRef.current.fen(),
           moveTree: [],
+          rootBranches: [],
+          startingPosition: startingFen,
           currentPath: [],
         }));
         initializedRef.current = studyKey;
@@ -95,6 +103,8 @@ export const useStudyInitialization = ({
           ...prev,
           position: chessRef.current.fen(),
           moveTree: [],
+          rootBranches: [],
+          startingPosition: startingFen,
           currentPath: [],
         }));
         initializedRef.current = studyKey;
@@ -119,6 +129,11 @@ export const useStudyInitialization = ({
           ...prev,
           position: chessRef.current.fen(),
           moveTree: studyGameState.moveTree,
+          rootBranches: studyGameState.rootBranches || [],
+          startingPosition:
+            studyGameState.startingPosition ||
+            studyGameState.position ||
+            startingFen,
           // Always start at starting position in review mode, ignore saved currentPath
           currentPath: [],
           comments: commentsMap,
@@ -132,6 +147,8 @@ export const useStudyInitialization = ({
         ...prev,
         position: chessRef.current.fen(),
         moveTree: [],
+        rootBranches: [],
+        startingPosition: startingFen,
         currentPath: [],
       }));
       initializedRef.current = studyKey;

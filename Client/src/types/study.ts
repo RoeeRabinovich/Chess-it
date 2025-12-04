@@ -35,6 +35,8 @@ export interface Study extends Record<string, unknown> {
     // For list views, only position is present
     // For full study review, all fields are present
     moveTree?: ChessGameState["moveTree"];
+    rootBranches?: ChessGameState["rootBranches"];
+    startingPosition?: string;
     currentPath?: ChessGameState["currentPath"];
     isFlipped?: boolean;
     opening?: ChessGameState["opening"];

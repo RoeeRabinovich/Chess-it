@@ -19,6 +19,8 @@ import { Puzzles } from "./pages/Puzzles/Puzzles.page";
 import { Profile } from "./pages/Profile/Profile.page";
 import { MyStudies } from "./pages/MyStudies/MyStudies.page";
 import About from "./pages/About/About.page";
+import Contact from "./pages/Contact/Contact.page";
+import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy.page";
 import { AdminLayout } from "./pages/Admin/layouts/AdminLayout";
 import { AdminDashboard } from "./pages/Admin/Dashboard/Dashboard.page";
 import { AdminUsers } from "./pages/Admin/Users management/AdminUsers.page";
@@ -120,6 +122,8 @@ function AppContent() {
 
         <Route path="/studies/:id" element={<ReviewStudy />} />
         <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
 
         {/* Admin Routes */}
         <Route

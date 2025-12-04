@@ -2,6 +2,135 @@ import type { Chess } from "chess.js";
 import type { ChessMove, MoveNode, MovePath } from "../types/chess";
 import { replayMoves } from "./chessMoveUtils";
 
+export const ROOT_PATH_INDEX = -1;
+
+export const isRootBranchPath = (path: MovePath): boolean =>
+  path.length > 0 && path[0] === ROOT_PATH_INDEX;
+
+const traverseBranchSegments = (
+  initialBranches: MoveNode[][],
+  segments: number[],
+): { sequence: MoveNode[]; moveIndex: number; node: MoveNode } | null => {
+  let branches = initialBranches;
+  let sequence: MoveNode[] | null = null;
+  let node: MoveNode | null = null;
+
+  for (let i = 0; i < segments.length; i += 2) {
+    const branchIndex = segments[i];
+    const moveIndex = segments[i + 1];
+
+    if (branchIndex === undefined || moveIndex === undefined) {
+      return null;
+    }
+
+    sequence = branches[branchIndex];
+    if (!sequence || moveIndex < 0 || moveIndex >= sequence.length) {
+      return null;
+    }
+
+    node = sequence[moveIndex];
+
+    if (i + 2 >= segments.length) {
+      return {
+        sequence,
+        moveIndex,
+        node,
+      };
+    }
+
+    branches = node.branches;
+  }
+
+  return null;
+};
+
+const appendBranchMoves = (
+  initialBranches: MoveNode[][],
+  segments: number[],
+  moves: ChessMove[],
+) => {
+  let branches = initialBranches;
+
+  for (let i = 0; i < segments.length; i += 2) {
+    const branchIndex = segments[i];
+    const moveIndex = segments[i + 1];
+
+    if (branchIndex === undefined || moveIndex === undefined) {
+      break;
+    }
+
+    const branchSequence = branches[branchIndex];
+    if (!branchSequence) {
+      break;
+    }
+
+    for (let j = 0; j <= moveIndex && j < branchSequence.length; j++) {
+      moves.push(branchSequence[j].move);
+    }
+
+    const node = branchSequence[moveIndex];
+    if (!node) {
+      break;
+    }
+
+    branches = node.branches;
+  }
+};
+
+const getAbsoluteIndexWithinBranches = (
+  initialBranches: MoveNode[][],
+  segments: number[],
+  startingIndex: number,
+): number => {
+  let absoluteIndex = startingIndex;
+  let branches = initialBranches;
+
+  for (let i = 0; i < segments.length; i += 2) {
+    const branchIndex = segments[i];
+    const moveIndex = segments[i + 1];
+
+    if (branchIndex === undefined || moveIndex === undefined) {
+      return absoluteIndex;
+    }
+
+    const branchSequence = branches[branchIndex];
+    if (
+      !branchSequence ||
+      moveIndex < 0 ||
+      moveIndex >= branchSequence.length
+    ) {
+      return -1;
+    }
+
+    absoluteIndex += moveIndex + 1;
+    const node = branchSequence[moveIndex];
+    branches = node.branches;
+  }
+
+  return absoluteIndex;
+};
+
+export const getBranchContextForPath = (
+  tree: MoveNode[],
+  rootBranches: MoveNode[][],
+  path: MovePath,
+): { sequence: MoveNode[]; moveIndex: number; node: MoveNode } | null => {
+  if (isRootBranchPath(path)) {
+    return traverseBranchSegments(rootBranches, path.slice(1));
+  }
+
+  if (path.length < 3) {
+    return null;
+  }
+
+  const mainIndex = path[0];
+  if (mainIndex < 0 || mainIndex >= tree.length) {
+    return null;
+  }
+
+  return traverseBranchSegments(tree[mainIndex].branches, path.slice(1));
+};
+
 /**
  * Converts a MovePath to a string key for comments/storage
  */
@@ -23,18 +152,53 @@ export const pathFromString = (str: string): MovePath => {
 export const getNodeAtPath = (
   tree: MoveNode[],
   path: MovePath,
+  rootBranches: MoveNode[][] = [],
 ): MoveNode | null => {
   if (path.length === 0) {
     return null;
   }
 
-  // First segment is always a main line move index
+  if (isRootBranchPath(path)) {
+    let branches = rootBranches;
+    let currentNode: MoveNode | null = null;
+
+    for (let i = 1; i < path.length; i += 2) {
+      const branchIndex = path[i];
+      const moveIndexInBranch = path[i + 1];
+
+      if (branchIndex === undefined || moveIndexInBranch === undefined) {
+        return currentNode;
+      }
+
+      if (branchIndex < 0 || branchIndex >= branches.length) {
+        return null;
+      }
+
+      const branchSequence = branches[branchIndex];
+      if (moveIndexInBranch < 0 || moveIndexInBranch >= branchSequence.length) {
+        return null;
+      }
+
+      currentNode = branchSequence[moveIndexInBranch];
+      branches = currentNode.branches;
+    }
+
+    return currentNode;
+  }
+
+  // First segment is main line move index
   const mainIndex = path[0];
   if (mainIndex < 0 || mainIndex >= tree.length) {
     return null;
   }
 
   let currentNode = tree[mainIndex];
+
+  if (path.length === 1) {
+    return currentNode;
+  }
+
+  let branches = currentNode.branches;
 
   // Process remaining path segments in pairs: [branchIndex, moveIndexInBranch]
   for (let i = 1; i < path.length; i += 2) {
@@ -47,16 +211,17 @@ export const getNodeAtPath = (
     }
 
     // Get the branch sequence
-    if (branchIndex < 0 || branchIndex >= currentNode.branches.length) {
+    if (branchIndex < 0 || branchIndex >= branches.length) {
       return null;
     }
-    const branchSequence = currentNode.branches[branchIndex];
+    const branchSequence = branches[branchIndex];
 
     // Get the move within that branch
     if (moveIndexInBranch < 0 || moveIndexInBranch >= branchSequence.length) {
       return null;
     }
     currentNode = branchSequence[moveIndexInBranch];
+    branches = currentNode.branches;
   }
 
   return currentNode;
@@ -72,11 +237,17 @@ export const getNodeAtPath = (
 export const getMovesAlongPath = (
   tree: MoveNode[],
   path: MovePath,
+  rootBranches: MoveNode[][] = [],
 ): ChessMove[] => {
   const moves: ChessMove[] = [];
 
   if (path.length === 0) {
     return moves; // At starting position
+  }
+
+  if (isRootBranchPath(path)) {
+    appendBranchMoves(rootBranches, path.slice(1), moves);
+    return moves;
   }
 
   const mainIndex = path[0];
@@ -103,37 +274,7 @@ export const getMovesAlongPath = (
   }
 
   // Now add branch moves
-  let currentNode = tree[mainIndex];
-  let pathIndex = 1;
-
-  while (pathIndex < path.length) {
-    const branchIndex = path[pathIndex];
-    const moveIndexInBranch = path[pathIndex + 1];
-
-    if (branchIndex === undefined || moveIndexInBranch === undefined) {
-      break;
-    }
-
-    // Get the branch sequence
-    if (branchIndex < 0 || branchIndex >= currentNode.branches.length) {
-      break;
-    }
-    const branchSequence = currentNode.branches[branchIndex];
-
-    // Add all moves in the branch up to moveIndexInBranch (inclusive)
-    for (let j = 0; j <= moveIndexInBranch && j < branchSequence.length; j++) {
-      moves.push(branchSequence[j].move);
-    }
-
-    // Update current node for potential deeper nesting
-    if (moveIndexInBranch >= 0 && moveIndexInBranch < branchSequence.length) {
-      currentNode = branchSequence[moveIndexInBranch];
-    } else {
-      break;
-    }
-
-    pathIndex += 2; // Move to next pair [branchIndex, moveIndex]
-  }
+  appendBranchMoves(tree[mainIndex].branches, path.slice(1), moves);
 
   return moves;
 };
@@ -150,11 +291,13 @@ export const loadPositionFromPath = (
   tree: MoveNode[],
   path: MovePath,
   startingPosition?: string,
+  rootBranches: MoveNode[][] = [],
 ): boolean => {
   // Load the starting position instead of resetting to default
-  const defaultPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+  const defaultPosition =
+    "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
   const position = startingPosition || defaultPosition;
-  
+
   try {
     chess.load(position);
   } catch (error) {
@@ -162,8 +305,8 @@ export const loadPositionFromPath = (
     console.warn("Failed to load starting position, using default:", error);
     chess.reset();
   }
-  
-  const moves = getMovesAlongPath(tree, path);
+
+  const moves = getMovesAlongPath(tree, path, rootBranches);
   return replayMoves(chess, moves, moves.length);
 };
 
@@ -176,14 +319,49 @@ export const loadPositionFromPath = (
  */
 export const addMoveToTree = (
   tree: MoveNode[],
+  rootBranches: MoveNode[][],
   path: MovePath,
   move: ChessMove,
 ): { newPath: MovePath; isNewBranch: boolean } => {
   if (path.length === 0) {
-    // Adding to empty tree
-    const newNode: MoveNode = { move, branches: [] };
-    tree.push(newNode);
-    return { newPath: [0], isNewBranch: false };
+    if (tree.length === 0) {
+      const newNode: MoveNode = { move, branches: [] };
+      tree.push(newNode);
+      return { newPath: [0], isNewBranch: false };
+    }
+
+    const newBranch: MoveNode[] = [{ move, branches: [] }];
+    rootBranches.push(newBranch);
+    const branchIndex = rootBranches.length - 1;
+    return {
+      newPath: [ROOT_PATH_INDEX, branchIndex, 0],
+      isNewBranch: true,
+    };
+  }
+
+  if (isRootBranchPath(path)) {
+    const branchContext = traverseBranchSegments(rootBranches, path.slice(1));
+    if (!branchContext) {
+      throw new Error("Invalid root branch path: node not found");
+    }
+
+    const { sequence, moveIndex, node } = branchContext;
+
+    if (moveIndex === sequence.length - 1) {
+      const newNode: MoveNode = { move, branches: [] };
+      sequence.push(newNode);
+      const newPath = [...path];
+      newPath[newPath.length - 1] = sequence.length - 1;
+      return { newPath, isNewBranch: false };
+    }
+
+    const newBranch: MoveNode[] = [{ move, branches: [] }];
+    node.branches.push(newBranch);
+    const newBranchIndex = node.branches.length - 1;
+    return {
+      newPath: [...path, newBranchIndex, 0],
+      isNewBranch: true,
+    };
   }
 
   // Check if we're extending the main line
@@ -206,43 +384,38 @@ export const addMoveToTree = (
   }
 
   // We're in a branch - get the current node
-  const currentNode = getNodeAtPath(tree, path);
+  const currentNode = getNodeAtPath(tree, path, rootBranches);
   if (!currentNode) {
     throw new Error("Invalid path: node not found");
   }
 
-  // Check if we're at the end of a branch sequence
-  // Path format: [mainIndex, branchIndex, moveIndexInBranch, ...]
   const mainIndex = path[0];
-  const branchIndex = path[1];
-  const moveIndexInBranch = path[2];
-
-  if (path.length === 3) {
-    // We're at a specific move in a branch
-    const branchSequence = tree[mainIndex].branches[branchIndex];
-    if (moveIndexInBranch === branchSequence.length - 1) {
-      // At the end of this branch - extend it
-      const newNode: MoveNode = { move, branches: [] };
-      branchSequence.push(newNode);
-      return {
-        newPath: [mainIndex, branchIndex, branchSequence.length - 1],
-        isNewBranch: false,
-      };
-    }
-    // Not at end - create a nested branch from this branch move
-    const newBranch: MoveNode[] = [{ move, branches: [] }];
-    currentNode.branches.push(newBranch);
-    const newBranchIndex = currentNode.branches.length - 1;
-    return {
-      newPath: [...path, newBranchIndex, 0],
-      isNewBranch: true,
-    };
+  if (mainIndex < 0 || mainIndex >= tree.length) {
+    throw new Error("Invalid main line index in path");
   }
 
-  // Deeper nesting - similar logic
+  const branchContext = traverseBranchSegments(
+    tree[mainIndex].branches,
+    path.slice(1),
+  );
+
+  if (!branchContext) {
+    throw new Error("Invalid branch path: node not found");
+  }
+
+  const { sequence, moveIndex, node } = branchContext;
+
+  if (moveIndex === sequence.length - 1) {
+    const newNode: MoveNode = { move, branches: [] };
+    sequence.push(newNode);
+    const newPath = [...path];
+    newPath[newPath.length - 1] = sequence.length - 1;
+    return { newPath, isNewBranch: false };
+  }
+
   const newBranch: MoveNode[] = [{ move, branches: [] }];
-  currentNode.branches.push(newBranch);
-  const newBranchIndex = currentNode.branches.length - 1;
+  node.branches.push(newBranch);
+  const newBranchIndex = node.branches.length - 1;
   return {
     newPath: [...path, newBranchIndex, 0],
     isNewBranch: true,
@@ -264,9 +437,14 @@ export const getMainLineMoves = (tree: MoveNode[]): ChessMove[] => {
 export const getAbsoluteMoveIndex = (
   tree: MoveNode[],
   path: MovePath,
+  rootBranches: MoveNode[][] = [],
 ): number => {
   if (path.length === 0) {
     return -1; // Starting position
+  }
+
+  if (isRootBranchPath(path)) {
+    return getAbsoluteIndexWithinBranches(rootBranches, path.slice(1), -1);
   }
 
   const mainIndex = path[0];
@@ -275,40 +453,17 @@ export const getAbsoluteMoveIndex = (
   }
 
   // Start with main line moves up to and including mainIndex
-  let absoluteIndex = mainIndex;
+  const absoluteIndex = mainIndex;
 
   // If we're in a branch, add the branch moves
   if (path.length > 1) {
-    let currentNode = tree[mainIndex];
-    let pathIndex = 1;
+    const branchIndex = getAbsoluteIndexWithinBranches(
+      tree[mainIndex].branches,
+      path.slice(1),
+      absoluteIndex,
+    );
 
-    while (pathIndex < path.length) {
-      const branchIndex = path[pathIndex];
-      const moveIndexInBranch = path[pathIndex + 1];
-
-      if (branchIndex === undefined || moveIndexInBranch === undefined) {
-        break;
-      }
-
-      // Get the branch sequence
-      if (branchIndex < 0 || branchIndex >= currentNode.branches.length) {
-        break;
-      }
-      const branchSequence = currentNode.branches[branchIndex];
-
-      // Add moves in this branch up to moveIndexInBranch (inclusive)
-      // The branch starts AFTER the current position, so we add moveIndexInBranch + 1 moves
-      absoluteIndex += moveIndexInBranch + 1;
-
-      // Update current node for deeper nesting
-      if (moveIndexInBranch >= 0 && moveIndexInBranch < branchSequence.length) {
-        currentNode = branchSequence[moveIndexInBranch];
-      } else {
-        break;
-      }
-
-      pathIndex += 2; // Move to next pair [branchIndex, moveIndex]
-    }
+    return branchIndex;
   }
 
   return absoluteIndex;
@@ -320,8 +475,22 @@ export const getAbsoluteMoveIndex = (
 export const getBranchesAtPath = (
   tree: MoveNode[],
   path: MovePath,
+  rootBranches: MoveNode[][] = [],
 ): MoveNode[][] => {
-  const node = getNodeAtPath(tree, path);
+  if (path.length === 0) {
+    return rootBranches;
+  }
+
+  if (isRootBranchPath(path) && path.length === 1) {
+    return rootBranches;
+  }
+
+  if (!isRootBranchPath(path) && path.length === 1) {
+    const node = tree[path[0]];
+    return node ? node.branches : [];
+  }
+
+  const node = getNodeAtPath(tree, path, rootBranches);
   return node ? node.branches : [];
 };
 
@@ -337,5 +506,5 @@ export const getPathDepth = (path: MovePath): number => {
  * Checks if a path is on the main line
  */
 export const isMainLinePath = (path: MovePath): boolean => {
-  return path.length === 1;
+  return path.length === 1 && path[0] >= 0;
 };

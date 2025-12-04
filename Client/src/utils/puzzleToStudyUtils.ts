@@ -73,7 +73,9 @@ export function puzzleToGameState(puzzle: Puzzle): ChessGameState {
 
   return {
     position: startingFen,
+    startingPosition: startingFen,
     moveTree,
+    rootBranches: [],
     currentPath,
     isFlipped,
   };

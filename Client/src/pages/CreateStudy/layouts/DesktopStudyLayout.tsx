@@ -136,6 +136,7 @@ export const DesktopStudyLayout = ({
             isAnalyzing={isAnalyzing}
             formattedEngineLines={formattedEngineLines}
             moveTree={gameState.moveTree}
+            rootBranches={gameState.rootBranches}
             currentPath={currentPath}
             onMoveClick={onMoveClick}
             opening={opening}

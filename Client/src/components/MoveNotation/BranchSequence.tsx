@@ -1,10 +1,7 @@
 import type { MoveNode, MovePath } from "../../types/chess";
 import { MoveButton } from "./MoveButton";
 import { MoveNumberLabel } from "./MoveNumberLabel";
-import {
-  pathToString,
-  getAbsoluteMoveIndex,
-} from "../../utils/moveTreeUtils";
+import { pathToString, getAbsoluteMoveIndex } from "../../utils/moveTreeUtils";
 
 interface BranchSequenceProps {
   branchSequence: MoveNode[];
@@ -14,6 +11,7 @@ interface BranchSequenceProps {
   comments: Map<string, string>;
   depth?: number;
   moveTree: MoveNode[];
+  rootBranches: MoveNode[][];
 }
 
 /**
@@ -26,6 +24,7 @@ const renderNestedBranches = (
   onMoveClick: (path: MovePath) => void,
   comments: Map<string, string>,
   moveTree: MoveNode[],
+  rootBranches: MoveNode[][],
   isAlreadyInParens = false,
 ) => {
   if (branches.length === 0) return null;
@@ -46,13 +45,13 @@ const renderNestedBranches = (
               const nestedAbsoluteIndex = getAbsoluteMoveIndex(
                 moveTree,
                 nestedMovePath,
+                rootBranches,
               );
 
               if (nestedAbsoluteIndex < 0) return null;
 
               const nestedIsBlackMove = nestedAbsoluteIndex % 2 === 1;
-              const nestedMoveNumber =
-                Math.floor(nestedAbsoluteIndex / 2) + 1;
+              const nestedMoveNumber = Math.floor(nestedAbsoluteIndex / 2) + 1;
               const nestedIsFirstMove = nestedMoveIdx === 0;
               const nestedIsActive =
                 pathToString(nestedMovePath) === pathToString(currentPath);
@@ -85,6 +84,7 @@ const renderNestedBranches = (
                       onMoveClick,
                       comments,
                       moveTree,
+                      rootBranches,
                       true,
                     )}
                 </span>
@@ -121,6 +121,7 @@ export const BranchSequence = ({
   comments,
   depth = 0,
   moveTree,
+  rootBranches,
 }: BranchSequenceProps) => {
   if (branchSequence.length === 0) return null;
 
@@ -132,7 +133,11 @@ export const BranchSequence = ({
     >
       {branchSequence.map((node, moveIdx) => {
         const movePath: MovePath = [...basePath, moveIdx];
-        const absoluteIndex = getAbsoluteMoveIndex(moveTree, movePath);
+        const absoluteIndex = getAbsoluteMoveIndex(
+          moveTree,
+          movePath,
+          rootBranches,
+        );
 
         if (absoluteIndex < 0) {
           return null;
@@ -166,6 +171,7 @@ export const BranchSequence = ({
                 onMoveClick,
                 comments,
                 moveTree,
+                rootBranches,
               )}
           </span>
         );
@@ -173,4 +179,3 @@ export const BranchSequence = ({
     </div>
   );
 };
-

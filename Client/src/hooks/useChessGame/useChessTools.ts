@@ -28,7 +28,9 @@ export const useChessTools = ({
         setGameState((prev) => ({
           ...prev,
           position: fen,
+          startingPosition: fen,
           moveTree: [],
+          rootBranches: [],
           currentPath: [],
           comments: new Map<string, string>(),
         }));
@@ -50,10 +52,20 @@ export const useChessTools = ({
           move: toChessMove(move),
           branches: [],
         }));
+        const headers = chessRef.current.header();
+        const setUp = headers.SetUp;
+        const fenHeader = headers.FEN;
+        const defaultFen =
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        const startingPosition =
+          setUp === "1" && fenHeader ? fenHeader : defaultFen;
+
         setGameState((prev) => ({
           ...prev,
           position: chessRef.current.fen(),
+          startingPosition,
           moveTree,
+          rootBranches: [],
           currentPath: moveTree.length > 0 ? [moveTree.length - 1] : [],
           comments: new Map<string, string>(),
         }));

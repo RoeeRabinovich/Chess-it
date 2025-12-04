@@ -1,7 +1,10 @@
 import { useCallback } from "react";
 import type { Chess } from "chess.js";
 import type { ChessGameState, MovePath } from "../../types/chess";
-import { loadPositionFromPath } from "../../utils/moveTreeUtils";
+import {
+  loadPositionFromPath,
+  getBranchContextForPath,
+} from "../../utils/moveTreeUtils";
 
 interface UseTreeChessNavigationParams {
   chessRef: React.MutableRefObject<Chess>;
@@ -31,6 +34,7 @@ export const useTreeChessNavigation = ({
           gameState.moveTree,
           path,
           effectiveStartingPosition, // Use the effective starting position
+          gameState.rootBranches,
         );
         if (!success) {
           throw new Error("Failed to replay moves");
@@ -45,7 +49,13 @@ export const useTreeChessNavigation = ({
         console.error("Error navigating to path:", error);
       }
     },
-    [chessRef, gameState.moveTree, effectiveStartingPosition, setGameState],
+    [
+      chessRef,
+      gameState.moveTree,
+      gameState.rootBranches,
+      effectiveStartingPosition,
+      setGameState,
+    ],
   );
 
   const navigateToMainLineMove = useCallback(
@@ -89,6 +99,9 @@ export const useTreeChessNavigation = ({
       } else {
         // At start of branch - go back to parent
         newPath = newPathArray.slice(0, -2);
+        if (newPath.length === 1 && newPath[0] === -1) {
+          newPath = [];
+        }
       }
     }
 
@@ -109,47 +122,48 @@ export const useTreeChessNavigation = ({
 
     // Calculate next path
     let newPath: MovePath;
-    if (currentPath.length === 1) {
+    if (currentPath.length === 1 && currentPath[0] >= 0) {
       // On main line
       const mainIndex = currentPath[0];
       if (mainIndex < tree.length - 1) {
         newPath = [mainIndex + 1];
       } else {
-        // At end of main line - check for branches
         const node = tree[mainIndex];
         if (node.branches.length > 0) {
           newPath = [mainIndex, 0, 0];
         } else {
-          return; // No next move
+          return;
         }
       }
     } else {
-      // In a branch
-      const newPathArray = [...currentPath];
-      const moveIndexInBranch = newPathArray[newPathArray.length - 1];
-      const branchIndex = newPathArray[newPathArray.length - 2];
-      const mainIndex = newPathArray[0];
+      const context = getBranchContextForPath(
+        tree,
+        gameState.rootBranches,
+        currentPath,
+      );
 
-      // Get the branch sequence
-      const branchSequence = tree[mainIndex].branches[branchIndex];
+      if (!context) {
+        return;
+      }
 
-      if (moveIndexInBranch < branchSequence.length - 1) {
-        // More moves in this branch
-        newPathArray[newPathArray.length - 1] = moveIndexInBranch + 1;
-        newPath = newPathArray;
+      if (context.moveIndex < context.sequence.length - 1) {
+        const nextPath = [...currentPath];
+        nextPath[nextPath.length - 1] = context.moveIndex + 1;
+        newPath = nextPath;
+      } else if (context.node.branches.length > 0) {
+        newPath = [...currentPath, 0, 0];
       } else {
-        // At end of branch - check for nested branches
-        const currentNode = branchSequence[moveIndexInBranch];
-        if (currentNode.branches.length > 0) {
-          newPath = [...newPathArray, 0, 0];
-        } else {
-          return; // No next move
-        }
+        return;
       }
     }
 
     navigateToPath(newPath);
-  }, [gameState.currentPath, gameState.moveTree, navigateToPath]);
+  }, [
+    gameState.currentPath,
+    gameState.moveTree,
+    gameState.rootBranches,
+    navigateToPath,
+  ]);
 
   return {
     navigateToPath,

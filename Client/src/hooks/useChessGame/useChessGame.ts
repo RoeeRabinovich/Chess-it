@@ -11,6 +11,8 @@ import { useChessTools } from "./useChessTools";
 const createInitialState = (): ChessGameState => ({
   position: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
   moveTree: [],
+  rootBranches: [],
+  startingPosition: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
   currentPath: [],
   isFlipped: false,
   comments: new Map<string, string>(),
@@ -38,6 +40,7 @@ export const useChessGame = () => {
     chessRef,
     gameState,
     setGameState,
+    startingPosition: gameState.startingPosition,
   });
 
   const tools = useChessTools({

@@ -4,6 +4,7 @@ import { toMoveData } from "../../utils/chessMoveUtils";
 import {
   getMainLineMoves,
   loadPositionFromPath,
+  ROOT_PATH_INDEX,
 } from "../../utils/moveTreeUtils";
 
 interface ReviewMoveHandlersParams {
@@ -75,6 +76,7 @@ export const makeReviewMove = ({
           gameState.moveTree,
           currentPath,
           startingPosition,
+          gameState.rootBranches,
         )
       ) {
         onInvalidMove?.("Failed to load current position.");
@@ -138,6 +140,9 @@ export const undoReviewMove = ({
         } else {
           // At start of branch - go back to parent
           newPath = newPathArray.slice(0, -2);
+          if (newPath.length === 1 && newPath[0] === ROOT_PATH_INDEX) {
+            newPath = [];
+          }
         }
       }
 
@@ -148,6 +153,7 @@ export const undoReviewMove = ({
           gameState.moveTree,
           newPath,
           startingPosition,
+          gameState.rootBranches,
         )
       ) {
         return false;

@@ -4,11 +4,14 @@ import type {
   ChessGameState,
   MovePath,
   MoveData,
+  MoveNode,
 } from "../../types/chess";
 import {
   addMoveToTree,
   loadPositionFromPath,
   getBranchesAtPath,
+  getBranchContextForPath,
+  isRootBranchPath,
 } from "../../utils/moveTreeUtils";
 
 /**
@@ -16,11 +19,20 @@ import {
  */
 export const isAtEndOfPath = (
   tree: ChessGameState["moveTree"],
+  rootBranches: MoveNode[][],
   path: MovePath,
 ): boolean => {
   if (path.length === 0) {
-    // Empty path - at start, can add first move
-    return true;
+    // Empty path - at start, can add first move only if tree is empty
+    return tree.length === 0;
+  }
+
+  if (isRootBranchPath(path)) {
+    const context = getBranchContextForPath(tree, rootBranches, path);
+    if (!context) {
+      return true;
+    }
+    return context.moveIndex === context.sequence.length - 1;
   }
 
   // If on main line
@@ -29,42 +41,61 @@ export const isAtEndOfPath = (
     return mainIndex === tree.length - 1;
   }
 
-  // In a branch - check if at the end of the branch sequence
-  // Path format: [mainIndex, branchIndex, moveIndexInBranch, ...]
-  const mainIndex = path[0];
-  const branchIndex = path[1];
-  const moveIndexInBranch = path[2];
-
-  if (
-    mainIndex === undefined ||
-    branchIndex === undefined ||
-    moveIndexInBranch === undefined
-  ) {
-    return false;
+  const context = getBranchContextForPath(tree, rootBranches, path);
+  if (!context) {
+    return true;
   }
 
-  // Get the branch sequence
-  if (mainIndex >= tree.length) {
-    return false;
-  }
-  const mainNode = tree[mainIndex];
-  if (branchIndex >= mainNode.branches.length) {
-    return false;
-  }
-  const branchSequence = mainNode.branches[branchIndex];
+  return context.moveIndex === context.sequence.length - 1;
+};
 
-  // Check if at the end of this branch sequence
-  if (moveIndexInBranch < branchSequence.length - 1) {
-    return false;
-  }
-
-  // At end of branch - check if there are deeper paths
-  if (path.length > 3) {
-    // Deeper nesting - recurse
-    return isAtEndOfPath(tree, path.slice(2));
+/**
+ * Determines the next move path when following the current line (main or branch)
+ */
+export const getContinuationPath = (
+  tree: ChessGameState["moveTree"],
+  rootBranches: MoveNode[][],
+  path: MovePath,
+): MovePath | null => {
+  if (path.length === 0) {
+    return tree.length > 0 ? [0] : null;
   }
 
-  return true;
+  if (isRootBranchPath(path)) {
+    const context = getBranchContextForPath(tree, rootBranches, path);
+    if (!context) {
+      return null;
+    }
+
+    if (context.moveIndex < context.sequence.length - 1) {
+      const nextPath = [...path];
+      nextPath[nextPath.length - 1] = context.moveIndex + 1;
+      return nextPath;
+    }
+
+    return null;
+  }
+
+  if (path.length === 1) {
+    const mainIndex = path[0];
+    if (mainIndex < 0 || mainIndex >= tree.length - 1) {
+      return null;
+    }
+    return [mainIndex + 1];
+  }
+
+  const context = getBranchContextForPath(tree, rootBranches, path);
+  if (!context) {
+    return null;
+  }
+
+  if (context.moveIndex < context.sequence.length - 1) {
+    const nextPath = [...path];
+    nextPath[nextPath.length - 1] = context.moveIndex + 1;
+    return nextPath;
+  }
+
+  return null;
 };
 
 /**
@@ -72,10 +103,11 @@ export const isAtEndOfPath = (
  */
 export const findMatchingBranchAtPath = (
   tree: ChessGameState["moveTree"],
+  rootBranches: MoveNode[][],
   path: MovePath,
   moveData: MoveData,
 ): MovePath | null => {
-  const branches = getBranchesAtPath(tree, path);
+  const branches = getBranchesAtPath(tree, path, rootBranches);
 
   for (let i = 0; i < branches.length; i++) {
     const branchSequence = branches[i];
@@ -110,12 +142,21 @@ export const handlePathContinuation = (
     const treeCopy = JSON.parse(
       JSON.stringify(prev.moveTree),
     ) as typeof prev.moveTree;
-    const { newPath } = addMoveToTree(treeCopy, currentPath, newMove);
+    const rootBranchesCopy = JSON.parse(
+      JSON.stringify(prev.rootBranches || []),
+    ) as MoveNode[][];
+    const { newPath } = addMoveToTree(
+      treeCopy,
+      rootBranchesCopy,
+      currentPath,
+      newMove,
+    );
 
     return {
       ...prev,
       position: chess.fen(),
       moveTree: treeCopy,
+      rootBranches: rootBranchesCopy,
       currentPath: newPath,
     };
   });
@@ -132,7 +173,13 @@ export const handleBranchNavigation = (
   gameState: ChessGameState,
   setGameState: React.Dispatch<React.SetStateAction<ChessGameState>>,
 ): boolean => {
-  const success = loadPositionFromPath(chess, gameState.moveTree, targetPath);
+  const success = loadPositionFromPath(
+    chess,
+    gameState.moveTree,
+    targetPath,
+    undefined,
+    gameState.rootBranches,
+  );
   if (!success) {
     return false;
   }
@@ -161,12 +208,21 @@ export const handleBranchCreation = (
     const treeCopy = JSON.parse(
       JSON.stringify(prev.moveTree),
     ) as typeof prev.moveTree;
-    const { newPath } = addMoveToTree(treeCopy, currentPath, newMove);
+    const rootBranchesCopy = JSON.parse(
+      JSON.stringify(prev.rootBranches || []),
+    ) as MoveNode[][];
+    const { newPath } = addMoveToTree(
+      treeCopy,
+      rootBranchesCopy,
+      currentPath,
+      newMove,
+    );
 
     return {
       ...prev,
       position: chess.fen(),
       moveTree: treeCopy,
+      rootBranches: rootBranchesCopy,
       currentPath: newPath,
     };
   });
@@ -184,5 +240,11 @@ export const loadPositionForPath = (
 ): boolean => {
   // Always load from the tree path to ensure consistency
   // The gameState.position might be out of sync with the path
-  return loadPositionFromPath(chess, gameState.moveTree, gameState.currentPath);
+  return loadPositionFromPath(
+    chess,
+    gameState.moveTree,
+    gameState.currentPath,
+    gameState.startingPosition,
+    gameState.rootBranches,
+  );
 };

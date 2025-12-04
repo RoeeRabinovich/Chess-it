@@ -82,6 +82,10 @@ const studySchema = new mongoose.Schema(
         type: [moveNodeSchema],
         default: [],
       },
+      rootBranches: {
+        type: [[mongoose.Schema.Types.Mixed]],
+        default: [],
+      },
       currentPath: {
         type: [Number], // Array of numbers: [mainIndex, branchIndex?, moveIndex?, ...]
         default: [],

@@ -20,6 +20,7 @@ interface ToolsSidebarProps {
 
   // Move History
   moveTree: import("../../../types/chess").MoveNode[];
+  rootBranches: import("../../../types/chess").MoveNode[][];
   currentPath: MovePath;
   onMoveClick: (path: MovePath) => void;
   opening?: { name: string; eco: string };
@@ -76,6 +77,7 @@ export const ToolsSidebar = ({
   isAnalyzing,
   formattedEngineLines,
   moveTree,
+  rootBranches,
   currentPath,
   onMoveClick,
   opening,
@@ -143,6 +145,7 @@ export const ToolsSidebar = ({
       <div className="mb-2 flex-1 overflow-y-auto sm:mb-3 lg:mb-4">
         <TreeMoveNotation
           moveTree={moveTree}
+          rootBranches={rootBranches}
           currentPath={currentPath}
           onMoveClick={onMoveClick}
           opening={opening}

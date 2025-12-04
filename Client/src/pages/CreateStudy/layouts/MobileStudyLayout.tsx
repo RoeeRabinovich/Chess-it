@@ -108,6 +108,7 @@ export const MobileStudyLayout = ({
 
       <MobileMoveHistory
         moveTree={gameState.moveTree}
+        rootBranches={gameState.rootBranches}
         currentPath={currentPath}
         onMoveClick={onMoveClick}
         opening={opening}

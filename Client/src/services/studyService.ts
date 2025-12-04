@@ -10,7 +10,7 @@ class StudyService {
     category: "Opening" | "Endgame" | "Strategy" | "Tactics";
     description?: string;
     isPublic: boolean;
-    gameState: Omit<ChessGameState, "comments"> & {
+    gameState: Omit<ChessGameState, "comments" | "startingPosition"> & {
       comments?: Map<string, string> | Record<string, string>;
     };
   }): Promise<{ id: string; studyName: string }> {
@@ -124,4 +124,3 @@ class StudyService {
 // Export singleton instance
 export const studyService = new StudyService();
 export default studyService;
-

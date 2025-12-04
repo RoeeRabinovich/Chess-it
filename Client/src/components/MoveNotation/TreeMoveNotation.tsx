@@ -8,6 +8,7 @@ import { OpeningSection } from "./OpeningSection";
 
 interface TreeMoveNotationProps {
   moveTree: MoveNode[];
+  rootBranches: MoveNode[][];
   currentPath: MovePath;
   onMoveClick: (path: MovePath) => void;
   opening?: { name: string; eco: string };
@@ -16,6 +17,7 @@ interface TreeMoveNotationProps {
 
 export const TreeMoveNotation = ({
   moveTree,
+  rootBranches,
   currentPath,
   onMoveClick,
   opening,
@@ -24,7 +26,7 @@ export const TreeMoveNotation = ({
   const mainLineIndex = currentPath.length === 1 ? currentPath[0] : -1;
 
   const { moveRefs, scrollContainerRef } = useMoveNotationScroll(mainLineIndex);
-  const formattedMovePairs = useTreeFormattedMovePairs(moveTree);
+  const formattedMovePairs = useTreeFormattedMovePairs(moveTree, rootBranches);
 
   return (
     <div className="bg-card h-full rounded-lg p-2 sm:rounded-2xl sm:p-4 lg:p-6">
@@ -104,6 +106,7 @@ export const TreeMoveNotation = ({
                         onMoveClick={onMoveClick}
                         comments={comments}
                         moveTree={moveTree}
+                        rootBranches={rootBranches}
                       />
                     ))}
                   </div>

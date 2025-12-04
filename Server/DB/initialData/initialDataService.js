@@ -36,6 +36,9 @@ const normalizeStudy = (study) => {
     gameState: {
       position: gameState?.position || "",
       moveTree: gameState?.moveTree || [],
+      rootBranches: Array.isArray(gameState?.rootBranches)
+        ? gameState.rootBranches
+        : [],
       currentPath: Array.isArray(gameState?.currentPath)
         ? gameState.currentPath
         : [],

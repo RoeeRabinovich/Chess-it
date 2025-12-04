@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import type { Chess } from "chess.js";
 import type { ChessGameState, ChessMove, MovePath } from "../../types/chess";
 import { toChessMove, toMoveData } from "../../utils/chessMoveUtils";
+import { getNodeAtPath, ROOT_PATH_INDEX } from "../../utils/moveTreeUtils";
 import {
   isAtEndOfPath,
   findMatchingBranchAtPath,
@@ -9,6 +10,7 @@ import {
   handleBranchNavigation,
   handleBranchCreation,
   loadPositionForPath,
+  getContinuationPath,
 } from "./treeMoveHandlers";
 
 interface UseTreeChessMoveManagerParams {
@@ -17,6 +19,21 @@ interface UseTreeChessMoveManagerParams {
   setGameState: React.Dispatch<React.SetStateAction<ChessGameState>>;
   getCommentKey: (path: MovePath) => string;
 }
+
+const movesMatch = (
+  existingMove: ChessMove | null,
+  moveData: { from: string; to: string; promotion?: string },
+) => {
+  if (!existingMove) {
+    return false;
+  }
+
+  return (
+    existingMove.from === moveData.from &&
+    existingMove.to === moveData.to &&
+    (existingMove.promotion || "") === (moveData.promotion || "")
+  );
+};
 
 export const useTreeChessMoveManager = ({
   chessRef,
@@ -65,8 +82,36 @@ export const useTreeChessMoveManager = ({
         // Convert to ChessMove format
         const newMove = toChessMove(result);
 
+        // Determine if this move continues the existing line
+        const continuationPath = getContinuationPath(
+          gameState.moveTree,
+          gameState.rootBranches,
+          currentPath,
+        );
+
+        if (continuationPath) {
+          const continuationNode = getNodeAtPath(
+            gameState.moveTree,
+            continuationPath,
+            gameState.rootBranches,
+          );
+
+          if (movesMatch(continuationNode?.move ?? null, moveData)) {
+            return handleBranchNavigation(
+              chessRef.current,
+              continuationPath,
+              gameState,
+              setGameState,
+            );
+          }
+        }
+
         // Check if we're at the end of the current path
-        const isAtEnd = isAtEndOfPath(gameState.moveTree, currentPath);
+        const isAtEnd = isAtEndOfPath(
+          gameState.moveTree,
+          gameState.rootBranches,
+          currentPath,
+        );
 
         if (isAtEnd) {
           // At the end - extend current path (main line or branch)
@@ -83,6 +128,7 @@ export const useTreeChessMoveManager = ({
         // Check if this move matches an existing branch's first move
         const matchingPath = findMatchingBranchAtPath(
           gameState.moveTree,
+          gameState.rootBranches,
           currentPath,
           moveData,
         );
@@ -144,6 +190,9 @@ export const useTreeChessMoveManager = ({
           } else {
             // At start of branch - go back to parent
             newPath = newPathArray.slice(0, -2);
+            if (newPath.length === 1 && newPath[0] === ROOT_PATH_INDEX) {
+              newPath = [];
+            }
           }
         }
 

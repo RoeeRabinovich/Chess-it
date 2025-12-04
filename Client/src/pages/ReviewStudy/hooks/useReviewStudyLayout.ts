@@ -7,6 +7,8 @@ interface UseReviewStudyLayoutProps {
   studyGameState: {
     position: string;
     moveTree: MoveNode[];
+    rootBranches?: MoveNode[][];
+    startingPosition?: string;
     currentPath: MovePath;
     isFlipped: boolean;
     opening?: string | { name: string; eco: string };

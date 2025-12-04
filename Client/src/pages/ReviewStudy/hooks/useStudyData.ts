@@ -15,6 +15,8 @@ interface UseStudyDataReturn {
   studyGameState: {
     position: string;
     moveTree: MoveNode[];
+    rootBranches: MoveNode[][];
+    startingPosition: string;
     currentPath: MovePath;
     isFlipped: boolean;
     opening?: string | { name: string; eco: string };
@@ -35,16 +37,32 @@ export const useStudyData = (id: string | undefined): UseStudyDataReturn => {
       return {
         position: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
         moveTree: [],
+        rootBranches: [],
+        startingPosition:
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
         currentPath: [],
         isFlipped: false,
       };
     }
     // Ensure the gameState matches the expected structure
-    const { position, moveTree, currentPath, isFlipped, opening, comments } =
-      study.gameState;
+    const {
+      position,
+      moveTree,
+      rootBranches,
+      startingPosition,
+      currentPath,
+      isFlipped,
+      opening,
+      comments,
+    } = study.gameState;
     return {
       position,
       moveTree: moveTree || [],
+      rootBranches: rootBranches || [],
+      startingPosition:
+        startingPosition ||
+        position ||
+        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
       currentPath: currentPath || [],
       isFlipped: isFlipped || false,
       opening,

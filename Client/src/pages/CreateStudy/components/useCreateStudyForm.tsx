@@ -140,8 +140,9 @@ export const useCreateStudyForm = ({
         description: formData.description,
         isPublic: formData.isPublic,
         gameState: {
-          position: gameState.position,
+          position: gameState.startingPosition,
           moveTree: gameState.moveTree,
+          rootBranches: gameState.rootBranches,
           currentPath: gameState.currentPath,
           isFlipped: gameState.isFlipped,
           opening: gameState.opening,

@@ -17,6 +17,8 @@ interface UseChessGameReviewParams {
   studyGameState: {
     position: string;
     moveTree: ChessGameState["moveTree"];
+    rootBranches?: ChessGameState["rootBranches"];
+    startingPosition?: string;
     currentPath: ChessGameState["currentPath"];
     isFlipped: boolean;
     opening?: ChessGameState["opening"];
@@ -46,9 +48,9 @@ export const useChessGameReview = ({
   // Store the starting position from studyGameState for navigation
   const startingPosition = useMemo(
     () =>
-      studyGameState.position ||
+      studyGameState.startingPosition ||
       "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-    [studyGameState.position],
+    [studyGameState.startingPosition],
   );
 
   const makeMove = useCallback(

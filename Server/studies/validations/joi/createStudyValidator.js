@@ -30,16 +30,15 @@ const chessMoveSchema = Joi.object({
 // Schema for MoveNode (recursive tree structure)
 // Since Mongoose uses Mixed type for branches, we validate top-level structure only
 // Deep recursive validation happens in application code if needed
+const branchSequenceSchema = Joi.array()
+  .items(Joi.object().unknown(true)) // Allow nested MoveNode objects
+  .max(100); // Limit branch sequence length
+
+const branchesSchema = Joi.array().items(branchSequenceSchema).max(50); // Limit number of branches per node
+
 const moveNodeSchema = Joi.object({
   move: chessMoveSchema.required(),
-  branches: Joi.array()
-    .items(
-      Joi.array()
-        .items(Joi.object().unknown(true)) // Allow nested MoveNode objects
-        .max(100) // Limit branch sequence length
-    )
-    .max(50) // Limit number of branches per node
-    .required(),
+  branches: branchesSchema.required(),
 });
 
 // Schema for MovePath (array of numbers)
@@ -58,6 +57,7 @@ const openingSchema = Joi.object({
 const gameStateSchema = Joi.object({
   position: Joi.string().custom(fenValidator).required(),
   moveTree: Joi.array().items(moveNodeSchema).required(),
+  rootBranches: branchesSchema.default([]),
   currentPath: movePathSchema.required(),
   isFlipped: Joi.boolean().required(),
   opening: openingSchema.optional(),

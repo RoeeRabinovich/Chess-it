@@ -92,6 +92,7 @@ export interface MoveNode {
 /**
  * Path to a specific position in the move tree.
  * Format: Array of segments, where each segment is:
+ * - Starting position branches: [-1, branchIndex, moveIndexInBranch, ...]
  * - For main line: just the move index [0, 1, 2, ...]
  * - For branches: [mainIndex, branchIndex, moveIndexInBranch, branchIndex?, ...]
  *
@@ -99,9 +100,10 @@ export interface MoveNode {
  * - [5] = main line move 5
  * - [5, 0, 2] = move 2 in branch 0 from main line move 5
  * - [5, 0, 2, 1, 0] = move 0 in branch 1 from move 2 in branch 0 from main line move 5
+ * - [-1, 0, 1] = move 1 inside branch 0 that starts from the initial position
  *
- * Path structure: [mainMoveIndex, branchIndex?, moveIndexInBranch?, branchIndex?, ...]
- * - First number: always a move index in main line
+ * Path structure: [origin, branchIndex?, moveIndexInBranch?, branchIndex?, ...]
+ * - First number: -1 for starting-position branches, otherwise the main-line move index
  * - Subsequent pairs: [branchIndex, moveIndexInBranch]
  * - Can continue with more pairs for deeper nesting
  */
@@ -113,6 +115,8 @@ export type MovePath = number[];
 export interface ChessGameState {
   position: string; // FEN
   moveTree: MoveNode[]; // Main line as array of MoveNodes (each can have branches)
+  rootBranches: MoveNode[][]; // Alternative move sequences starting from the initial position
+  startingPosition: string; // Original starting FEN for replay/reset
   currentPath: MovePath; // Path to current position in the tree
   isFlipped: boolean;
   opening?: {

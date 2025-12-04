@@ -3,6 +3,7 @@ import { MoveNode, MovePath } from "../../../types/chess";
 
 interface MobileMoveHistoryProps {
   moveTree: MoveNode[];
+  rootBranches: MoveNode[][];
   currentPath: MovePath;
   onMoveClick: (path: MovePath) => void;
   opening?: { name: string; eco: string };
@@ -11,6 +12,7 @@ interface MobileMoveHistoryProps {
 
 export const MobileMoveHistory = ({
   moveTree,
+  rootBranches,
   currentPath,
   onMoveClick,
   opening,
@@ -27,6 +29,7 @@ export const MobileMoveHistory = ({
       <div className="max-h-[150px] overflow-y-auto sm:max-h-[200px]">
         <TreeMoveNotation
           moveTree={moveTree}
+          rootBranches={rootBranches}
           currentPath={currentPath}
           onMoveClick={onMoveClick}
           opening={opening}
@@ -36,4 +39,3 @@ export const MobileMoveHistory = ({
     </div>
   );
 };
-
