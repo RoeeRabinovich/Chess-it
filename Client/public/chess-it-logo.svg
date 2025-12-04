@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="512" height="512">
+  <title>Chess-it Logo</title>
+  <desc>Chess-it Logo with Crown Icon and Circular Background</desc>
+  
+  <!-- Circular background (matching navbar style) -->
+  <circle cx="12" cy="12" r="12" fill="#A8E6CF"/>
+  <circle cx="12" cy="12" r="12" fill="none" stroke="#000000" stroke-width="0.5"/>
+  
+  <!-- Crown Icon -->
+  <g fill="#000000" transform="translate(0, 0)">
+    <!-- Left side spikes -->
+    <path d="M0.574 6.859h1.14v2.28H0.574Z"/>
+    <path d="M1.714 5.711h2.287v1.147H1.714Z"/>
+    <path d="m1.714 9.139 0 1.147 1.147 0 0 3.427 1.14 0 0 -3.427 1.14 0 0 -3.427 -1.14 0 0 2.28 -2.287 0z"/>
+    
+    <!-- Left center section -->
+    <path d="M5.141 10.286h1.147v1.14H5.141Z"/>
+    <path d="M6.289 11.426h1.14v1.147H6.289Z"/>
+    <path d="M7.429 12.574h1.14v1.14H7.429Z"/>
+    <path d="M7.429 14.854h2.287v1.147H7.429Z"/>
+    <path d="M8.569 7.999h1.14v2.287H8.569Z"/>
+    <path d="M8.569 4.571h1.14v2.287H8.569Z"/>
+    <path d="M9.716 10.286h1.147v2.287H9.716Z"/>
+    
+    <!-- Center section -->
+    <path d="M10.856 3.431h2.287v1.14H10.856Z"/>
+    <path d="M10.856 6.859h2.287v1.14H10.856Z"/>
+    <path d="M10.856 13.714h2.287v2.287H10.856Z"/>
+    <path d="M13.144 4.571h1.14v2.287H13.144Z"/>
+    <path d="M13.144 7.999h1.14v2.287H13.144Z"/>
+    <path d="M14.284 10.286h1.147v2.287H14.284Z"/>
+    <path d="M14.284 14.854h2.287v1.147H14.284Z"/>
+    
+    <!-- Right center section -->
+    <path d="M15.431 12.574h1.14v1.14H15.431Z"/>
+    <path d="M16.571 11.426h1.14v1.147H16.571Z"/>
+    <path d="M17.711 10.286h1.147v1.14H17.711Z"/>
+    
+    <!-- Right side spikes -->
+    <path d="m19.999 13.714 1.147 0 0 -3.427 1.14 0 0 -1.147 -2.287 0 0 -2.28 -1.14 0 0 3.427 1.14 0 0 3.427z"/>
+    <path d="M19.999 5.711h2.287v1.147H19.999Z"/>
+    <path d="M22.286 6.859h1.14v2.28h-1.14Z"/>
+    
+    <!-- Base band -->
+    <path d="m18.859 14.854 -1.147 0 0 1.147 1.147 0 0 1.14 -13.717 0 0 -1.14 1.147 0 0 -1.147 -1.147 0 0 -1.14 -1.14 0 0 5.715 1.14 0 0 1.14 13.717 0 0 -1.14 1.14 0 0 -5.715 -1.14 0 0 1.14z"/>
+  </g>
+</svg>
+

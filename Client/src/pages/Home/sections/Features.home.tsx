@@ -18,14 +18,12 @@ const features: FeatureItem[] = [
   {
     icon: <Book className="text-foreground h-10 w-10" aria-hidden />,
     title: "Public & Private Studies",
-    description:
-      "Choose to keep your work private or share it publicly (with admin approval).",
+    description: "Choose to keep your work private or share it publicly.",
   },
   {
     icon: <Comment className="text-foreground h-10 w-10" aria-hidden />,
     title: "Comments & Favorites",
-    description:
-      "Engage with other users by commenting on and favoriting their studies.",
+    description: "Engage with other users by favoriting their studies.",
   },
   {
     icon: <Computer className="text-foreground h-10 w-10" aria-hidden />,
