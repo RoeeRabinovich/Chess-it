@@ -2,19 +2,19 @@
   {
     "username": "admin",
     "email": "admin@chess-it.com",
-    "password": "Admin123!",
+    "password": "Admin1234!",
     "isAdmin": true
   },
   {
     "username": "alice",
     "email": "alice@chess-it.com",
-    "password": "User123!",
+    "password": "User1234!",
     "isAdmin": false
   },
   {
     "username": "bob",
     "email": "bob@chess-it.com",
-    "password": "User123!",
+    "password": "User1234!",
     "isAdmin": false
   }
 ]
