@@ -17,8 +17,7 @@ export const RoleChangeConfirmModal = ({
   pendingRole,
   onConfirm,
 }: RoleChangeConfirmModalProps) => {
-  const currentRole =
-    user.isAdmin === true || user.role === "admin" ? "admin" : "user";
+  const currentRole = user.isAdmin === true ? "admin" : "user";
 
   return (
     <Modal

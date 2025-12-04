@@ -121,7 +121,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="bg-background flex min-h-screen items-center justify-center px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mb-4 flex justify-center">
@@ -129,15 +129,6 @@ const Login = () => {
           </div>
           <CardTitle className="text-2xl">Welcome Back</CardTitle>
           <CardDescription>Sign in to your Chess-It account</CardDescription>
-          <div className="bg-muted/50 border-border mt-2 rounded-md border p-3">
-            <p className="text-muted-foreground text-xs">
-              <strong>Demo credentials:</strong>
-              <br />
-              Email: test3@email.com
-              <br />
-              Password: Test!123
-            </p>
-          </div>
         </CardHeader>
         <CardContent>
           <form
@@ -182,7 +173,7 @@ const Login = () => {
 
             <Button
               type="submit"
-              className="w-full bg-pastel-mint text-foreground hover:bg-pastel-mint/80 dark:!text-[#1A1A1A]"
+              className="bg-pastel-mint text-foreground hover:bg-pastel-mint/80 w-full dark:!text-[#1A1A1A]"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Signing in..." : "Sign In"}

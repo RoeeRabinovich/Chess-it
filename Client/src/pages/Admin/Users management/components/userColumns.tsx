@@ -35,9 +35,9 @@ export const getUserColumns = ({
     {
       header: "Role",
       accessor: "role",
-      render: (value, row) => {
+      render: (_value, row) => {
         const user = row as User;
-        const isAdmin = value === "admin" || user.isAdmin === true;
+        const isAdmin = user.isAdmin === true;
         return (
           <Badge variant={isAdmin ? "default" : "secondary"}>
             {isAdmin ? "ADMIN" : "USER"}

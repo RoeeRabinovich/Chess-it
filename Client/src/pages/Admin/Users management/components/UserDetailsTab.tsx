@@ -18,15 +18,9 @@ export const UserDetailsTab = ({ user, formatDate }: UserDetailsTabProps) => {
               {user.username}
             </h3>
             <Badge
-              variant={
-                user.isAdmin === true || user.role === "admin"
-                  ? "default"
-                  : "secondary"
-              }
+              variant={user.isAdmin === true ? "default" : "secondary"}
             >
-              {user.isAdmin === true || user.role === "admin"
-                ? "ADMIN"
-                : "USER"}
+              {user.isAdmin === true ? "ADMIN" : "USER"}
             </Badge>
           </div>
           <p className="text-muted-foreground text-sm">{user.email}</p>
@@ -53,15 +47,9 @@ export const UserDetailsTab = ({ user, formatDate }: UserDetailsTabProps) => {
             </label>
             <div className="mt-1">
               <Badge
-                variant={
-                  user.isAdmin === true || user.role === "admin"
-                    ? "default"
-                    : "secondary"
-                }
+                variant={user.isAdmin === true ? "default" : "secondary"}
               >
-                {user.isAdmin === true || user.role === "admin"
-                  ? "ADMIN"
-                  : "USER"}
+                {user.isAdmin === true ? "ADMIN" : "USER"}
               </Badge>
             </div>
           </div>

@@ -63,12 +63,8 @@ export const useAdminUsers = () => {
   // Get selected users and separate admin from non-admin
   const { adminUsers, nonAdminUsers } = useMemo(() => {
     const selected = users.filter((user) => selectedUserIds.includes(user._id));
-    const admins = selected.filter(
-      (user) => user.isAdmin === true || user.role === "admin",
-    );
-    const nonAdmins = selected.filter(
-      (user) => !user.isAdmin && user.role !== "admin",
-    );
+    const admins = selected.filter((user) => user.isAdmin === true);
+    const nonAdmins = selected.filter((user) => user.isAdmin !== true);
     return {
       adminUsers: admins,
       nonAdminUsers: nonAdmins,
@@ -105,7 +101,7 @@ export const useAdminUsers = () => {
   // Handle single user delete
   const handleSingleDelete = useCallback(
     async (user: User) => {
-      if (user.isAdmin === true || user.role === "admin") {
+      if (user.isAdmin === true) {
         setIsSingleDeleteModalOpen(false);
         setUserToDelete(null);
         return;

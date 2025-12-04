@@ -132,19 +132,17 @@ export const ProfileInformationCard = ({
             </p>
           </div>
 
-          {user.role && (
+          {user.isAdmin !== undefined && (
             <div>
               <label className="text-muted-foreground text-sm font-medium">
                 Role
               </label>
               <div className="mt-1">
                 <Badge
-                  variant={
-                    user.role === "admin" ? "destructive" : "secondary"
-                  }
+                  variant={user.isAdmin === true ? "destructive" : "secondary"}
                   size="sm"
                 >
-                  {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                  {user.isAdmin === true ? "Admin" : "User"}
                 </Badge>
               </div>
             </div>

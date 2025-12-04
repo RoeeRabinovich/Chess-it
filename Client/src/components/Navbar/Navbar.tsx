@@ -21,12 +21,16 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, logout } = useAuth();
 
+  // Check if user is admin
+  const isAdmin = user?.isAdmin === true;
+
   const navLinks = user
     ? [
         { name: "Explore", path: "/home" },
         { name: "Puzzles", path: "/puzzles" },
         { name: "Create Study", path: "/create-study" },
         { name: "My Studies", path: "/my-studies" },
+        ...(isAdmin ? [{ name: "Admin", path: "/admin" }] : []),
       ]
     : [
         { name: "Home", path: "/home" },

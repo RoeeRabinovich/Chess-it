@@ -19,7 +19,7 @@ interface StudyCardsGridProps {
   filter: StudyFilters;
 }
 
-const ITEMS_PER_PAGE = 12;
+const ITEMS_PER_PAGE = 10;
 
 export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
   const [studies, setStudies] = useState<Study[]>([]);

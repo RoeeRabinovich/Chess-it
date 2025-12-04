@@ -64,14 +64,10 @@ export const UserModals = ({
             setUserToDelete(null);
           }}
           usernames={
-            userToDelete.isAdmin === true || userToDelete.role === "admin"
-              ? []
-              : [userToDelete.username]
+            userToDelete.isAdmin === true ? [] : [userToDelete.username]
           }
           adminUsernames={
-            userToDelete.isAdmin === true || userToDelete.role === "admin"
-              ? [userToDelete.username]
-              : []
+            userToDelete.isAdmin === true ? [userToDelete.username] : []
           }
           isDeleting={isDeleting}
           onConfirm={() => onSingleDelete(userToDelete)}

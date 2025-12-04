@@ -13,8 +13,7 @@ export const EditRoleSection = ({
   user,
   onRoleUpdate,
 }: EditRoleSectionProps) => {
-  const currentRole =
-    user.isAdmin === true || user.role === "admin" ? "admin" : "user";
+  const currentRole = user.isAdmin === true ? "admin" : "user";
   const [role, setRole] = useState<"admin" | "user">(currentRole);
   const [isSaving, setIsSaving] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);

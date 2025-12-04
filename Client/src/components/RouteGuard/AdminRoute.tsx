@@ -30,11 +30,11 @@ export const AdminRoute = ({ children }: AdminRouteProps) => {
   // Check if user is admin
   let isAdmin = false;
   if (user) {
-    isAdmin = user.isAdmin === true || user.role === "admin";
+    isAdmin = user.isAdmin === true;
   } else if (storedUser) {
     try {
       const parsedUser = JSON.parse(storedUser);
-      isAdmin = parsedUser.isAdmin === true || parsedUser.role === "admin";
+      isAdmin = parsedUser.isAdmin === true;
     } catch {
       // Invalid JSON, treat as not admin
     }
