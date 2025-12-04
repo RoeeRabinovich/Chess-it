@@ -11,7 +11,7 @@
  */
 
 export { DataTable } from "./DataTable";
-export { DataTableHeader, getColumnKey } from "./DataTableHeader";
+export { DataTableHeader } from "./DataTableHeader";
 export { DataTableRow } from "./DataTableRow";
 export { DataTableCell } from "./DataTableCell";
 export { DataTableLoading } from "./DataTableLoading";
@@ -19,7 +19,7 @@ export { DataTableEmpty } from "./DataTableEmpty";
 export { DataTableToolbar } from "./DataTableToolbar";
 export { DataTablePagination } from "./DataTablePagination";
 export { DataTableMobileCard } from "./DataTableMobileCard";
-export { sortData, getValueFromRow } from "./utils";
+export { sortData, getValueFromRow, getColumnKey } from "./utils";
 
 export type {
   DataTableProps,

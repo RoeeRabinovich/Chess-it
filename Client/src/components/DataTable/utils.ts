@@ -1,6 +1,21 @@
 import { DataTableColumn } from "../../types";
 
 /**
+ * Helper function to get column identifier for sorting
+ */
+export function getColumnKey<T>(
+  column: DataTableColumn<T>,
+  index: number,
+): string {
+  // If accessor is a string key, use it directly
+  if (typeof column.accessor === "string") {
+    return column.accessor;
+  }
+  // Otherwise, use index as fallback
+  return `column-${index}`;
+}
+
+/**
  * Get the value from a row using the accessor
  */
 export function getValueFromRow<T>(

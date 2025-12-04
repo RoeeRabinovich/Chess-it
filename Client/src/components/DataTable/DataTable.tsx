@@ -1,7 +1,7 @@
 import * as React from "react";
 import { DataTableProps } from "../../types";
 import { cn } from "../../lib/utils";
-import { DataTableHeader, getColumnKey } from "./DataTableHeader";
+import { DataTableHeader } from "./DataTableHeader";
 import { DataTableRow } from "./DataTableRow";
 import { DataTableLoading } from "./DataTableLoading";
 import { DataTableEmpty } from "./DataTableEmpty";
@@ -154,7 +154,6 @@ export function DataTable<T extends Record<string, unknown>>({
                 columns={columns}
                 sortState={sorting?.state}
                 onSort={sorting?.onSort}
-                getColumnKey={getColumnKey}
                 selection={selection}
                 allRowIds={data.map((row) => getRowId(row))}
               />
