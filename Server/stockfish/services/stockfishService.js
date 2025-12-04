@@ -30,9 +30,9 @@ class StockfishService {
       this.engine.send("uci", () => {
         // Configure Stockfish for better evaluation accuracy
         // Set hash size (memory for position caching) - 256MB
-        this.engine.send("setoption name Hash value 256");
+        this.engine.send("setoption name Hash value 64");
         // Set thread count (use more CPU cores for faster analysis)
-        this.engine.send("setoption name Threads value 4");
+        this.engine.send("setoption name Threads value 2");
         // Enable Syzygy tablebase (for endgame accuracy)
         // Note: Requires tablebase files, skip if not available
         // this.engine.send("setoption name SyzygyPath value ./syzygy");
