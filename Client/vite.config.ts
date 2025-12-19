@@ -39,7 +39,7 @@ export default defineConfig({
     format: "es",
   },
   optimizeDeps: {
-    exclude: ["stockfish.wasm"],
+    exclude: [],
     include: ["react", "react-dom", "react-router-dom"], // Pre-bundle common deps
   },
   build: {
