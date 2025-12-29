@@ -1111,9 +1111,13 @@ curl -X POST http://localhost:9191/api/studies/create \
   - Study versioning/history
 
 - [ ] **Notifications**
-  - Email notifications for study likes
   - In-app notification system
   - Study update notifications
+
+-[ ] **My Own Chess Oppening ECO Api**
+
+- Currently I'm using a hardcoded ECO since i couldnt find that kind of api,
+  so in the near future i plan on creating my own full ECO api.
 
 #### Long-term
 
