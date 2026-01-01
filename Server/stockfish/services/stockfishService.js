@@ -14,12 +14,15 @@ class StockfishService {
 
   init() {
     try {
+      console.log("[DEBUG] Initializing Stockfish engine...");
       // Load the Stockfish engine using the provided helper
       const stockfishPath = path.join(
         __dirname,
         "../../node_modules/stockfish/src/stockfish-17.1-8e4d048.js"
       );
+      console.log("[DEBUG] Stockfish path:", stockfishPath);
       this.engine = loadEngine(stockfishPath);
+      console.log("[DEBUG] Engine loaded, setting up stream handler");
 
       // Set up message stream handler
       this.engine.stream = (message) => {
@@ -27,7 +30,9 @@ class StockfishService {
       };
 
       // Initialize UCI and configure Stockfish for better accuracy
+      console.log("[DEBUG] Sending UCI command...");
       this.engine.send("uci", () => {
+        console.log("[DEBUG] UCI command callback fired, configuring engine...");
         // Configure Stockfish for better evaluation accuracy
         // Set hash size (memory for position caching) - 256MB
         this.engine.send("setoption name Hash value 256");
@@ -37,17 +42,24 @@ class StockfishService {
         // Note: Requires tablebase files, skip if not available
         // this.engine.send("setoption name SyzygyPath value ./syzygy");
 
+        console.log("[DEBUG] Sending isready command...");
         this.engine.send("isready", () => {
+          console.log("[DEBUG] isready callback fired, engine is ready!");
           this.isReady = true;
         });
       });
     } catch (error) {
       console.error("❌ Failed to initialize Stockfish:", error);
+      console.error("[DEBUG] Stockfish init error details:", { message: error.message, stack: error.stack });
       this.isReady = true; // Allow requests but mock mode
     }
   }
 
   handleEngineMessage(message) {
+    // Log all engine messages for debugging (only first 100 chars to avoid spam)
+    if (message && (message.includes("uciok") || message.includes("readyok") || message.startsWith("bestmove"))) {
+      console.log("[DEBUG] Engine message:", message.substring(0, 100));
+    }
     if (!message || !this.currentAnalysis) return;
 
     // Parse UCI output for analysis data
