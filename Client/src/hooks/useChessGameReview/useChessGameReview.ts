@@ -43,7 +43,10 @@ export const useChessGameReview = ({
     chessRef,
   });
 
-  const { getComment } = useChessComments({ gameState, setGameState });
+  const { getComment, getCommentKey } = useChessComments({
+    gameState,
+    setGameState,
+  });
 
   // Store the starting position from studyGameState for navigation
   const startingPosition = useMemo(
@@ -84,8 +87,10 @@ export const useChessGameReview = ({
 
   const tools = useChessTools({
     chessRef,
+    gameState,
     setGameState,
     createInitialState: () => gameState, // Use current state as initial
+    getCommentKey,
   });
 
   const mainLineMoves = useMemo(() => {
