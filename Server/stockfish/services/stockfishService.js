@@ -43,7 +43,20 @@ class StockfishService {
         // this.engine.send("setoption name SyzygyPath value ./syzygy");
 
         console.log("[DEBUG] Sending isready command...");
+        // Set a timeout fallback in case readyok message comes but callback doesn't fire
+        const readyTimeout = setTimeout(() => {
+          if (!this.isReady) {
+            console.log("[DEBUG] isready timeout - checking if engine responded via message handler");
+            // If still not ready after 2 seconds, force it (message handler should have caught it)
+            if (!this.isReady) {
+              console.log("[DEBUG] Forcing engine ready after timeout");
+              this.isReady = true;
+            }
+          }
+        }, 2000);
+        
         this.engine.send("isready", () => {
+          clearTimeout(readyTimeout);
           console.log("[DEBUG] isready callback fired, engine is ready!");
           this.isReady = true;
         });
@@ -60,6 +73,13 @@ class StockfishService {
     if (message && (message.includes("uciok") || message.includes("readyok") || message.startsWith("bestmove"))) {
       console.log("[DEBUG] Engine message:", message.substring(0, 100));
     }
+    
+    // Handle readyok message - set engine as ready if we're waiting for it
+    if (message && message.includes("readyok") && !this.isReady) {
+      console.log("[DEBUG] readyok received, setting engine as ready");
+      this.isReady = true;
+    }
+    
     if (!message || !this.currentAnalysis) return;
 
     // Parse UCI output for analysis data
