@@ -298,24 +298,52 @@ class StockfishService {
         this.currentAnalysis.fen = fen;
 
         // Set position
-        this.engine.send(`position fen ${fen}`);
+        try {
+          console.log("[DEBUG] Sending position command:", `position fen ${fen}`);
+          this.engine.send(`position fen ${fen}`);
+          console.log("[DEBUG] Position command sent");
+        } catch (error) {
+          console.error("[DEBUG] Error sending position:", error);
+        }
+        
         console.log("[DEBUG] Position set, sending MultiPV");
 
         // Set MultiPV before starting analysis
-        this.engine.send(`setoption name MultiPV value ${multipv}`);
+        try {
+          console.log("[DEBUG] Sending MultiPV command:", `setoption name MultiPV value ${multipv}`);
+          this.engine.send(`setoption name MultiPV value ${multipv}`);
+          console.log("[DEBUG] MultiPV command sent");
+        } catch (error) {
+          console.error("[DEBUG] Error sending MultiPV:", error);
+        }
 
         // Small delay to ensure options are set before starting analysis
         setTimeout(() => {
           const command = isDeepMode ? `go movetime ${analysisTime}` : `go depth ${depth}`;
           console.log("[DEBUG] Sending go command:", { isDeepMode, command });
-          if (isDeepMode) {
-            // Deep mode: use time-based analysis (go movetime)
-            // This allows Stockfish to search as deep as it can in the given time
-            this.engine.send(`go movetime ${analysisTime}`);
-          } else {
-            // Quick mode: use depth-based analysis
-            // This ensures we get evaluation at exactly the specified depth
-            this.engine.send(`go depth ${depth}`);
+          try {
+            if (isDeepMode) {
+              // Deep mode: use time-based analysis (go movetime)
+              // This allows Stockfish to search as deep as it can in the given time
+              this.engine.send(`go movetime ${analysisTime}`);
+            } else {
+              // Quick mode: use depth-based analysis
+              // This ensures we get evaluation at exactly the specified depth
+              this.engine.send(`go depth ${depth}`);
+            }
+            console.log("[DEBUG] Go command sent successfully");
+            // Log a message after 1 second to see if we're getting any responses
+            setTimeout(() => {
+              console.log("[DEBUG] 1 second after go command - checking for messages");
+              if (this.currentAnalysis && this.currentAnalysis.depth === 0) {
+                console.log("[DEBUG] WARNING: No analysis progress after 1 second");
+              }
+            }, 1000);
+          } catch (error) {
+            console.error("[DEBUG] Error sending go command:", error);
+            clearTimeout(timeout);
+            reject(error);
+            this.currentAnalysis = null;
           }
         }, 100);
       } catch (error) {
