@@ -69,9 +69,24 @@ class StockfishService {
   }
 
   handleEngineMessage(message) {
-    // Log all engine messages for debugging (only first 100 chars to avoid spam)
-    if (message && (message.includes("uciok") || message.includes("readyok") || message.startsWith("bestmove"))) {
-      console.log("[DEBUG] Engine message:", message.substring(0, 100));
+    // Log all engine messages for debugging
+    if (message) {
+      // Log important messages fully
+      if (message.includes("uciok") || message.includes("readyok") || message.startsWith("bestmove")) {
+        console.log("[DEBUG] Engine message:", message);
+      }
+      // Log info messages (analysis progress) but only first few to avoid spam
+      else if (message.startsWith("info") && this.currentAnalysis) {
+        // Only log first info message and bestmove to see if we're getting responses
+        if (!this.currentAnalysis.loggedFirstInfo) {
+          console.log("[DEBUG] First info message received:", message.substring(0, 150));
+          this.currentAnalysis.loggedFirstInfo = true;
+        }
+      }
+      // Log any other messages we might be missing
+      else if (this.currentAnalysis && !message.includes("option")) {
+        console.log("[DEBUG] Other engine message:", message.substring(0, 100));
+      }
     }
     
     // Handle readyok message - set engine as ready if we're waiting for it
@@ -262,6 +277,7 @@ class StockfishService {
         finalDepthReached: false,
         requestedMultipv: multipv, // Track how many lines we requested
         linesAtFinalDepth: new Set(), // Track which MultiPV lines reached final depth
+        loggedFirstInfo: false, // Track if we've logged first info message
       };
 
       // Set timeout for analysis
