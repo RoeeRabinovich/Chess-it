@@ -62,12 +62,19 @@ const createIPRateLimiter = (type) => {
     // Skip rate limiting for exempted IPs (localhost in development)
     skip: (req) => {
       const ip = ipKeyGenerator(req);
-      return shouldExemptIP(ip);
+      const exempt = shouldExemptIP(ip);
+      if (req.path && req.path.includes("/stockfish")) {
+        console.log("[DEBUG] Rate limiter skip check:", { ip, exempt, type, path: req.path, timestamp: new Date().toISOString() });
+      }
+      return exempt;
     },
     // Custom key generator - use IP address with proper IPv6 handling
     keyGenerator: ipKeyGenerator,
     // Custom handler to match existing error format
     handler: (req, res) => {
+      if (req.path && req.path.includes("/stockfish")) {
+        console.log("[DEBUG] Rate limit exceeded:", { path: req.path, type, timestamp: new Date().toISOString() });
+      }
       const retryAfter = Math.ceil(config.windowMs / 1000); // Convert to seconds
       res.setHeader("Retry-After", retryAfter);
       res.status(429).send(config.message);

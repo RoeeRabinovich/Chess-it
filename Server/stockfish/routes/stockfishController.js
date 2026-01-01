@@ -9,12 +9,12 @@ const { stockfishRateLimiter } = require("../../middlewares/rateLimiter");
 // POST /analyze - Analyze a chess position
 router.post("/analyze", stockfishRateLimiter, async (req, res) => {
   const startTime = Date.now();
-  fetch('http://127.0.0.1:7242/ingest/9e5da5ad-4f5d-4a3a-8adb-71d5d70d748b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'stockfishController.js:11',message:'/analyze route called',data:{body:req.body},timestamp:Date.now(),sessionId:'debug-session',runId:'railway-timeout',hypothesisId:'A'})}).catch(()=>{});
+  console.log("[DEBUG] /analyze route called:", { body: req.body, timestamp: new Date().toISOString() });
   try {
     // Validate request body
-    fetch('http://127.0.0.1:7242/ingest/9e5da5ad-4f5d-4a3a-8adb-71d5d70d748b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'stockfishController.js:13',message:'Validating request',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'railway-timeout',hypothesisId:'A'})}).catch(()=>{});
+    console.log("[DEBUG] Validating request");
     const validatedData = validateAnalyzeRequest(req.body);
-    fetch('http://127.0.0.1:7242/ingest/9e5da5ad-4f5d-4a3a-8adb-71d5d70d748b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'stockfishController.js:15',message:'Validation passed, calling analyzePosition',data:{fen:validatedData.fen,depth:validatedData.depth,multipv:validatedData.multipv,mode:validatedData.analysisMode},timestamp:Date.now(),sessionId:'debug-session',runId:'railway-timeout',hypothesisId:'A'})}).catch(()=>{});
+    console.log("[DEBUG] Validation passed, calling analyzePosition:", { fen: validatedData.fen, depth: validatedData.depth, multipv: validatedData.multipv, mode: validatedData.analysisMode });
 
     // Analyze position with validated data
     const result = await stockfishService.analyzePosition(
@@ -23,12 +23,12 @@ router.post("/analyze", stockfishRateLimiter, async (req, res) => {
       validatedData.multipv,
       validatedData.analysisMode
     );
-    fetch('http://127.0.0.1:7242/ingest/9e5da5ad-4f5d-4a3a-8adb-71d5d70d748b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'stockfishController.js:23',message:'analyzePosition resolved, sending response',data:{hasResult:!!result,depth:result?.depth},timestamp:Date.now(),sessionId:'debug-session',runId:'railway-timeout',hypothesisId:'A'})}).catch(()=>{});
+    console.log("[DEBUG] analyzePosition resolved, sending response:", { hasResult: !!result, depth: result?.depth });
 
     res.json(result);
-    fetch('http://127.0.0.1:7242/ingest/9e5da5ad-4f5d-4a3a-8adb-71d5d70d748b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'stockfishController.js:25',message:'Response sent',data:{duration:Date.now()-startTime},timestamp:Date.now(),sessionId:'debug-session',runId:'railway-timeout',hypothesisId:'A'})}).catch(()=>{});
+    console.log("[DEBUG] Response sent, duration:", Date.now() - startTime, "ms");
   } catch (error) {
-    fetch('http://127.0.0.1:7242/ingest/9e5da5ad-4f5d-4a3a-8adb-71d5d70d748b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'stockfishController.js:27',message:'Error caught in controller',data:{errorMessage:error?.message,errorStack:error?.stack?.substring(0,200)},timestamp:Date.now(),sessionId:'debug-session',runId:'railway-timeout',hypothesisId:'A'})}).catch(()=>{});
+    console.error("[DEBUG] Error caught in controller:", { errorMessage: error?.message, errorStack: error?.stack?.substring(0, 200) });
     // Return appropriate error status
     const statusCode =
       error.message.includes("Invalid") || error.message.includes("must be")
@@ -38,7 +38,7 @@ router.post("/analyze", stockfishRateLimiter, async (req, res) => {
     res.status(statusCode).json({
       error: error.message || "Analysis failed",
     });
-    fetch('http://127.0.0.1:7242/ingest/9e5da5ad-4f5d-4a3a-8adb-71d5d70d748b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'stockfishController.js:35',message:'Error response sent',data:{statusCode,duration:Date.now()-startTime},timestamp:Date.now(),sessionId:'debug-session',runId:'railway-timeout',hypothesisId:'A'})}).catch(()=>{});
+    console.log("[DEBUG] Error response sent:", { statusCode, duration: Date.now() - startTime + "ms" });
   }
 });
 
