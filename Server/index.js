@@ -26,24 +26,11 @@ app.use(sanitize);
 app.use(express.static(path.join(__dirname, "public")));
 
 // API routes
-app.use("/api", router);
+app.use(router);
 
-//Error Handling Middleware
+// Error Handling Middleware (must be last to catch errors from all routes)
 app.use((err, req, res, next) => {
   handleError(res, err.status || 500, err.message || "Internal Server Error");
-});
-
-// Serve React app for all non-API routes (SPA routing)
-// This must be last, after error handler, to catch all unmatched routes
-// Use app.use() instead of app.get("*") for Express 5 compatibility
-app.use((req, res, next) => {
-  // Only serve index.html for non-API routes
-  if (!req.path.startsWith("/api")) {
-    res.sendFile(path.join(__dirname, "public", "index.html"));
-  } else {
-    // API route not found
-    handleError(res, 404, "API endpoint not found");
-  }
 });
 
 // Initialize Server

@@ -2,10 +2,12 @@ const config = require("config");
 
 const ENV = config.get("NODE_ENV");
 const connectToDb = () => {
-  if (ENV === "development") {
+  // If MONGODB_URI is set, use Atlas connection (works for Railway and local dev with Atlas)
+  if (process.env.MONGODB_URI) {
+    require("./mongoDB/connectToAtlas");
+  } else if (ENV === "development") {
     require("./mongoDB/connectLocally");
-  }
-  if (ENV === "production") {
+  } else if (ENV === "production") {
     require("./mongoDB/connectToAtlas");
   }
 };
