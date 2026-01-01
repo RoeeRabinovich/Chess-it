@@ -14,15 +14,12 @@ class StockfishService {
 
   init() {
     try {
-      console.log("[DEBUG] Initializing Stockfish engine...");
       // Load the Stockfish engine using the provided helper
       const stockfishPath = path.join(
         __dirname,
         "../../node_modules/stockfish/src/stockfish-17.1-8e4d048.js"
       );
-      console.log("[DEBUG] Stockfish path:", stockfishPath);
       this.engine = loadEngine(stockfishPath);
-      console.log("[DEBUG] Engine loaded, setting up stream handler");
 
       // Set up message stream handler
       this.engine.stream = (message) => {
@@ -30,9 +27,7 @@ class StockfishService {
       };
 
       // Initialize UCI and configure Stockfish for better accuracy
-      console.log("[DEBUG] Sending UCI command...");
       this.engine.send("uci", () => {
-        console.log("[DEBUG] UCI command callback fired, configuring engine...");
         // Configure Stockfish for better evaluation accuracy
         // Set hash size (memory for position caching) - 256MB
         this.engine.send("setoption name Hash value 256");
@@ -42,14 +37,11 @@ class StockfishService {
         // Note: Requires tablebase files, skip if not available
         // this.engine.send("setoption name SyzygyPath value ./syzygy");
 
-        console.log("[DEBUG] Sending isready command...");
         // Set a timeout fallback in case readyok message comes but callback doesn't fire
         const readyTimeout = setTimeout(() => {
           if (!this.isReady) {
-            console.log("[DEBUG] isready timeout - checking if engine responded via message handler");
             // If still not ready after 2 seconds, force it (message handler should have caught it)
             if (!this.isReady) {
-              console.log("[DEBUG] Forcing engine ready after timeout");
               this.isReady = true;
             }
           }
@@ -57,41 +49,18 @@ class StockfishService {
         
         this.engine.send("isready", () => {
           clearTimeout(readyTimeout);
-          console.log("[DEBUG] isready callback fired, engine is ready!");
           this.isReady = true;
         });
       });
     } catch (error) {
       console.error("❌ Failed to initialize Stockfish:", error);
-      console.error("[DEBUG] Stockfish init error details:", { message: error.message, stack: error.stack });
       this.isReady = true; // Allow requests but mock mode
     }
   }
 
   handleEngineMessage(message) {
-    // Log all engine messages for debugging
-    if (message) {
-      // Log important messages fully
-      if (message.includes("uciok") || message.includes("readyok") || message.startsWith("bestmove")) {
-        console.log("[DEBUG] Engine message:", message);
-      }
-      // Log info messages (analysis progress) but only first few to avoid spam
-      else if (message.startsWith("info") && this.currentAnalysis) {
-        // Only log first info message and bestmove to see if we're getting responses
-        if (!this.currentAnalysis.loggedFirstInfo) {
-          console.log("[DEBUG] First info message received:", message.substring(0, 150));
-          this.currentAnalysis.loggedFirstInfo = true;
-        }
-      }
-      // Log any other messages we might be missing
-      else if (this.currentAnalysis && !message.includes("option")) {
-        console.log("[DEBUG] Other engine message:", message.substring(0, 100));
-      }
-    }
-    
     // Handle readyok message - set engine as ready if we're waiting for it
     if (message && message.includes("readyok") && !this.isReady) {
-      console.log("[DEBUG] readyok received, setting engine as ready");
       this.isReady = true;
     }
     
@@ -182,7 +151,6 @@ class StockfishService {
 
     // Check if analysis is complete
     if (message.startsWith("bestmove")) {
-      console.log("[DEBUG] bestmove received:", { hasCurrentAnalysis: !!this.currentAnalysis, message });
       if (this.currentAnalysis && this.currentAnalysis.resolve) {
         // Extract the best move from the bestmove message for verification
 
@@ -235,10 +203,8 @@ class StockfishService {
   }
 
   async analyzePosition(fen, depth = 15, multipv = 1, analysisMode = "quick") {
-    console.log("[DEBUG] analyzePosition called:", { fen, depth, multipv, analysisMode, isReady: this.isReady, hasEngine: !!this.engine });
     // Wait for engine to be ready
     if (!this.isReady) {
-      console.log("[DEBUG] Waiting for engine to be ready");
       await new Promise((resolve) => {
         const checkReady = setInterval(() => {
           if (this.isReady) {
@@ -247,7 +213,6 @@ class StockfishService {
           }
         }, 100);
       });
-      console.log("[DEBUG] Engine is ready");
     }
 
     // Stop any ongoing analysis
@@ -264,7 +229,6 @@ class StockfishService {
 
     // Create new analysis promise
     return new Promise((resolve, reject) => {
-      console.log("[DEBUG] Creating analysis promise:", { maxTimeout, isDeepMode });
       this.currentAnalysis = {
         resolve,
         reject,
@@ -277,12 +241,10 @@ class StockfishService {
         finalDepthReached: false,
         requestedMultipv: multipv, // Track how many lines we requested
         linesAtFinalDepth: new Set(), // Track which MultiPV lines reached final depth
-        loggedFirstInfo: false, // Track if we've logged first info message
       };
 
       // Set timeout for analysis
       const timeout = setTimeout(() => {
-        console.log("[DEBUG] Analysis timeout triggered:", { maxTimeout });
         if (this.currentAnalysis) {
           this.engine.send("stop");
           console.error("⏱️  Analysis timeout");
@@ -293,61 +255,28 @@ class StockfishService {
 
       // Start analysis
       try {
-        console.log("[DEBUG] Starting analysis commands:", { fen, depth, isDeepMode });
         // Store FEN for debugging
         this.currentAnalysis.fen = fen;
 
         // Set position
-        try {
-          console.log("[DEBUG] Sending position command:", `position fen ${fen}`);
-          this.engine.send(`position fen ${fen}`);
-          console.log("[DEBUG] Position command sent");
-        } catch (error) {
-          console.error("[DEBUG] Error sending position:", error);
-        }
-        
-        console.log("[DEBUG] Position set, sending MultiPV");
+        this.engine.send(`position fen ${fen}`);
 
         // Set MultiPV before starting analysis
-        try {
-          console.log("[DEBUG] Sending MultiPV command:", `setoption name MultiPV value ${multipv}`);
-          this.engine.send(`setoption name MultiPV value ${multipv}`);
-          console.log("[DEBUG] MultiPV command sent");
-        } catch (error) {
-          console.error("[DEBUG] Error sending MultiPV:", error);
-        }
+        this.engine.send(`setoption name MultiPV value ${multipv}`);
 
         // Small delay to ensure options are set before starting analysis
         setTimeout(() => {
-          const command = isDeepMode ? `go movetime ${analysisTime}` : `go depth ${depth}`;
-          console.log("[DEBUG] Sending go command:", { isDeepMode, command });
-          try {
-            if (isDeepMode) {
-              // Deep mode: use time-based analysis (go movetime)
-              // This allows Stockfish to search as deep as it can in the given time
-              this.engine.send(`go movetime ${analysisTime}`);
-            } else {
-              // Quick mode: use depth-based analysis
-              // This ensures we get evaluation at exactly the specified depth
-              this.engine.send(`go depth ${depth}`);
-            }
-            console.log("[DEBUG] Go command sent successfully");
-            // Log a message after 1 second to see if we're getting any responses
-            setTimeout(() => {
-              console.log("[DEBUG] 1 second after go command - checking for messages");
-              if (this.currentAnalysis && this.currentAnalysis.depth === 0) {
-                console.log("[DEBUG] WARNING: No analysis progress after 1 second");
-              }
-            }, 1000);
-          } catch (error) {
-            console.error("[DEBUG] Error sending go command:", error);
-            clearTimeout(timeout);
-            reject(error);
-            this.currentAnalysis = null;
+          if (isDeepMode) {
+            // Deep mode: use time-based analysis (go movetime)
+            // This allows Stockfish to search as deep as it can in the given time
+            this.engine.send(`go movetime ${analysisTime}`);
+          } else {
+            // Quick mode: use depth-based analysis
+            // This ensures we get evaluation at exactly the specified depth
+            this.engine.send(`go depth ${depth}`);
           }
         }, 100);
       } catch (error) {
-        console.error("[DEBUG] Error in analysis setup:", { errorMessage: error?.message });
         clearTimeout(timeout);
         reject(error);
         this.currentAnalysis = null;

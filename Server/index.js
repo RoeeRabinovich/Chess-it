@@ -25,14 +25,6 @@ app.use(sanitize);
 // Serve static files from public directory (built client)
 app.use(express.static(path.join(__dirname, "public")));
 
-// Log all incoming requests before routing (for Railway debugging)
-app.use((req, res, next) => {
-  if (req.path.startsWith("/stockfish")) {
-    console.log("[DEBUG] Request before router:", { path: req.path, method: req.method, url: req.url, timestamp: new Date().toISOString() });
-  }
-  next();
-});
-
 // API routes
 app.use(router);
 
