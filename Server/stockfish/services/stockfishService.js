@@ -135,6 +135,7 @@ class StockfishService {
 
     // Check if analysis is complete
     if (message.startsWith("bestmove")) {
+      fetch('http://127.0.0.1:7242/ingest/9e5da5ad-4f5d-4a3a-8adb-71d5d70d748b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'stockfishService.js:137',message:'bestmove received',data:{hasCurrentAnalysis:!!this.currentAnalysis},timestamp:Date.now(),sessionId:'debug-session',runId:'railway-timeout',hypothesisId:'C'})}).catch(()=>{});
       if (this.currentAnalysis && this.currentAnalysis.resolve) {
         // Extract the best move from the bestmove message for verification
 
@@ -187,8 +188,10 @@ class StockfishService {
   }
 
   async analyzePosition(fen, depth = 15, multipv = 1, analysisMode = "quick") {
+    fetch('http://127.0.0.1:7242/ingest/9e5da5ad-4f5d-4a3a-8adb-71d5d70d748b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'stockfishService.js:189',message:'analyzePosition called',data:{fen,depth,multipv,analysisMode,isReady:this.isReady,hasEngine:!!this.engine},timestamp:Date.now(),sessionId:'debug-session',runId:'railway-timeout',hypothesisId:'B'})}).catch(()=>{});
     // Wait for engine to be ready
     if (!this.isReady) {
+      fetch('http://127.0.0.1:7242/ingest/9e5da5ad-4f5d-4a3a-8adb-71d5d70d748b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'stockfishService.js:192',message:'Waiting for engine to be ready',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'railway-timeout',hypothesisId:'B'})}).catch(()=>{});
       await new Promise((resolve) => {
         const checkReady = setInterval(() => {
           if (this.isReady) {
@@ -197,6 +200,7 @@ class StockfishService {
           }
         }, 100);
       });
+      fetch('http://127.0.0.1:7242/ingest/9e5da5ad-4f5d-4a3a-8adb-71d5d70d748b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'stockfishService.js:200',message:'Engine is ready',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'railway-timeout',hypothesisId:'B'})}).catch(()=>{});
     }
 
     // Stop any ongoing analysis
@@ -213,6 +217,7 @@ class StockfishService {
 
     // Create new analysis promise
     return new Promise((resolve, reject) => {
+      fetch('http://127.0.0.1:7242/ingest/9e5da5ad-4f5d-4a3a-8adb-71d5d70d748b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'stockfishService.js:215',message:'Creating analysis promise',data:{maxTimeout,isDeepMode},timestamp:Date.now(),sessionId:'debug-session',runId:'railway-timeout',hypothesisId:'B'})}).catch(()=>{});
       this.currentAnalysis = {
         resolve,
         reject,
@@ -229,6 +234,7 @@ class StockfishService {
 
       // Set timeout for analysis
       const timeout = setTimeout(() => {
+        fetch('http://127.0.0.1:7242/ingest/9e5da5ad-4f5d-4a3a-8adb-71d5d70d748b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'stockfishService.js:231',message:'Analysis timeout triggered',data:{maxTimeout},timestamp:Date.now(),sessionId:'debug-session',runId:'railway-timeout',hypothesisId:'B'})}).catch(()=>{});
         if (this.currentAnalysis) {
           this.engine.send("stop");
           console.error("⏱️  Analysis timeout");
@@ -239,17 +245,20 @@ class StockfishService {
 
       // Start analysis
       try {
+        fetch('http://127.0.0.1:7242/ingest/9e5da5ad-4f5d-4a3a-8adb-71d5d70d748b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'stockfishService.js:241',message:'Starting analysis commands',data:{fen,depth,isDeepMode},timestamp:Date.now(),sessionId:'debug-session',runId:'railway-timeout',hypothesisId:'B'})}).catch(()=>{});
         // Store FEN for debugging
         this.currentAnalysis.fen = fen;
 
         // Set position
         this.engine.send(`position fen ${fen}`);
+        fetch('http://127.0.0.1:7242/ingest/9e5da5ad-4f5d-4a3a-8adb-71d5d70d748b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'stockfishService.js:246',message:'Position set, sending MultiPV',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'railway-timeout',hypothesisId:'B'})}).catch(()=>{});
 
         // Set MultiPV before starting analysis
         this.engine.send(`setoption name MultiPV value ${multipv}`);
 
         // Small delay to ensure options are set before starting analysis
         setTimeout(() => {
+          fetch('http://127.0.0.1:7242/ingest/9e5da5ad-4f5d-4a3a-8adb-71d5d70d748b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'stockfishService.js:252',message:'Sending go command',data:{isDeepMode,command:isDeepMode?`go movetime ${analysisTime}`:`go depth ${depth}`},timestamp:Date.now(),sessionId:'debug-session',runId:'railway-timeout',hypothesisId:'B'})}).catch(()=>{});
           if (isDeepMode) {
             // Deep mode: use time-based analysis (go movetime)
             // This allows Stockfish to search as deep as it can in the given time
@@ -261,6 +270,7 @@ class StockfishService {
           }
         }, 100);
       } catch (error) {
+        fetch('http://127.0.0.1:7242/ingest/9e5da5ad-4f5d-4a3a-8adb-71d5d70d748b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'stockfishService.js:263',message:'Error in analysis setup',data:{errorMessage:error?.message},timestamp:Date.now(),sessionId:'debug-session',runId:'railway-timeout',hypothesisId:'B'})}).catch(()=>{});
         clearTimeout(timeout);
         reject(error);
         this.currentAnalysis = null;
