@@ -17,9 +17,10 @@ class StockfishService {
       // Load the Stockfish engine using the provided helper
       const stockfishPath = path.join(
         __dirname,
-        "../../node_modules/stockfish/src/stockfish-17.1-8e4d048.js"
+        "../../node_modules/stockfish/src/stockfish-17.1-lite-51f59da.js"
       );
       this.engine = loadEngine(stockfishPath);
+      console.log(this.engine);
 
       // Set up message stream handler
       this.engine.stream = (message) => {
