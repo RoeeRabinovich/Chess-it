@@ -30,9 +30,9 @@ class StockfishService {
       // Initialize UCI and configure Stockfish for better accuracy
       this.engine.send("uci", () => {
         // Configure Stockfish for better evaluation accuracy
-        // Set hash size (memory for position caching) - 256MB
+        // Set hash size (memory for position caching) - 32MB - optimal for Railway.
         this.engine.send("setoption name Hash value 32");
-        // Set thread count (use more CPU cores for faster analysis)
+        // Set thread count (use more CPU cores for faster analysis) - single thread
         this.engine.send("setoption name Threads value 1");
         // Enable Syzygy tablebase (for endgame accuracy)
         // Note: Requires tablebase files, skip if not available
