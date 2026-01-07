@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import { Puzzle } from "../../puzzleService";
+import { Puzzle } from "../puzzleService";
 import { mockPuzzles } from "../../../data/mockPuzzles";
 
 /**

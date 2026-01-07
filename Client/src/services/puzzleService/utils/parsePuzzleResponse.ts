@@ -1,4 +1,4 @@
-import { Puzzle, PuzzleApiResponse } from "../../puzzleService";
+import { Puzzle, PuzzleApiResponse } from "../puzzleService";
 
 /**
  * Parses the API response and extracts puzzles array

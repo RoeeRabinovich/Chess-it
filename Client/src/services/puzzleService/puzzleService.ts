@@ -4,7 +4,7 @@ import { parsePuzzleResponse } from "./utils/parsePuzzleResponse";
 import { handlePuzzleError } from "./utils/handlePuzzleError";
 
 // RapidAPI configuration
-const RAPIDAPI_KEY = "f4a0bf4fb8msh1dc8034ed679677p1d4ed1jsn766d960f3b32a";
+const RAPIDAPI_KEY = "f4a0bf4fb8msh1dc8034ed679677p1d4ed1jsn766d960f3b32";
 const RAPIDAPI_HOST = "chess-puzzles.p.rapidapi.com";
 
 /**
