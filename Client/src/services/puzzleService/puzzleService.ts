@@ -61,7 +61,7 @@ export interface GetPuzzlesParams {
 export async function getPuzzles(params: GetPuzzlesParams): Promise<Puzzle[]> {
   const {
     rating,
-    count = 15,
+    count = 5,
     themes = ["middlegame", "advantage"],
     themesType = "OR", // Default to "OR" for better results (API expects "ALL" or "OR")
     playerMoves = 4,
