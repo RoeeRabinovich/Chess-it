@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { usePuzzleTimer } from "../../../hooks/usePuzzles/usePuzzleTimer";
 import { ThemeSelector } from "./ThemeSelector";
 import { PuzzleRatingSection } from "./PuzzleRatingSection";
 import { PuzzleTimerSection } from "./PuzzleTimerSection";
+import { ToggleSwitch } from "../../../components/ui/ToggleSwitch";
 
 interface PuzzlesSidebarProps {
   // Timer state
@@ -59,6 +61,18 @@ export const PuzzlesSidebar = ({
     resetKey: puzzleKey,
   });
 
+  const [isThemesEnabled, setIsThemesEnabled] = useState(false);
+
+  // Handle toggle change
+  const handleToggleChange = (checked: boolean) => {
+    setIsThemesEnabled(checked);
+    // When toggle turns off, clear themes (user wants random puzzle)
+    // Don't trigger fetch - fetch only happens on page load or when "Set Themes" is clicked
+    if (!checked) {
+      onThemesChange([]);
+    }
+  };
+
   return (
     <div className="bg-card flex h-full max-h-full flex-col overflow-x-hidden overflow-y-auto p-1 sm:p-1.5 lg:p-3">
       <PuzzleRatingSection
@@ -88,11 +102,20 @@ export const PuzzlesSidebar = ({
         </span>
       </div>
       <div className="flex-shrink-0 px-2">
-        <ThemeSelector
-          selectedThemes={selectedThemes}
-          onThemesChange={onThemesChange}
-          onThemesApply={onThemesApply}
+        <ToggleSwitch
+          id="select-themes-toggle"
+          label="Select Themes"
+          checked={isThemesEnabled}
+          onChange={handleToggleChange}
+          ariaLabel="Toggle theme selection"
         />
+        {isThemesEnabled && (
+          <ThemeSelector
+            selectedThemes={selectedThemes}
+            onThemesChange={onThemesChange}
+            onThemesApply={onThemesApply}
+          />
+        )}
       </div>
     </div>
   );

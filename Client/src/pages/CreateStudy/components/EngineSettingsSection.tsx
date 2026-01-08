@@ -1,4 +1,4 @@
-import { ToggleSwitch } from "./ToggleSwitch";
+import { ToggleSwitch } from "../../../components/ui/ToggleSwitch";
 import { RangeSlider } from "./RangeSlider";
 
 interface EngineSettingsSectionProps {

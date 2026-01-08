@@ -192,9 +192,8 @@ export const usePuzzleState = ({
   useEffect(() => {
     if (!hasInitialFetchRef.current) {
       hasInitialFetchRef.current = true;
-      // Initial fetch with default themes (all theme keys)
-      const allThemeKeys = PUZZLE_THEMES.map((theme) => theme.key);
-      fetchPuzzles(allThemeKeys);
+      // Initial fetch with no themes (toggle is OFF by default, API returns 1 random puzzle)
+      fetchPuzzles([]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run on mount
