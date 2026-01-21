@@ -75,7 +75,7 @@ export const MyStudiesContent = ({
             value={searchQuery}
             onChange={onSearchChange}
             showClearButton
-            debounceMs={300}
+            debounceMs={50}
             className="max-w-md"
           />
         </div>

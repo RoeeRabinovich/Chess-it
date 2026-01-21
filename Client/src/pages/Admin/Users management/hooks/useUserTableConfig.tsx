@@ -57,7 +57,7 @@ export const useUserTableConfig = ({
       value: searchQuery,
       onChange: setSearchQuery,
       placeholder: "Search users...",
-      debounceMs: 500,
+      debounceMs: 50,
     },
     sorting: {
       state: sortState,

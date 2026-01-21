@@ -60,7 +60,7 @@ export const useStudyTableConfig = ({
       value: searchQuery,
       onChange: setSearchQuery,
       placeholder: "Search by study name...",
-      debounceMs: 500,
+      debounceMs: 50,
     },
     sorting: {
       state: sortState,
