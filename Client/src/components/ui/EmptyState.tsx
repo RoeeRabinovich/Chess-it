@@ -12,7 +12,7 @@ interface EmptyStateProps {
   title: string;
 
   /** Optional description text */
-  description?: string;
+  description?: string ;
 
   /** Optional action button */
   action?: ReactNode;
