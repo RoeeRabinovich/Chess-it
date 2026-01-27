@@ -4,7 +4,7 @@ import { parsePuzzleResponse } from "./utils/parsePuzzleResponse";
 import { handlePuzzleError } from "./utils/handlePuzzleError";
 
 // RapidAPI configuration
-const RAPIDAPI_KEY = "f4a0bf4fb8msh1dc8034ed679677p1d4ed1jsn766d960f3b32";
+const RAPIDAPI_KEY = import.meta.env.VITE_RAPIDAPI_KEY as string | undefined;
 const RAPIDAPI_HOST = "chess-puzzles.p.rapidapi.com";
 
 /**
@@ -79,6 +79,12 @@ export async function getPuzzles(params: GetPuzzlesParams): Promise<Puzzle[]> {
   );
 
   try {
+    if (!RAPIDAPI_KEY) {
+      throw new Error(
+        "Missing RapidAPI key. Set VITE_RAPIDAPI_KEY in your Client .env (for example: Client/.env.local).",
+      );
+    }
+
     console.log("=== Request Details ===");
     console.log("Full URL:", url);
     console.log("Themes requested:", themes || []);

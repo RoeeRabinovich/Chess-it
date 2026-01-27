@@ -116,11 +116,6 @@ export const Puzzles = () => {
         ? Math.floor((Date.now() - puzzleStartTime) / 1000)
         : undefined;
 
-  // Show loading state only when fetching puzzles
-  if (isLoading) {
-    return <LoadingSpinner fullScreen size="large" text="Loading puzzles..." />;
-  }
-
   // Top content (Rating & Turn) - shown above board on mobile/tablet
   const topContent = (
     <PuzzlesTopBar
@@ -131,7 +126,11 @@ export const Puzzles = () => {
   );
 
   // Sidebar content with PuzzlesSidebar component
-  const sidebarContent = (
+  const sidebarContent = isLoading ? (
+    <div className="flex h-full items-center justify-center p-4">
+      <LoadingSpinner size="large" text="Loading puzzles..." />
+    </div>
+  ) : (
     <PuzzlesSidebar
       isTimerRunning={isTimerRunning}
       onTimerStop={handleTimerStop}
