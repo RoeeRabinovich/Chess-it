@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { GameAspect, StudyFilters, Study } from "../../../types/study";
 import { apiService } from "../../../services/api";
 import { studyService } from "../../../services/studyService";
@@ -13,6 +13,7 @@ import { EmptyState } from "../../../components/ui/EmptyState";
 import { Button } from "../../../components/ui/Button";
 import { Book } from "../../../components/icons/Book.icon";
 import { Search } from "../../../components/icons/Search.icon";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 interface StudyCardsGridProps {
   category: GameAspect;
@@ -22,15 +23,12 @@ interface StudyCardsGridProps {
 const ITEMS_PER_PAGE = 10;
 
 export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
-  const [studies, setStudies] = useState<Study[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const { toast } = useToast();
   const searchQuery = useAppSelector((state) => state.search.query);
   const isArchiveActive = useAppSelector((state) => state.archive.isActive);
   const isAuthenticated = apiService.isAuthenticated();
+  const likedOnly = isArchiveActive && isAuthenticated;
   const dispatch = useAppDispatch();
 
   // Clear archive state if user is not authenticated
@@ -43,66 +41,52 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
   useEffect(() => {
     // Reset to page 1 when filters/search change
     setCurrentPage(1);
-  }, [category, filter, searchQuery, isArchiveActive]);
+  }, [category, filter, searchQuery, likedOnly]);
+
+  const skip = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  const queryKey = useMemo(
+    () => [
+      "publicStudies",
+      { category, filter, searchQuery, likedOnly, currentPage },
+    ],
+    [category, filter, searchQuery, likedOnly, currentPage],
+  );
+
+  const {
+    data: studiesData,
+    isPending,
+    isFetching,
+    error,
+  } = useQuery<Study[], ApiError>({
+    queryKey,
+    queryFn: () =>
+      studyService.getPublicStudies({
+        category,
+        filter,
+        search: searchQuery,
+        // Fetch one extra item to check if there's a next page
+        limit: ITEMS_PER_PAGE + 1,
+        skip,
+        likedOnly,
+      }),
+    staleTime: 60_000,
+    gcTime: 10 * 60_000,
+    refetchOnWindowFocus: false,
+    retry: 1,
+    placeholderData: keepPreviousData,
+  });
 
   useEffect(() => {
-    const fetchStudies = async () => {
-      setLoading(true);
-      setError(null);
+    if (!error) return;
+    toast({
+      title: "Error",
+      description: error?.message || "Failed to load studies. Please try again.",
+      variant: "destructive",
+    });
+  }, [error, toast]);
 
-      try {
-        const skip = (currentPage - 1) * ITEMS_PER_PAGE;
-        // Fetch one extra item to check if there's a next page
-        const data = await studyService.getPublicStudies({
-          category,
-          filter,
-          search: searchQuery,
-          limit: ITEMS_PER_PAGE + 1,
-          skip,
-          likedOnly: isArchiveActive && isAuthenticated,
-        });
-
-        // If we got more than ITEMS_PER_PAGE, there's a next page
-        const hasNextPage = data.length > ITEMS_PER_PAGE;
-        // Only display ITEMS_PER_PAGE items
-        const studiesToShow = data.slice(0, ITEMS_PER_PAGE);
-
-        setStudies(studiesToShow);
-
-        // Calculate total pages: if there's a next page, show currentPage + 1
-        // Otherwise, currentPage is the last page
-        if (hasNextPage) {
-          setTotalPages(currentPage + 1);
-        } else {
-          setTotalPages(currentPage);
-        }
-      } catch (err) {
-        const apiError = err as ApiError;
-        const errorMessage =
-          apiError?.message || "Failed to load studies. Please try again.";
-        setError(errorMessage);
-        toast({
-          title: "Error",
-          description: errorMessage,
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStudies();
-  }, [
-    category,
-    filter,
-    searchQuery,
-    isArchiveActive,
-    isAuthenticated,
-    currentPage,
-    toast,
-  ]);
-
-  if (loading) {
+  if (isPending) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <LoadingSpinner size="large" />
@@ -115,11 +99,16 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
       <EmptyState
         variant="error"
         title="Error loading studies"
-        description={error}
+        description={error?.message || "Failed to load studies. Please try again."}
         size="md"
       />
     );
   }
+
+  const studiesRaw = studiesData ?? [];
+  const hasNextPage = studiesRaw.length > ITEMS_PER_PAGE;
+  const studies = studiesRaw.slice(0, ITEMS_PER_PAGE);
+  const totalPages = hasNextPage ? currentPage + 1 : currentPage;
 
   if (studies.length === 0) {
     // Show different message for archive empty state (only if authenticated)
@@ -151,6 +140,11 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
 
   return (
     <div className="space-y-6">
+      {isFetching && (
+        <div className="flex items-center justify-center">
+          <LoadingSpinner size="small" />
+        </div>
+      )}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {studies.map((study) => (
           <StudyCard key={study._id} study={study} />
