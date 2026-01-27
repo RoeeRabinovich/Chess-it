@@ -41,14 +41,14 @@ export const StudyCardsGrid = ({ category, filter }: StudyCardsGridProps) => {
   useEffect(() => {
     // Reset to page 1 when filters/search change
     setCurrentPage(1);
-  }, [category, filter, searchQuery, likedOnly]);
+  }, [category, filter, searchQuery, likedOnly , isArchiveActive]);
 
   const skip = (currentPage - 1) * ITEMS_PER_PAGE;
 
   const queryKey = useMemo(
     () => [
       "publicStudies",
-      { category, filter, searchQuery, likedOnly, currentPage },
+      { category, filter, searchQuery, likedOnly, currentPage , isArchiveActive },
     ],
     [category, filter, searchQuery, likedOnly, currentPage],
   );
