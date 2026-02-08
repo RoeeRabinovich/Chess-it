@@ -42,16 +42,20 @@ export const EngineLinesSection = ({
             </span>
           </div>
         ) : (
-          <EngineLines
-            lines={formattedEngineLines.map((line) => ({
-              moves: line.sanNotation.split(" "),
-              evaluation: line.evaluation,
-              depth: line.depth,
-              mate: line.possibleMate ? parseInt(line.possibleMate) : undefined,
-            }))}
-            isAnalyzing={isAnalyzing}
-            maxLines={engineLinesCount}
-          />
+          <div className="w-[360px] max-w-full self-center">
+            <EngineLines
+              lines={formattedEngineLines.map((line) => ({
+                moves: line.sanNotation.split(" "),
+                evaluation: line.evaluation,
+                depth: line.depth,
+                mate: line.possibleMate
+                  ? parseInt(line.possibleMate)
+                  : undefined,
+              }))}
+              isAnalyzing={isAnalyzing}
+              maxLines={engineLinesCount}
+            />
+          </div>
         )}
       </div>
       <hr className="border-border/30 my-1.5 sm:my-2 lg:my-4" />

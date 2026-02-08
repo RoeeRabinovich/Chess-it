@@ -46,7 +46,7 @@ export const MobileTopSection = ({
 
   if (isReviewMode) {
     return (
-      <div className="border-border bg-card w-full max-w-screen border-b py-2 sm:py-3">
+      <div className="border-border bg-card w-full max-w-screen border-b py-2 sm:py-3 ">
         <div className="mb-1.5 flex items-center gap-1.5 px-2 sm:px-3">
           <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500"></div>
           <span className="text-muted-foreground shrink-0 text-[10px] font-medium tracking-wide uppercase sm:text-xs">
@@ -102,15 +102,17 @@ export const MobileTopSection = ({
         </span>
       </div>
       <div className="min-h-[50px] w-full max-w-screen overflow-hidden px-2 sm:min-h-[70px] sm:px-3">
-        <EngineLines
-          lines={formattedEngineLines.slice(0, 2).map((line) => ({
-            moves: line.sanNotation.split(" "),
-            evaluation: line.evaluation,
-            depth: line.depth,
-            mate: line.possibleMate ? parseInt(line.possibleMate) : undefined,
-          }))}
-          isAnalyzing={isAnalyzing}
-        />
+        <div className="w-full max-w-full">
+          <EngineLines
+            lines={formattedEngineLines.slice(0, 2).map((line) => ({
+              moves: line.sanNotation.split(" "),
+              evaluation: line.evaluation,
+              depth: line.depth,
+              mate: line.possibleMate ? parseInt(line.possibleMate) : undefined,
+            }))}
+            isAnalyzing={isAnalyzing}
+          />
+        </div>
       </div>
     </div>
   );
