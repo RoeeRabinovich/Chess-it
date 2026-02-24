@@ -71,10 +71,7 @@ export const EngineLines = ({
               } ${isMobile ? "hidden sm:flex" : ""}`}
               onClick={() => onMoveClick?.(line.moves)}
             >
-              <span className="text-muted-foreground shrink-0 text-[9px] font-medium sm:text-[10px]">
-                {index + 1}.
-              </span>
-              <span className="text-foreground min-w-0 flex-1 truncate font-mono text-[9px] leading-tight sm:text-[10px]">
+<span className="text-foreground min-w-0 flex-1 truncate font-mono text-[9px] leading-tight sm:text-[10px]">
                 {line.sanNotation || line.moves.join(" ")}
               </span>
               <div
