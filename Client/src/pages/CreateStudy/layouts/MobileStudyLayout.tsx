@@ -20,15 +20,6 @@ import { cn } from "../../../lib/utils";
 
 type MobileTab = "moves" | "comment" | "engine";
 
-const calculateMobileBoardSize = (): number => {
-  if (typeof window === "undefined") return 300;
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  const availH = h - 200;
-  const availW = w - 32;
-  return Math.min(availW, availH, 350);
-};
-
 interface TabButtonProps {
   label: string;
   active: boolean;
@@ -42,7 +33,7 @@ const TabButton = ({ label, active, onClick, dot }: TabButtonProps) => (
     className={cn(
       "flex-1 py-2 text-[10px] font-medium tracking-wide uppercase transition-colors",
       active
-        ? "border-b-2 border-foreground text-foreground"
+        ? "border-foreground text-foreground border-b-2"
         : "text-muted-foreground hover:text-foreground",
     )}
   >
@@ -99,7 +90,6 @@ export const MobileStudyLayout = ({
   const [activeTab, setActiveTab] = useState<MobileTab>("moves");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [commentText, setCommentText] = useState(currentMoveComment);
-  const [boardSize, setBoardSize] = useState(calculateMobileBoardSize);
 
   // Sync comment text when navigating between moves
   useEffect(() => {
@@ -113,42 +103,36 @@ export const MobileStudyLayout = ({
     }
   }, [currentPath.length, activeTab]);
 
-  useEffect(() => {
-    const update = () => setBoardSize(calculateMobileBoardSize());
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
-
   const canShowCommentTab = currentPath.length > 0;
   const hasComment = !!currentMoveComment && currentMoveComment.trim() !== "";
 
-  const evalBarWidth = 12;
-  const evalBarGap = 4;
+  const formatEval = () => {
+    if (displayEvaluation.possibleMate) {
+      const m = parseInt(displayEvaluation.possibleMate);
+      return m > 0 ? `+M${Math.abs(m)}` : `-M${Math.abs(m)}`;
+    }
+    const v = displayEvaluation.evaluation;
+    return v > 0 ? `+${v.toFixed(1)}` : v.toFixed(1);
+  };
+
+  const evalColor = () => {
+    if (displayEvaluation.possibleMate) {
+      const m = parseInt(displayEvaluation.possibleMate);
+      return m > 0
+        ? "text-green-600 dark:text-green-400"
+        : "text-red-600 dark:text-red-400";
+    }
+    const v = displayEvaluation.evaluation;
+    if (v > 0.5) return "text-green-600 dark:text-green-400";
+    if (v < -0.5) return "text-red-600 dark:text-red-400";
+    return "text-muted-foreground";
+  };
 
   return (
-    <div className="flex h-full flex-col overflow-hidden">
-      {/* Board area */}
+    <div className="flex h-full w-full flex-col overflow-hidden">
+      {/* Board area — eval bar overlays left edge of board (no extra width needed) */}
       <div className="bg-muted/30 flex flex-shrink-0 items-center justify-center p-2">
-        {isEngineEnabled && (
-          <div
-            className="mr-1 flex-shrink-0 transition-all duration-200"
-            style={{
-              width: `${evalBarWidth * boardScale}px`,
-              height: `${boardSize * boardScale}px`,
-              marginRight: `${evalBarGap}px`,
-            }}
-          >
-            <EvaluationBar
-              evaluation={displayEvaluation.evaluation}
-              possibleMate={displayEvaluation.possibleMate}
-              isFlipped={gameState.isFlipped}
-              height={boardSize * boardScale}
-              width={evalBarWidth * boardScale}
-            />
-          </div>
-        )}
-        <div className="relative z-0 flex-shrink-0 transition-all duration-200">
+        <div className="relative flex-shrink-0">
           <ChessBoard
             position={gameState.position}
             onMove={(move) => makeMove(move as ChessMove)}
@@ -156,6 +140,21 @@ export const MobileStudyLayout = ({
             isInteractive={true}
             boardScale={boardScale}
           />
+          {isEngineEnabled && (
+            <div
+              className="absolute top-0 left-0 z-10 transition-all duration-200"
+              style={{ width: "10px", height: "100%" }}
+            >
+              <EvaluationBar
+                evaluation={displayEvaluation.evaluation}
+                possibleMate={displayEvaluation.possibleMate}
+                isFlipped={gameState.isFlipped}
+                height="100%"
+                width={10}
+                showText={false}
+              />
+            </div>
+          )}
         </div>
       </div>
 
@@ -262,13 +261,13 @@ export const MobileStudyLayout = ({
         </div>
 
         {/* Tab content */}
-        <div className="bg-card flex-1 overflow-y-auto">
+        <div className="bg-card flex-1 overflow-x-hidden overflow-y-auto">
           {/* Moves tab */}
           {activeTab === "moves" && (
             <div className="px-2 py-1.5">
               {/* Study info in review mode */}
               {studyName && (
-                <div className="mb-2 pb-2 border-b border-border">
+                <div className="border-border mb-2 border-b pb-2">
                   <StudyMetadata
                     studyName={studyName}
                     studyCategory={studyCategory}
@@ -325,7 +324,7 @@ export const MobileStudyLayout = ({
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
                     placeholder="Add a note for this move..."
-                    className="border-border bg-background text-foreground placeholder:text-muted-foreground w-full resize-none border px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                    className="border-border bg-background text-foreground placeholder:text-muted-foreground focus:ring-primary w-full resize-none border px-2 py-1.5 text-xs focus:ring-1 focus:outline-none"
                     rows={4}
                     maxLength={1000}
                   />
@@ -343,7 +342,18 @@ export const MobileStudyLayout = ({
 
           {/* Engine tab */}
           {activeTab === "engine" && isEngineEnabled && (
-            <div className="px-2 py-1.5">
+            <div className="max-w-[100vw] px-2 py-1.5">
+              {/* Evaluation score */}
+              <div className="mb-2 flex items-center gap-2">
+                <span className={`font-mono text-sm font-bold ${evalColor()}`}>
+                  {formatEval()}
+                </span>
+                {isAnalyzing && (
+                  <span className="text-muted-foreground animate-pulse text-[10px]">
+                    analyzing...
+                  </span>
+                )}
+              </div>
               <EngineLines
                 lines={formattedEngineLines.map((line) => ({
                   moves: line.sanNotation.split(" "),

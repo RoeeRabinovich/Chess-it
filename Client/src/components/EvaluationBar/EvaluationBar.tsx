@@ -4,6 +4,7 @@ interface EvaluationBarProps {
   isFlipped?: boolean;
   height?: string | number;
   width?: string | number;
+  showText?: boolean;
 }
 
 export const EvaluationBar = ({
@@ -12,6 +13,7 @@ export const EvaluationBar = ({
   isFlipped = false,
   height = "100%",
   width,
+  showText = true,
 }: EvaluationBarProps) => {
   // Use raw evaluation from Stockfish (always from White's perspective)
   // Stockfish: positive = good for White, negative = good for Black
@@ -167,15 +169,17 @@ export const EvaluationBar = ({
         />
       )}
       {/* Evaluation text */}
-      <div className="absolute inset-0 z-10 flex items-center justify-center">
-        <span
-          className={`${isHorizontal ? "text-[10px]" : "text-[10px]"} font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)] ${
-            normalizedEval < -0.1 ? "text-white" : "text-foreground"
-          }`}
-        >
-          {formatEval()}
-        </span>
-      </div>
+      {showText && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center">
+          <span
+            className={`${isHorizontal ? "text-[10px]" : "text-[10px]"} font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)] ${
+              normalizedEval < -0.1 ? "text-white" : "text-foreground"
+            }`}
+          >
+            {formatEval()}
+          </span>
+        </div>
+      )}
       {/* Center line */}
       {isHorizontal ? (
         <div className="bg-border absolute top-0 bottom-0 left-1/2 w-0.5 -translate-x-1/2 opacity-50" />

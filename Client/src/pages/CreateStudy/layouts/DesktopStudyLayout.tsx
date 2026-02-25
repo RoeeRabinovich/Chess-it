@@ -82,7 +82,7 @@ export const DesktopStudyLayout = ({
   return (
     <div className="flex flex-1 flex-row overflow-hidden">
       {/* Left Column - Evaluation Bar + Board */}
-      <div className="bg-muted/30 relative flex min-h-0 flex-1 items-center justify-center overflow-auto p-3 sm:p-4 lg:max-h-screen lg:max-w-[calc(100%-400px)] lg:p-6">
+      <div className="bg-muted/30 relative flex min-h-0 flex-1 items-center justify-center overflow-auto p-3 sm:p-4 md:max-w-[calc(100%-288px)] lg:max-h-screen lg:max-w-[calc(100%-400px)] lg:p-6">
         <div className="flex items-center justify-center">
           {/* Desktop: Vertical evaluation bar on left */}
           {isEngineEnabled && (
@@ -129,7 +129,7 @@ export const DesktopStudyLayout = ({
       </div>
 
       {/* Right Column - Tools Sidebar */}
-      <div className="border-border bg-background w-full border-l lg:w-[400px] lg:max-w-[400px] lg:min-w-[400px]">
+      <div className="border-border bg-background w-full border-l md:w-72 md:max-w-72 md:min-w-72 lg:w-[400px] lg:max-w-[400px] lg:min-w-[400px]">
         <div className="flex h-full flex-col overflow-hidden">
           <ToolsSidebar
             isEngineEnabled={isEngineEnabled}

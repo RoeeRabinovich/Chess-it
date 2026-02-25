@@ -47,7 +47,7 @@ export const EngineLines = ({
   };
 
   return (
-    <div className="w-full max-w-screen space-y-1">
+    <div className="w-full space-y-1">
       <h3 className="text-foreground mb-1 text-[10px] font-semibold sm:text-xs">
         Top Engine Lines
       </h3>
@@ -58,17 +58,15 @@ export const EngineLines = ({
         </div>
       ) : (
         // Render engine lines (using stable lines to prevent layout shifts)
-        // Show 1 line on mobile, maxLines on desktop
         displayLines.slice(0, maxLines).map((line, index) => {
-          const isMobile = index >= 1; // Hide lines 2 and 3 on mobile
           return (
             <div
               key={index}
-              className={`flex w-full max-w-screen cursor-pointer items-center gap-1 rounded border px-1.5 py-1 transition-colors sm:gap-1.5 sm:px-2 sm:py-1.5 ${
+              className={`flex w-full cursor-pointer items-center gap-1 rounded border px-1.5 py-1 transition-colors sm:gap-1.5 sm:px-2 sm:py-1.5 ${
                 index === 0
                   ? "border-primary bg-primary/5"
                   : "border-border bg-card hover:bg-muted"
-              } ${isMobile ? "hidden sm:flex" : ""}`}
+              }`}
               onClick={() => onMoveClick?.(line.moves)}
             >
 <span className="text-foreground min-w-0 flex-1 truncate font-mono text-[9px] leading-tight sm:text-[10px]">

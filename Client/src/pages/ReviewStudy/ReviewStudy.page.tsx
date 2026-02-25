@@ -99,11 +99,11 @@ export const ReviewStudy = () => {
   return (
     <div className="bg-background flex h-screen overflow-hidden pt-16 sm:pt-20 md:pt-24">
       {/* Mobile Layout */}
-      <div className="flex flex-1 lg:hidden">
+      <div className="flex flex-1 md:hidden">
         <MobileStudyLayout {...layoutPropsWithLikes} />
       </div>
       {/* Desktop Layout */}
-      <div className="hidden flex-1 lg:flex">
+      <div className="hidden flex-1 md:flex">
         <DesktopStudyLayout {...layoutPropsWithLikes} />
       </div>
     </div>
