@@ -130,20 +130,13 @@ export const MobileStudyLayout = ({
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
-      {/* Board area — eval bar overlays left edge of board (no extra width needed) */}
-      <div className="bg-muted/30 flex flex-shrink-0 items-center justify-center p-2">
-        <div className="relative flex-shrink-0">
-          <ChessBoard
-            position={gameState.position}
-            onMove={(move) => makeMove(move as ChessMove)}
-            isFlipped={gameState.isFlipped}
-            isInteractive={true}
-            boardScale={boardScale}
-          />
+      {/* Board area — eval bar sits to the left of the board as a flex sibling */}
+      <div className="bg-muted/30 flex flex-shrink-0 items-center justify-center p-2 pl-3 sm:pl-4">
+        <div className="flex flex-shrink-0 items-stretch">
           {isEngineEnabled && (
             <div
-              className="absolute top-0 left-0 z-10 transition-all duration-200"
-              style={{ width: "10px", height: "100%" }}
+              className="flex-shrink-0 transition-all duration-200"
+              style={{ width: "10px" }}
             >
               <EvaluationBar
                 evaluation={displayEvaluation.evaluation}
@@ -155,6 +148,13 @@ export const MobileStudyLayout = ({
               />
             </div>
           )}
+          <ChessBoard
+            position={gameState.position}
+            onMove={(move) => makeMove(move as ChessMove)}
+            isFlipped={gameState.isFlipped}
+            isInteractive={true}
+            boardScale={boardScale}
+          />
         </div>
       </div>
 

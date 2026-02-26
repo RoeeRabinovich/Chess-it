@@ -34,7 +34,7 @@ export const EngineLinesSection = ({
         indicatorColor={indicatorColor}
         showIndicator={isEngineEnabled}
       />
-      <div className="mb-2 flex min-h-[60px] flex-col sm:mb-3 sm:min-h-[80px] lg:mb-4 lg:min-h-[120px]">
+      <div className="mb-2 flex min-h-16 max-h-[18vh] flex-col overflow-y-auto sm:mb-3 sm:min-h-20 lg:mb-4 lg:min-h-28">
         {movesCount === 0 ? (
           <div className="flex flex-1 items-center justify-center">
             <span className="text-muted-foreground text-[10px] sm:text-xs">

@@ -7,7 +7,7 @@ interface UseBoardSizeReturn {
 }
 
 const MIN_BOARD_SIZE_PX = 120;
-const MAX_BOARD_SIZE_PX = 650;
+const MAX_BOARD_SIZE_PX = 700;
 
 const calculateBoardSize = (): number => {
   if (typeof window === "undefined") return 300;
@@ -21,15 +21,15 @@ const calculateBoardSize = (): number => {
     const availableHeight = height - 200; // Account for nav, engine lines, eval bar, controls
     const availableWidth = width - 32; // Account for padding
     size = Math.min(availableWidth, availableHeight, 350);
-  } else if (width >= 1024) {
-    size = 550; // lg desktop
-  } else if (width >= 768) {
-    size = 400; // md tablet - reduced from 500
   } else {
-    // 640-768px range - make it smaller to fit better
-    const availableHeight = height - 250; // Account for all sections
-    const availableWidth = width - 64; // Account for padding
-    size = Math.min(availableWidth, availableHeight, 350);
+    // md (768px+) and lg (1024px+): viewport-aware dynamic calculation
+    const sidebarWidth = width >= 1024 ? 400 : 288;
+    const navHeight   = width >= 1024 ? 96 : 80;   // pt-24 or pt-20
+    const hPadding    = width >= 1024 ? 96 : 64;   // p-6*2 or p-4*2
+    const evalBarSpace = 24;                        // eval bar (20px) + gap (4px)
+    const availW = width - sidebarWidth - hPadding - evalBarSpace;
+    const availH = height - navHeight - 64;
+    size = Math.min(availW, availH) / 1.4; // leave room so boardScale=1.4 (max) fits exactly
   }
 
   // Guard against transient negative/zero sizes during responsive resizes.
